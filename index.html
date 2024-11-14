@@ -173,6 +173,39 @@
 
   <div id="navbar-container"></div>
 
+<<<<<<< HEAD
   <script src="script.js"></script>
+=======
+  <script>
+
+        document.addEventListener("DOMContentLoaded", function() {
+            // Fetch user ID from URL query parameter
+            const urlParams = new URLSearchParams(window.location.search);
+            const userId = urlParams.get('user_id');
+
+            // Check if userId is found, and update the span text
+            if (userId) {
+                document.getElementById('userId').innerText = `User ID: ${userId}`;
+            } else {
+                document.getElementById('userId').innerText = "User ID not available";
+            }
+        });
+
+
+
+
+
+
+
+
+    fetch('navbar.html')
+      .then(response => response.text())
+      .then(html => {
+        document.getElementById('navbar-container').innerHTML = html;
+      })
+      .catch(error => console.error('Error loading navbar:', error));
+  </script>
+
+>>>>>>> c7b4ad1d54dd03adf2719a70054bbe3a3dd8912c
 </body>
 </html>
