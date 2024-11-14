@@ -26,6 +26,21 @@
         width: 90%;
         max-width: 400px;
     }
+
+    .header {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      color: #b3b3b3;
+      font-size: 14px;
+      padding-bottom: 20px;
+    }
+    .header img {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      margin-right: 10px;
+    }
     
     .user-id {
         font-size: 0.9rem;
@@ -139,12 +154,18 @@
 
 
 </style>
+
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+
 </head>
 <body>
 
 <div class="container">
 
-    <div class="user-id">User ID: 55313456</div>
+    <div class="header">
+        <img src="user-avatar.png" alt="User Avatar">
+        <span id="userId">User ID: Loading...</span>
+      </div>
 
 
     <h1>INVITE FRIENDS</h1>
@@ -163,6 +184,21 @@
 <div id="navbar-container"></div>
 
 <script>
+
+
+        // Initialize Telegram WebApp
+        const tg = window.Telegram.WebApp;
+
+        // When the webapp is ready
+        tg.ready(() => {
+            // Get the user's ID
+            const userId = tg.initDataUnsafe.user.id;
+            // Update the span with the user's ID
+            document.getElementById('userId').textContent = `User ID: ${userId}`;
+        });
+
+
+
   fetch('navbar.html')
     .then(response => response.text())
     .then(html => {
