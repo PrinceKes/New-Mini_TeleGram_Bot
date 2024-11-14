@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Telegram Mini App</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #1c1c1e;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      height: 100vh;
+      padding: 10px;
+      overflow: hidden;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      color: #b3b3b3;
+      font-size: 14px;
+      padding-bottom: 20px;
+    }
+    .header img {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      margin-right: 10px;
+    }
+
+    .content {
+      text-align: center;
+    }
+    .wallet-btn {
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      font-size: 14px;
+      border-radius: 25px;
+      margin-bottom: 20px;
+      cursor: pointer;
+    }
+    .wallet-btn:focus {
+      outline: none;
+    }
+    .paws-icon {
+      font-size: 70px;
+      margin-bottom: 10px;
+    }
+    .points {
+      font-size: 48px;
+      font-weight: bold;
+    }
+    .rank {
+      font-size: 14px;
+      color: #e1e1e1;
+    }
+    .rank span {
+      font-size: 12px;
+      color: #ffd700;
+    }
+
+    .buttons {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .button {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background-color: #2c2c2e;
+      padding: 15px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 16px;
+      color: #fff;
+    }
+    .button span {
+      color: #007bff;
+    }
+
+    /* Navbar Styles */
+    #navbar-container {
+      width: 100%;
+      display: flex;
+    }
+
+    .bottom-nav {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      background-color: #00af43;
+      border-top: 1px solid #333;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      height: 60px;
+      color: #b3b3b3;
+      z-index: 1000;
+      box-sizing: border-box;
+    }
+
+    .bottom-nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      cursor: pointer;
+      transition: color 0.3s;
+      flex: 1; /* Ensure each item takes equal width */
+      text-align: center;
+    }
+
+    .bottom-nav-item.active {
+      color: #fff; /* White color for active item */
+      background-color: #007bff; /* Different background color for active tab */
+      border-radius: 10px;
+      padding: 5px 10px;
+    }
+
+    .bottom-nav-item div:first-child {
+      font-size: 20px;
+      margin-bottom: 3px;
+      color: inherit;
+    }
+
+    .bottom-nav-item:hover {
+      color: #fff; /* Hover color */
+    }
+  </style>
+
+</head>
+<body>
+
+  <div class="header">
+    <img src="user-avatar.png" alt="User Avatar">
+    <span>User ID: 55313456</span>
+  </div>
+
+  <div class="content">
+    <button class="wallet-btn">Connect wallet</button>
+    <div class="paws-icon">🐾</div>
+    <div class="points">1,529 PAWS</div>
+    <div class="rank">NEWCOMER <span>✨</span> RANK</div>
+  </div>
+
+  <div class="buttons">
+    <div class="button">
+      <span>👥 Join our community</span>
+      <span>›</span>
+    </div>
+    <div class="button">
+      <span>⭐ Check your rewards</span>
+      <span>›</span>
+    </div>
+  </div>
+
+  <div id="navbar-container"></div>
+
+  <script>
+    fetch('navbar.html')
+      .then(response => response.text())
+      .then(html => {
+        document.getElementById('navbar-container').innerHTML = html;
+      })
+      .catch(error => console.error('Error loading navbar:', error));
+  </script>
+
+</body>
+</html>
