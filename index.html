@@ -175,43 +175,58 @@
 
   <script>
 
-    // Initialize Telegram WebApp
-    const tg = window.Telegram.WebApp;
+    // Place this script at the end of the body to ensure DOM is loaded
+document.addEventListener("DOMContentLoaded", function() {
+    // Get the user ID from the URL query parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    const userId = urlParams.get('user_id');
 
-    // When the webapp is ready
-    tg.ready(() => {
-        try {
-            console.log("WebApp is ready");
-            console.log("InitData:", tg.initData);
-            console.log("InitDataUnsafe:", tg.initDataUnsafe);
+    // Check if user ID exists, then display it
+    if (userId) {
+        document.getElementById('user-id').innerText = `User ID: ${userId}`;
+    } else {
+        document.getElementById('user-id').innerText = "User ID not found";
+    }
+});
+
+
+    // // Initialize Telegram WebApp
+    // const tg = window.Telegram.WebApp;
+
+    // // When the webapp is ready
+    // tg.ready(() => {
+    //     try {
+    //         console.log("WebApp is ready");
+    //         console.log("InitData:", tg.initData);
+    //         console.log("InitDataUnsafe:", tg.initDataUnsafe);
             
-            if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-                const userId = tg.initDataUnsafe.user.id;
-                console.log("User ID:", userId);
-                document.getElementById('userId').textContent = `User ID: ${userId}`;
-            } else {
-                console.log("No user data available");
-                document.getElementById('userId').textContent = 'User ID: Not available';
-            }
-        } catch (error) {
-            console.error("Error accessing user data:", error);
-            document.getElementById('userId').textContent = 'Error loading user ID';
-        }
-    });
+    //         if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+    //             const userId = tg.initDataUnsafe.user.id;
+    //             console.log("User ID:", userId);
+    //             document.getElementById('userId').textContent = `User ID: ${userId}`;
+    //         } else {
+    //             console.log("No user data available");
+    //             document.getElementById('userId').textContent = 'User ID: Not available';
+    //         }
+    //     } catch (error) {
+    //         console.error("Error accessing user data:", error);
+    //         document.getElementById('userId').textContent = 'Error loading user ID';
+    //     }
+    // });
 
-    // Add event listener for WebApp closing
-    tg.onEvent('viewportChanged', () => {
-        console.log('Viewport changed');
-    });
+    // // Add event listener for WebApp closing
+    // tg.onEvent('viewportChanged', () => {
+    //     console.log('Viewport changed');
+    // });
 
 
 
-    document.addEventListener('DOMContentLoaded', function() {
-        if (window.Telegram && window.Telegram.WebApp) {
-            window.Telegram.WebApp.expand();
-            window.Telegram.WebApp.ready();
-        }
-    });
+    // document.addEventListener('DOMContentLoaded', function() {
+    //     if (window.Telegram && window.Telegram.WebApp) {
+    //         window.Telegram.WebApp.expand();
+    //         window.Telegram.WebApp.ready();
+    //     }
+    // });
     
 
 
