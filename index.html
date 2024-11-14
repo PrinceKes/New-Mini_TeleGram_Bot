@@ -175,19 +175,18 @@
 
   <script>
 
-    // Place this script at the end of the body to ensure DOM is loaded
-document.addEventListener("DOMContentLoaded", function() {
-    // Get the user ID from the URL query parameter
-    const urlParams = new URLSearchParams(window.location.search);
-    const userId = urlParams.get('user_id');
+        document.addEventListener("DOMContentLoaded", function() {
+            // Fetch user ID from URL query parameter
+            const urlParams = new URLSearchParams(window.location.search);
+            const userId = urlParams.get('user_id');
 
-    // Check if user ID exists, then display it
-    if (userId) {
-        document.getElementById('user-id').innerText = `User ID: ${userId}`;
-    } else {
-        document.getElementById('user-id').innerText = "User ID not found";
-    }
-});
+            // Check if userId is found, and update the span text
+            if (userId) {
+                document.getElementById('userId').innerText = `User ID: ${userId}`;
+            } else {
+                document.getElementById('userId').innerText = "User ID not available";
+            }
+        });
 
 
     // // Initialize Telegram WebApp
