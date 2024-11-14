@@ -52,28 +52,25 @@ document.addEventListener("DOMContentLoaded", function() {
 
 // function to connect wallet
 document.addEventListener("DOMContentLoaded", function() {
-    // Initialize TON Connect
+
     const tonConnect = new TonConnect();
 
     const walletButton = document.querySelector(".wallet-btn");
 
-    // Check if a wallet is already connected
+
     const connectedWalletAddress = localStorage.getItem("walletAddress");
     if (connectedWalletAddress) {
         walletButton.innerText = `${connectedWalletAddress.slice(0, 4)}...${connectedWalletAddress.slice(-4)}`;
     }
 
-    // Handle wallet connection
     walletButton.addEventListener("click", async () => {
         try {
             const walletInfo = await tonConnect.connectWallet();
 
             if (walletInfo) {
-                // Save the wallet address to local storage
                 const walletAddress = walletInfo.address;
                 localStorage.setItem("walletAddress", walletAddress);
 
-                // Update the button text to show the first and last 4 characters of the address
                 walletButton.innerText = `${walletAddress.slice(0, 4)}...${walletAddress.slice(-4)}`;
             }
         } catch (error) {
