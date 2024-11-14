@@ -173,59 +173,6 @@
 
   <div id="navbar-container"></div>
 
-  <script>
-
-    // Initialize Telegram WebApp
-    const tg = window.Telegram.WebApp;
-
-    // When the webapp is ready
-    tg.ready(() => {
-        try {
-            console.log("WebApp is ready");
-            console.log("InitData:", tg.initData);
-            console.log("InitDataUnsafe:", tg.initDataUnsafe);
-            
-            if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-                const userId = tg.initDataUnsafe.user.id;
-                console.log("User ID:", userId);
-                document.getElementById('userId').textContent = `User ID: ${userId}`;
-            } else {
-                console.log("No user data available");
-                document.getElementById('userId').textContent = 'User ID: Not available';
-            }
-        } catch (error) {
-            console.error("Error accessing user data:", error);
-            document.getElementById('userId').textContent = 'Error loading user ID';
-        }
-    });
-
-    // Add event listener for WebApp closing
-    tg.onEvent('viewportChanged', () => {
-        console.log('Viewport changed');
-    });
-
-
-
-    document.addEventListener('DOMContentLoaded', function() {
-        if (window.Telegram && window.Telegram.WebApp) {
-            window.Telegram.WebApp.expand();
-            window.Telegram.WebApp.ready();
-        }
-    });
-    
-
-
-
-
-
-
-    fetch('navbar.html')
-      .then(response => response.text())
-      .then(html => {
-        document.getElementById('navbar-container').innerHTML = html;
-      })
-      .catch(error => console.error('Error loading navbar:', error));
-  </script>
-
+  <script src="script.js"></script>
 </body>
 </html>

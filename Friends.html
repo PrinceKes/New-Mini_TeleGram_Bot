@@ -149,13 +149,11 @@
     }
 
     .bottom-nav-item:hover {
-      color: #fff; /* Hover color */
+      color: #fff;
     }
 
 
 </style>
-
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
 
 </head>
 <body>
@@ -183,30 +181,6 @@
 
 <div id="navbar-container"></div>
 
-<script>
-
-
-        // Initialize Telegram WebApp
-        const tg = window.Telegram.WebApp;
-
-        // When the webapp is ready
-        tg.ready(() => {
-            // Get the user's ID
-            const userId = tg.initDataUnsafe.user.id;
-            // Update the span with the user's ID
-            document.getElementById('userId').textContent = `User ID: ${userId}`;
-        });
-
-
-
-  fetch('navbar.html')
-    .then(response => response.text())
-    .then(html => {
-      document.getElementById('navbar-container').innerHTML = html;
-    })
-    .catch(error => console.error('Error loading navbar:', error));
-</script>
-
-
+<script src="script.js"></script>
 </body>
 </html>
