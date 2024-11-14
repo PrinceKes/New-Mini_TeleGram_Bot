@@ -1,13 +1,20 @@
 document.addEventListener("DOMContentLoaded", function() {
 
-    // Fetch user ID from URL query parameter
-    const urlParams = new URLSearchParams(window.location.search);
-    const userId = urlParams.get('user_id');
+const urlParams = new URLSearchParams(window.location.search);
+const userId = urlParams.get('user_id');
 
+// Assuming you have an API or a method to get the avatar URL based on the user ID
+const avatarUrl = "https://example.com/path/to/avatar.png"; 
+
+if (userId) {
+    updateHeader(userId, avatarUrl);
+} else {
     const userIdElement = document.getElementById('userId');
     if (userIdElement) {
-        userIdElement.innerText = userId ? `User ID: ${userId}` : "User ID not available";
+        userIdElement.innerText = "User ID Unknown";
     }
+}
+
 
     // Navbar loading
     fetch('navbar.html')
@@ -50,27 +57,33 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
 
-// function to connect wallet
-document.addEventListener("DOMContentLoaded", function() {
-
-    const tonConnect = new TonConnect();
+// Ensure that TON Connect is initialized once the DOM is fully loaded
+document.addEventListener("DOMContentLoaded", async function() {
+    // Initialize TON Connect
+    const tonConnect = new TonConnect({
+        manifestUrl: 'https://new-mini-telegram-bot.onrender.com/tonconnect-manifest.json' // Update with your manifest URL
+    });
 
     const walletButton = document.querySelector(".wallet-btn");
 
-
+    // Check if a wallet is already connected
     const connectedWalletAddress = localStorage.getItem("walletAddress");
     if (connectedWalletAddress) {
         walletButton.innerText = `${connectedWalletAddress.slice(0, 4)}...${connectedWalletAddress.slice(-4)}`;
     }
 
+    // Handle wallet connection
     walletButton.addEventListener("click", async () => {
         try {
-            const walletInfo = await tonConnect.connectWallet();
+            // Open the wallet connection prompt
+            const walletInfo = await tonConnect.connect();
 
             if (walletInfo) {
+                // Save the wallet address to local storage
                 const walletAddress = walletInfo.address;
                 localStorage.setItem("walletAddress", walletAddress);
 
+                // Update the button text to show the first and last 4 characters of the address
                 walletButton.innerText = `${walletAddress.slice(0, 4)}...${walletAddress.slice(-4)}`;
             }
         } catch (error) {
@@ -80,67 +93,3 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 });
 
-
-
-
-
-
-//     // Fetch user ID from URL query parameter
-
-// document.addEventListener("DOMContentLoaded", function() {
-
-//     const urlParams = new URLSearchParams(window.location.search);
-//     const userId = urlParams.get('user_id');
-
-//     const userIdElement = document.getElementById('userId');
-//     if (userIdElement) {
-//         userIdElement.innerText = userId ? `User ID: ${userId}` : "User ID not available";
-//     }
-// });
-
-
-// // function that controls navbar
-
-// fetch('navbar.html')
-//     .then(response => response.text())
-//     .then(html => {
-//         document.getElementById('navbar-container').innerHTML = html;
-//     })
-//     .catch(error => console.error('Error loading navbar:', error));
-
-
-
-//     document.addEventListener("DOMContentLoaded", function() {
-//         // Fetch user ID from URL query parameter
-//         const urlParams = new URLSearchParams(window.location.search);
-//         const userId = urlParams.get('user_id');
-  
-//         // Update User ID in the header
-//         if (userId) {
-//           document.getElementById('userId').innerText = `User ID: ${userId}`;
-//         } else {
-//           document.getElementById('userId').innerText = "User ID not available";
-//         }
-  
-//         // Welcome bonus logic
-//         const pointsElement = document.getElementById("points");
-        
-//         // Check if user has claimed the welcome bonus before
-//         const hasClaimedBonus = localStorage.getItem("hasClaimedBonus");
-  
-//         if (!hasClaimedBonus) {
-//           // Alert the user about the welcome bonus
-//           setTimeout(() => {
-//             alert("Welcome! Claim your 2000 PAWS as a welcome bonus!");
-            
-//             // Update points to reflect the welcome bonus
-//             pointsElement.innerText = "2000 PAWS";
-  
-//             // Store that the user has claimed the bonus to avoid repeated alerts
-//             localStorage.setItem("hasClaimedBonus", "true");
-//           }, 1000);
-//         } else {
-//           // Set points to 0 or existing points if not the first time
-//           pointsElement.innerText = "0 PAWS";
-//         }
-//      });

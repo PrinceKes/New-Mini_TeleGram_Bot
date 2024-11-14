@@ -3,7 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="https://unpkg.com/@tonconnect/sdk@latest"></script>
+  <!-- <script src="https://unpkg.com/@tonconnect/sdk@latest"></script> -->
+  <script src="https://unpkg.com/ton-connect@latest"></script>
+
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <title>Telegram Mini App</title>
   <style>
@@ -56,6 +58,12 @@
     .wallet-btn:focus {
       outline: none;
     }
+
+
+    .wallet-btn:hover {
+        background-color: #0056b3;
+    }
+
     .paws-icon {
       font-size: 70px;
       margin-bottom: 10px;
@@ -174,39 +182,9 @@
 
   <div id="navbar-container"></div>
 
-<<<<<<< HEAD
+  <script src="header.js"></script>
+
   <script src="script.js"></script>
-=======
-  <script>
 
-        document.addEventListener("DOMContentLoaded", function() {
-            // Fetch user ID from URL query parameter
-            const urlParams = new URLSearchParams(window.location.search);
-            const userId = urlParams.get('user_id');
-
-            // Check if userId is found, and update the span text
-            if (userId) {
-                document.getElementById('userId').innerText = `User ID: ${userId}`;
-            } else {
-                document.getElementById('userId').innerText = "User ID not available";
-            }
-        });
-
-
-
-
-
-
-
-
-    fetch('navbar.html')
-      .then(response => response.text())
-      .then(html => {
-        document.getElementById('navbar-container').innerHTML = html;
-      })
-      .catch(error => console.error('Error loading navbar:', error));
-  </script>
-
->>>>>>> c7b4ad1d54dd03adf2719a70054bbe3a3dd8912c
 </body>
 </html>

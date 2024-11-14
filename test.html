@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connect Wallet</title>
+    <!-- Link the TON Connect SDK -->
+    <script src="https://unpkg.com/@tonconnect/sdk@latest"></script>
+</head>
+<body>
+    <div class="content">
+        <button class="wallet-btn">Connect wallet</button>
+        <div class="paws-icon">🐾</div>
+        <div id="points" class="points">0 PAWS</div>
+        <div class="rank">NEWCOMER <span>✨</span> RANK</div>
+    </div>
+    <!-- Link to your JavaScript file -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Check if TonConnect is available
+            if (typeof TonConnect === "undefined") {
+                console.error("TonConnect SDK not loaded");
+                return;
+            }
+            console.log("TonConnect SDK loaded successfully");
+
+            // Initialize TonConnect
+            const tonConnect = new TonConnect({
+                manifestUrl: 'https://new-mini-telegram-bot.onrender.com/tonconnect-manifest.json'
+            });
+
+            const walletButton = document.querySelector(".wallet-btn");
+
+            // Check if a wallet is already connected
+            const connectedWalletAddress = localStorage.getItem("walletAddress");
+            if (connectedWalletAddress) {
+                walletButton.innerText = `${connectedWalletAddress.slice(0, 4)}...${connectedWalletAddress.slice(-4)}`;
+                console.log("Wallet already connected:", connectedWalletAddress);
+            }
+
+            // Handle wallet connection
+            walletButton.addEventListener("click", async () => {
+                console.log("Connect Wallet button clicked");
+                try {
+                    const walletInfo = await tonConnect.connectWallet();
+
+                    if (walletInfo) {
+                        // Save the wallet address to local storage
+                        const walletAddress = walletInfo.address;
+                        localStorage.setItem("walletAddress", walletAddress);
+
+                        // Update the button text to show the first and last 4 characters of the address
+                        walletButton.innerText = `${walletAddress.slice(0, 4)}...${walletAddress.slice(-4)}`;
+                        console.log("Wallet connected successfully:", walletAddress);
+                    }
+                } catch (error) {
+                    console.error("Wallet connection failed:", error);
+                    alert("Failed to connect to the wallet. Please try again.");
+                }
+            });
+        });
+    </script>
+</body>
+</html>
