@@ -4,8 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <!-- <script src="https://unpkg.com/@tonconnect/sdk@latest"></script> -->
-  <script src="https://unpkg.com/ton-connect@latest"></script>
-
+  <script src="https://unpkg.com/@tonconnect/sdk@latest"></script>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <title>Telegram Mini App</title>
   <style>
@@ -15,17 +14,21 @@
       box-sizing: border-box;
     }
     body {
-      font-family: Arial, sans-serif;
-      background-color: #1c1c1e;
-      color: #fff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: space-between;
-      height: 100vh;
-      padding: 10px;
-      overflow: hidden;
-    }
+    font-family: Arial, sans-serif;
+    background-image: url('./assets/background.png'); /* Corrected file name */
+    background-size: cover; /* Ensures the image covers the whole page */
+    background-repeat: no-repeat; /* Prevents the image from repeating */
+    background-position: center center; /* Centers the image */
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    height: 100vh;
+    padding: 10px;
+    overflow: hidden;
+  }
+
 
     .header {
       display: flex;
@@ -165,7 +168,7 @@
   <div class="content">
     <button class="wallet-btn">Connect wallet</button>
     <div class="paws-icon">🐾</div>
-    <div id="points" class="points">0 PAWS</div>
+    <div id="points" class="points">0 Roast</div>
     <div class="rank">NEWCOMER <span>✨</span> RANK</div>
   </div>
 

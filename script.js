@@ -36,28 +36,29 @@ if (userId) {
         if (!hasClaimedBonus) {
 
             setTimeout(() => {
-                alert("Welcome! Claim your 2000 PAWS as a welcome bonus!");
+                alert("Welcome! Claim your 2000 Roast as a welcome bonus!");
 
                 points = 2000;
-                pointsElement.innerText = `${points} PAWS`;
+                pointsElement.innerText = `${points} Roast`;
 
                 localStorage.setItem("hasClaimedBonus", "true");
                 localStorage.setItem("userPoints", points);
             }, 1000);
         } else {
             points = 0;
-            pointsElement.innerText = `${points} PAWS`;
+            pointsElement.innerText = `${points} Roast`;
             localStorage.setItem("userPoints", points);
         }
     } else {
         
-        pointsElement.innerText = `${points} PAWS`;
+        pointsElement.innerText = `${points} Roast`;
     }
 });
 
 
 
 // Ensure that TON Connect is initialized once the DOM is fully loaded
+alert("JavaScript loaded");
 document.addEventListener("DOMContentLoaded", async function() {
     // Initialize TON Connect
     const tonConnect = new TonConnect({
@@ -74,17 +75,18 @@ document.addEventListener("DOMContentLoaded", async function() {
 
     // Handle wallet connection
     walletButton.addEventListener("click", async () => {
+        console.log("Button clicked");  // Confirm the button click in the console
+        alert("Button clicked");  // Optional alert for button click
+
         try {
             // Open the wallet connection prompt
             const walletInfo = await tonConnect.connect();
 
             if (walletInfo) {
-                // Save the wallet address to local storage
                 const walletAddress = walletInfo.address;
                 localStorage.setItem("walletAddress", walletAddress);
-
-                // Update the button text to show the first and last 4 characters of the address
                 walletButton.innerText = `${walletAddress.slice(0, 4)}...${walletAddress.slice(-4)}`;
+                console.log("Wallet connected:", walletAddress);
             }
         } catch (error) {
             console.error("Wallet connection failed:", error);
@@ -92,4 +94,3 @@ document.addEventListener("DOMContentLoaded", async function() {
         }
     });
 });
-
