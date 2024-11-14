@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", function() {
         })
         .catch(error => console.error('Error loading navbar:', error));
 
-        
+
     // Welcome bonus logic
     const pointsElement = document.getElementById("points");
 
@@ -47,6 +47,42 @@ document.addEventListener("DOMContentLoaded", function() {
         pointsElement.innerText = `${points} PAWS`;
     }
 });
+
+
+
+// function to connect wallet
+document.addEventListener("DOMContentLoaded", function() {
+    // Initialize TON Connect
+    const tonConnect = new TonConnect();
+
+    const walletButton = document.querySelector(".wallet-btn");
+
+    // Check if a wallet is already connected
+    const connectedWalletAddress = localStorage.getItem("walletAddress");
+    if (connectedWalletAddress) {
+        walletButton.innerText = `${connectedWalletAddress.slice(0, 4)}...${connectedWalletAddress.slice(-4)}`;
+    }
+
+    // Handle wallet connection
+    walletButton.addEventListener("click", async () => {
+        try {
+            const walletInfo = await tonConnect.connectWallet();
+
+            if (walletInfo) {
+                // Save the wallet address to local storage
+                const walletAddress = walletInfo.address;
+                localStorage.setItem("walletAddress", walletAddress);
+
+                // Update the button text to show the first and last 4 characters of the address
+                walletButton.innerText = `${walletAddress.slice(0, 4)}...${walletAddress.slice(-4)}`;
+            }
+        } catch (error) {
+            console.error("Wallet connection failed:", error);
+            alert("Failed to connect to the wallet. Please try again.");
+        }
+    });
+});
+
 
 
 
