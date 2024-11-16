@@ -48,60 +48,60 @@ fetch('navbar.html')
     .catch(error => console.error('Error loading navbar:', error));
 
 
-    // Function to load screen animation
+    // // Function to load screen animation
 
-    document.addEventListener('DOMContentLoaded', () => {
-        const loadingScreen = document.getElementById('loading-screen');
-        const contentContainer = document.getElementById('content'); // The container where pages will be loaded
+    // document.addEventListener('DOMContentLoaded', () => {
+    //     const loadingScreen = document.getElementById('loading-screen');
+    //     const contentContainer = document.getElementById('content'); // The container where pages will be loaded
     
-        // Function to show the loading screen
-        function showLoading() {
-            console.log('Showing loading screen...');
-            loadingScreen.style.display = 'flex'; // Display the loading screen
-        }
+    //     // Function to show the loading screen
+    //     function showLoading() {
+    //         console.log('Showing loading screen...');
+    //         loadingScreen.style.display = 'flex'; // Display the loading screen
+    //     }
     
-        // Function to hide the loading screen after 3 seconds
-        function hideLoading() {
-            console.log('Hiding loading screen after delay...');
-            setTimeout(() => {
-                loadingScreen.style.display = 'none'; // Hide the loading screen after 3 seconds
-            }, 3000); // 3000ms = 3 seconds
-        }
+    //     // Function to hide the loading screen after 3 seconds
+    //     function hideLoading() {
+    //         console.log('Hiding loading screen after delay...');
+    //         setTimeout(() => {
+    //             loadingScreen.style.display = 'none'; // Hide the loading screen after 3 seconds
+    //         }, 3000); // 3000ms = 3 seconds
+    //     }
     
-        // Function to load a new page
-        function loadPage(pageUrl) {
-            console.log('Loading page:', pageUrl);
-            showLoading(); // Show the loading screen before fetching the page
+    //     // Function to load a new page
+    //     function loadPage(pageUrl) {
+    //         console.log('Loading page:', pageUrl);
+    //         showLoading(); // Show the loading screen before fetching the page
     
-            // Fetch the page content
-            fetch(pageUrl)
-                .then(response => response.text())
-                .then(html => {
-                    console.log('Page loaded successfully');
-                    contentContainer.innerHTML = html; // Replace the content with the new page
-                })
-                .catch(error => {
-                    console.error('Error loading page:', error);
-                    contentContainer.innerHTML = `<p>Error loading page.</p>`; // Display error message if fetch fails
-                })
-                .finally(() => {
-                    hideLoading(); // Hide the loading screen after the page loads, with the 3-second delay
-                });
-        }
+    //         // Fetch the page content
+    //         fetch(pageUrl)
+    //             .then(response => response.text())
+    //             .then(html => {
+    //                 console.log('Page loaded successfully');
+    //                 contentContainer.innerHTML = html; // Replace the content with the new page
+    //             })
+    //             .catch(error => {
+    //                 console.error('Error loading page:', error);
+    //                 contentContainer.innerHTML = `<p>Error loading page.</p>`; // Display error message if fetch fails
+    //             })
+    //             .finally(() => {
+    //                 hideLoading(); // Hide the loading screen after the page loads, with the 3-second delay
+    //             });
+    //     }
     
-        // Attach click event to navbar links for navigation
-        document.querySelectorAll('nav a').forEach(link => {
-            link.addEventListener('click', event => {
-                event.preventDefault(); // Prevent default navigation behavior
-                const pageUrl = event.target.getAttribute('href');
-                console.log('Navbar link clicked:', pageUrl);
-                loadPage(pageUrl); // Load the clicked page
-            });
-        });
+    //     // Attach click event to navbar links for navigation
+    //     document.querySelectorAll('nav a').forEach(link => {
+    //         link.addEventListener('click', event => {
+    //             event.preventDefault(); // Prevent default navigation behavior
+    //             const pageUrl = event.target.getAttribute('href');
+    //             console.log('Navbar link clicked:', pageUrl);
+    //             loadPage(pageUrl); // Load the clicked page
+    //         });
+    //     });
     
-        // Initially load the default page (e.g., index.html)
-        loadPage('index.html');
-    });
+    //     // Initially load the default page (e.g., index.html)
+    //     loadPage('index.html');
+    // });
     
       
 
