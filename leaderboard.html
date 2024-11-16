@@ -12,20 +12,36 @@
       box-sizing: border-box;
     }
     body {
-   font-family: Arial, sans-serif;
-   background-image: url('./assets/background.png');
-   background-size: cover; 
-   background-repeat: no-repeat;
-   background-position: center center;
-   color: #fff;
-   display: flex;
-   flex-direction: column;
-   align-items: center;
-   justify-content: space-between;
-   height: 100vh;
-   padding: 10px;
-   overflow: hidden;
+    font-family: Arial, sans-serif;
+    background-image: url('./assets/background.png');
+    background-size: cover; 
+    background-repeat: no-repeat;
+    background-position: center center;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    height: 100vh;
+    padding: 10px;
+    overflow: hidden;
+  }
+
+
+  #loading-screen {
+  display: flex; /* Initially visible */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(58, 58, 58, 0.9); /* Optional background */
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* Ensure it's above all other elements */
 }
+
+
 
 
     .header {
@@ -54,7 +70,7 @@
       font-weight: bold;
     }
     .trophy-icon {
-      width: 50px;
+      width: 150px;
       margin-bottom: 10px;
     }
     .total-users {
@@ -119,59 +135,6 @@
       background-color: #4a3d32;
     }
 
-    
-    /* Navbar Styles */
-    #navbar-container {
-      width: 100%;
-      display: flex;
-    }
-
-    .bottom-nav {
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      background-color: #00af43;
-      border-top: 1px solid #333;
-      position: fixed;
-      bottom: 0;
-      width: 100%;
-      height: 60px;
-      color: #b3b3b3;
-      z-index: 1000;
-      box-sizing: border-box;
-    }
-
-    .bottom-nav-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      font-size: 12px;
-      cursor: pointer;
-      transition: color 0.3s;
-      flex: 1; /* Ensure each item takes equal width */
-      text-align: center;
-    }
-
-    .bottom-nav-item.active {
-      color: #fff; /* White color for active item */
-      background-color: #007bff; /* Different background color for active tab */
-      border-radius: 10px;
-      padding: 5px 10px;
-    }
-
-    .bottom-nav-item div:first-child {
-      font-size: 20px;
-      margin-bottom: 3px;
-      color: inherit;
-    }
-
-    .bottom-nav-item:hover {
-      color: #fff; /* Hover color */
-    }
-
-    
-
   </style>
 
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -179,20 +142,24 @@
 </head>
 <body>
 
+  <!-- <div id="loading-screen">
+    <img src="./assets/roaster.png" alt="Loading..." />
+  </div> -->
+
   <div class="header">
-    <img src="user-avatar.png" alt="User Avatar">
+    <img src="./assets/Avatar.jpg" alt="User Avatar">
     <span id="userId">User ID: Loading...</span>
   </div>
 
   <div class="leaderboard-container">
-    <img src="trophy.png" alt="Trophy" class="trophy-icon">
+    <img src="./assets/trophy.png" alt="Trophy" class="trophy-icon">
     <div class="leaderboard-title">Leaderboard</div>
     <div class="total-users">Total 30,452,010 users</div>
     
 
     <div class="leaderboard-card">
       <div class="user-info">
-        <img src="paws-icon.png" alt="User Icon">
+        <img src="./assets/roaster.png" alt="User Icon">
         <div class="user-details">
           <span class="username">reutercom</span>
           <span class="points">1,529 PAWS</span>
@@ -203,7 +170,7 @@
 
     <div class="leaderboard-card rank-1">
       <div class="user-info">
-        <img src="paws-icon.png" alt="User Icon">
+        <img src="./assets/roaster.png" alt="User Icon">
         <div class="user-details">
           <span class="username">imGet</span>
           <span class="points">72,729,032 PAWS</span>
@@ -214,7 +181,7 @@
 
     <div class="leaderboard-card rank-2">
       <div class="user-info">
-        <img src="paws-icon.png" alt="User Icon">
+        <img src="./assets/roaster.png" alt="User Icon">
         <div class="user-details">
           <span class="username">Pishnahad_Sup</span>
           <span class="points">57,642,584 PAWS</span>
@@ -225,7 +192,7 @@
 
     <div class="leaderboard-card rank-3">
       <div class="user-info">
-        <img src="paws-icon.png" alt="User Icon">
+        <img src="./assets/roaster.png" alt="User Icon">
         <div class="user-details">
           <span class="username">Esalat</span>
           <span class="points">49,256,421 PAWS</span>
@@ -236,7 +203,7 @@
 
     <div class="leaderboard-card">
       <div class="user-info">
-        <img src="paws-icon.png" alt="User Icon">
+        <img src="./assets/roaster.png" alt="User Icon">
         <div class="user-details">
           <span class="username">mehranseyedi</span>
           <span class="points">48,601,772 PAWS</span>

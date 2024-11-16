@@ -4,7 +4,7 @@ const urlParams = new URLSearchParams(window.location.search);
 const userId = urlParams.get('user_id');
 
 // Assuming you have an API or a method to get the avatar URL based on the user ID
-const avatarUrl = "https://example.com/path/to/avatar.png"; 
+const avatarUrl = "../assets/Avatar.png";
 
 if (userId) {
     updateHeader(userId, avatarUrl);
@@ -16,13 +16,105 @@ if (userId) {
 }
 
 
-    // Navbar loading
-    fetch('navbar.html')
-        .then(response => response.text())
-        .then(html => {
-            document.getElementById('navbar-container').innerHTML = html;
-        })
-        .catch(error => console.error('Error loading navbar:', error));
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Navbar loading and active tab handling
+// Navbar loading and active tab handling
+fetch('navbar.html')
+    .then(response => response.text())
+    .then(html => {
+        document.getElementById('navbar-container').innerHTML = html;
+
+        const currentPath = window.location.pathname.split('/').pop();
+        const navItems = document.querySelectorAll('.bottom-nav-item');
+
+        navItems.forEach(item => {
+            if (item.getAttribute('href').includes(currentPath)) {
+                item.classList.add('active');
+            }
+        });
+    })
+    .catch(error => console.error('Error loading navbar:', error));
+
+
+    // Function to load screen animation
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const loadingScreen = document.getElementById('loading-screen');
+        const contentContainer = document.getElementById('content'); // The container where pages will be loaded
+    
+        // Function to show the loading screen
+        function showLoading() {
+            console.log('Showing loading screen...');
+            loadingScreen.style.display = 'flex'; // Display the loading screen
+        }
+    
+        // Function to hide the loading screen after 3 seconds
+        function hideLoading() {
+            console.log('Hiding loading screen after delay...');
+            setTimeout(() => {
+                loadingScreen.style.display = 'none'; // Hide the loading screen after 3 seconds
+            }, 3000); // 3000ms = 3 seconds
+        }
+    
+        // Function to load a new page
+        function loadPage(pageUrl) {
+            console.log('Loading page:', pageUrl);
+            showLoading(); // Show the loading screen before fetching the page
+    
+            // Fetch the page content
+            fetch(pageUrl)
+                .then(response => response.text())
+                .then(html => {
+                    console.log('Page loaded successfully');
+                    contentContainer.innerHTML = html; // Replace the content with the new page
+                })
+                .catch(error => {
+                    console.error('Error loading page:', error);
+                    contentContainer.innerHTML = `<p>Error loading page.</p>`; // Display error message if fetch fails
+                })
+                .finally(() => {
+                    hideLoading(); // Hide the loading screen after the page loads, with the 3-second delay
+                });
+        }
+    
+        // Attach click event to navbar links for navigation
+        document.querySelectorAll('nav a').forEach(link => {
+            link.addEventListener('click', event => {
+                event.preventDefault(); // Prevent default navigation behavior
+                const pageUrl = event.target.getAttribute('href');
+                console.log('Navbar link clicked:', pageUrl);
+                loadPage(pageUrl); // Load the clicked page
+            });
+        });
+    
+        // Initially load the default page (e.g., index.html)
+        loadPage('index.html');
+    });
+    
+      
+
+
+
+
+
+
+
+
+
+
+
 
 
     // Welcome bonus logic
@@ -57,29 +149,41 @@ if (userId) {
 
 
 
+
+
+
+// functions to update user balance base on the tasks they do
+
+document.addEventListener('DOMContentLoaded', () => {
+    const balanceElement = document.getElementById('points');
+    const savedBalance = localStorage.getItem('userBalance') || '0';
+    balanceElement.textContent = `${savedBalance} Roast`;
+  });
+  
+
+
+
+
+
 // Ensure that TON Connect is initialized once the DOM is fully loaded
-alert("JavaScript loaded");
+
 document.addEventListener("DOMContentLoaded", async function() {
-    // Initialize TON Connect
     const tonConnect = new TonConnect({
         manifestUrl: 'https://new-mini-telegram-bot.onrender.com/tonconnect-manifest.json' // Update with your manifest URL
     });
 
     const walletButton = document.querySelector(".wallet-btn");
 
-    // Check if a wallet is already connected
     const connectedWalletAddress = localStorage.getItem("walletAddress");
     if (connectedWalletAddress) {
         walletButton.innerText = `${connectedWalletAddress.slice(0, 4)}...${connectedWalletAddress.slice(-4)}`;
     }
 
-    // Handle wallet connection
     walletButton.addEventListener("click", async () => {
-        console.log("Button clicked");  // Confirm the button click in the console
-        alert("Button clicked");  // Optional alert for button click
+        console.log("Button clicked");  
+        alert("Button clicked");  
 
         try {
-            // Open the wallet connection prompt
             const walletInfo = await tonConnect.connect();
 
             if (walletInfo) {
@@ -94,3 +198,8 @@ document.addEventListener("DOMContentLoaded", async function() {
         }
     });
 });
+
+
+
+
+

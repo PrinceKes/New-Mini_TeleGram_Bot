@@ -1,4 +1,79 @@
-<div class="bottom-nav">
+<div id="navbar-container">
+    <style>
+        #navbar-container {
+            width: 100%;
+            display: flex;
+        }
+
+        .bottom-nav {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            background-color: #000000;
+            border-top: 1px solid #333;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            height: 80px;
+            color: #b3b3b3;
+            z-index: 1000;
+            box-sizing: border-box;
+        }
+
+        .bottom-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            cursor: pointer;
+            transition: color 0.3s, background-color 0.3s;
+            flex: 1;
+            text-align: center;
+            text-decoration: none;
+            color: #bbb;
+        }
+
+        .bottom-nav-item.active {
+            color: #fff;
+            background-color: #848484;
+            border-radius: 10px;
+            padding: 5px 10px;
+        }
+
+        .bottom-nav-item div:first-child {
+            font-size: 20px;
+            margin-bottom: 3px;
+            color: inherit;
+        }
+
+        .bottom-nav-item:hover {
+            color: #fff;
+        }
+    </style>
+
+    <div class="bottom-nav">
+        <a href="/index.html" class="bottom-nav-item" data-page="home">
+            <div>🏠</div>
+            <div>Home</div>
+        </a>
+        <a href="/leaderboard.html" class="bottom-nav-item" data-page="leaderboard">
+            <div>🏆</div>
+            <div>Leaderboard</div>
+        </a>
+        <a href="/friends.html" class="bottom-nav-item" data-page="friends">
+            <div>👥</div>
+            <div>Friends</div>
+        </a>
+        <a href="/earn.html" class="bottom-nav-item" data-page="earn">
+            <div>📋</div>
+            <div>Earn</div>
+        </a>
+    </div>
+</div>
+
+
+<!-- <div class="bottom-nav">
     <a href="/index.html" class="bottom-nav-item">
         <div>🏠</div>
         <div>Home</div>
@@ -7,7 +82,7 @@
         <div>🏆</div>
         <div>Leaderboard</div>
     </a>
-    <a href="/Friends.html" class="bottom-nav-item">
+    <a href="/friends.html" class="bottom-nav-item">
         <div>👥</div>
         <div>Friends</div>
     </a>
@@ -17,4 +92,4 @@
     </a>
 </div>
 
-
+ -->

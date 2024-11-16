@@ -1,0 +1,30 @@
+{
+  "name": "miniapp",
+  "version": "1.0.0",
+  "description": "��#\u0000 \u0000N\u0000e\u0000w\u0000-\u0000M\u0000i\u0000n\u0000i\u0000_\u0000T\u0000e\u0000l\u0000e\u0000G\u0000r\u0000a\u0000m\u0000_\u0000B\u0000o\u0000t\u0000\r\u0000 \u0000",
+  "main": "header.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PrinceKes/New-Mini_TeleGram_Bot.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/PrinceKes/New-Mini_TeleGram_Bot/issues"
+  },
+  "homepage": "https://github.com/PrinceKes/New-Mini_TeleGram_Bot#readme",
+  "dependencies": {
+    "body-parser": "^1.20.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "mongodb": "^6.10.0",
+    "mongoose": "^8.8.1",
+    "node-fetch": "^3.3.2"
+  }
+}
