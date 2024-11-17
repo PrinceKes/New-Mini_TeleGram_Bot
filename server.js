@@ -25,7 +25,7 @@ mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
   });
 
 app.listen(PORT, () => {
-  // console.log(Server running on port ${PORT});
+  
 });
 
 // Route to fetch tasks from the MongoDB collection

@@ -99,19 +99,21 @@
 
       /* Basic button styling */
 
-      .task-item {
+    .task-item {
+    /* display: flex; */
+    /* flex-direction: row; */
     border: 1px solid #444;
     border-radius: 10px;
     padding: 12px 16px; 
     margin: 8px 0;
-    background-color: #2a2d3a;
+    background-color: #000000;
     color: #f0f0f5;
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
     transition: transform 0.2s ease-in-out;
   }
   .task-item button {
     padding: 10px 15px;
-    font-size: 16px;
+    font-size: 12px;
     color: white;
     background-color: #007bff;
     border: none;
@@ -120,8 +122,17 @@
     transition: background-color 0.3s ease;
   }
 
+  .task-item h3 {
+    font-weight: 500;
+  }
+
+  .task-item p {
+    color: #5a5a5a;
+    font-size: medium;
+  }
+
   .task-item button:hover {
-    background-color: #0056b3;
+    background-color: #00448c;
   }
 
   .task-item button.claim-reward {
