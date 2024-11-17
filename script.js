@@ -1,20 +1,56 @@
-document.addEventListener("DOMContentLoaded", function() {
-
-const urlParams = new URLSearchParams(window.location.search);
-const userId = urlParams.get('user_id');
-
-// Assuming you have an API or a method to get the avatar URL based on the user ID
-const avatarUrl = "../assets/Avatar.png";
-
-if (userId) {
-    updateHeader(userId, avatarUrl);
-} else {
+document.addEventListener("DOMContentLoaded", function () {
+    const urlParams = new URLSearchParams(window.location.search);
+    const userIdFromUrl = urlParams.get('user_id'); // Extract user_id from URL
+    const storedUserId = localStorage.getItem('user_id'); // Retrieve stored user_id from localStorage
     const userIdElement = document.getElementById('userId');
-    if (userIdElement) {
-        userIdElement.innerText = "User ID Unknown";
+  
+    let userId = userIdFromUrl || storedUserId;
+  
+    if (userId) {
+      // Store the user ID in localStorage for future reference
+      localStorage.setItem('user_id', userId);
+  
+      // Update the header with the user ID
+      const avatarUrl = "../assets/Avatar.png"; // Replace with dynamic avatar retrieval if necessary
+      updateHeader(userId, avatarUrl);
+  
+      // Save the user ID to MongoDB if this is the first visit
+      if (userIdFromUrl) {
+        saveUserIdToDatabase(userId);
+      }
+    } else {
+      if (userIdElement) {
+        userIdElement.innerText = "User ID: Unknown";
+      }
     }
-}
-
+  });
+  
+  // Function to update the header with the user ID and avatar
+  function updateHeader(userId, avatarUrl) {
+    const userIdElement = document.getElementById('userId');
+    const avatarElement = document.querySelector(".header img");
+  
+    if (userIdElement) {
+      userIdElement.innerText = `User ID: ${userId}`;
+    }
+  
+    if (avatarElement && avatarUrl) {
+      avatarElement.src = avatarUrl;
+    }
+  }
+  
+  // Function to save the user ID to the database via API
+  function saveUserIdToDatabase(userId) {
+    fetch('http://localhost:5000/api/users', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ user_id: userId }),
+    })
+      .then(response => response.json())
+      .then(data => console.log('User ID saved:', data))
+      .catch(error => console.error('Error saving user ID:', error));
+  }
+  
 
 
 
@@ -145,7 +181,7 @@ fetch('navbar.html')
         
         pointsElement.innerText = `${points} Roast`;
     }
-});
+// });
 
 
 

@@ -126,3 +126,68 @@ app.put('/api/users/:userId/balance', async (req, res) => {
     res.status(500).json({ error: 'Failed to update balance' });
   }
 });
+
+
+
+
+
+
+
+
+// route to update Users activities
+// const mongoose = require('mongoose');
+
+const userSchema = new mongoose.Schema({
+  user_id: { type: String, required: true, unique: true },
+  createdAt: { type: Date, default: Date.now },
+});
+
+const User = mongoose.model('User', userSchema);
+
+
+
+// handle users ID storage
+
+app.post('/api/users', async (req, res) => {
+  const { user_id } = req.body;
+
+  if (!user_id) {
+    return res.status(400).json({ error: 'User ID is required' });
+  }
+
+  try {
+    // Check if the user already exists
+    let user = await User.findOne({ user_id });
+    if (!user) {
+      // Create a new user if not found
+      user = new User({ user_id });
+      await user.save();
+    }
+
+    res.json({ message: 'User ID saved successfully', user });
+  } catch (error) {
+    console.error('Error saving user ID:', error);
+    res.status(500).json({ error: 'Failed to save user ID' });
+  }
+});
+
+
+// Tracking User Activities in MongoDB
+
+app.put('/api/users/:userId/track', async (req, res) => {
+  const { userId } = req.params;
+  const { action } = req.body;
+
+  try {
+    const user = await User.findOneAndUpdate(
+      { user_id: userId },
+      { $set: { lastActiveAt: new Date() }, $push: { actions: action } },
+      { new: true, upsert: true }
+    );
+
+    res.json({ message: 'User activity tracked', user });
+  } catch (error) {
+    console.error('Error tracking user activity:', error);
+    res.status(500).json({ error: 'Failed to track activity' });
+  }
+});
