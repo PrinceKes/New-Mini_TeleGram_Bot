@@ -10,7 +10,7 @@ app.use(express.json());
 
 app.use(cors({
   // origin: 'http://localhost:8000',
-  origin: 'https://telegram-mini-app-hvwg.onrender.com',
+  origin: 'https://new-mini-telegram-bot.onrender.com',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true 
 }));

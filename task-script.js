@@ -4,7 +4,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Function to fetch tasks from the server
 function fetchTasks() {
-  fetch('http://localhost:5000/api/tasks')
+  // fetch('http://localhost:5000/api/tasks')
+  fetch('https://sunday-mini-telegram-bot.onrender.com/api/tasks')
     .then(response => response.json())
     .then(data => {
       const tasks = data.tasks;
@@ -54,7 +55,8 @@ function startTask(taskId, link, reward) {
 
 // Function to claim the reward for a task
 function claimReward(taskId, reward) {
-  fetch(`http://localhost:5000/api/tasks/${taskId}`, {
+  // fetch(`http://localhost:5000/api/tasks/${taskId}`, {
+  fetch(`https://sunday-mini-telegram-bot.onrender.com/api/tasks/${taskId}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ isCompleted: true })
