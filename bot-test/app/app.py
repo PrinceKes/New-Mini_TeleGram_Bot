@@ -12,17 +12,13 @@ app = Flask(__name__)
 # Retrieve and encode the MongoDB URI
 mongo_uri = os.getenv("MONGO_URI")
 
-# Parse the Mongo URI into components
 parsed_uri = urllib.parse.urlparse(mongo_uri)
 
-# Encode the username and password, ensuring they're strings
 encoded_user = urllib.parse.quote_plus(str(parsed_uri.username)) if parsed_uri.username else ''
 encoded_password = urllib.parse.quote_plus(str(parsed_uri.password)) if parsed_uri.password else ''
 
-# Reconstruct the Mongo URI with encoded credentials
 encoded_uri = mongo_uri.replace(parsed_uri.username, encoded_user).replace(parsed_uri.password, encoded_password)
 
-# Set the Mongo URI in the Flask app configuration
 app.config["MONGO_URI"] = encoded_uri
 
 mongo = PyMongo(app)

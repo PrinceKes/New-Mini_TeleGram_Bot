@@ -9,7 +9,8 @@ const PORT = process.env.PORT || 5000;
 app.use(express.json());
 
 app.use(cors({
-  origin: 'http://localhost:8000',
+  // origin: 'http://localhost:8000',
+  origin: 'https://telegram-mini-app-hvwg.onrender.com',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true 
 }));

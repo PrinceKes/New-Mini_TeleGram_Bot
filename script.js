@@ -38,7 +38,8 @@ document.addEventListener("DOMContentLoaded", function () {
   
   // Function to save the user ID to the database via API
   function saveUserIdToDatabase(userId) {
-    fetch('http://localhost:5000/api/users', {
+    // fetch('http://localhost:5000/api/users', {
+    fetch('https://sunday-mini-telegram-bot.onrender.com/api/users', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ user_id: userId }),
