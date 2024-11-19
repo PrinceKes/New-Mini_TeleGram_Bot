@@ -1,20 +1,17 @@
 document.addEventListener("DOMContentLoaded", function () {
     const urlParams = new URLSearchParams(window.location.search);
-    const userIdFromUrl = urlParams.get('user_id'); // Extract user_id from URL
-    const storedUserId = localStorage.getItem('user_id'); // Retrieve stored user_id from localStorage
+    const userIdFromUrl = urlParams.get('user_id'); 
+    const storedUserId = localStorage.getItem('user_id');
     const userIdElement = document.getElementById('userId');
   
     let userId = userIdFromUrl || storedUserId;
   
     if (userId) {
-      // Store the user ID in localStorage for future reference
       localStorage.setItem('user_id', userId);
-  
-      // Update the header with the user ID
-      const avatarUrl = "../assets/Avatar.png"; // Replace with dynamic avatar retrieval if necessary
+
+      const avatarUrl = "../assets/Avatar.png";
       updateHeader(userId, avatarUrl);
   
-      // Save the user ID to MongoDB if this is the first visit
       if (userIdFromUrl) {
         saveUserIdToDatabase(userId);
       }
@@ -153,35 +150,51 @@ fetch('navbar.html')
 
 
 
+
+
+
+
+
+
+
     // Welcome bonus logic
-    const pointsElement = document.getElementById("points");
+const pointsElement = document.getElementById("points");
+const modal = document.getElementById("welcome-modal");
+const claimBonusBtn = document.getElementById("claim-bonus-btn");
 
-    let points = localStorage.getItem("userPoints");
+let points = localStorage.getItem("userPoints");
 
-    if (points === null) {
-        const hasClaimedBonus = localStorage.getItem("hasClaimedBonus");
+if (points === null) {
+    const hasClaimedBonus = localStorage.getItem("hasClaimedBonus");
 
-        if (!hasClaimedBonus) {
+    if (!hasClaimedBonus) {
+        // Show modal after a delay
+        setTimeout(() => {
+            modal.classList.remove("hidden");
+        }, 1000);
 
-            setTimeout(() => {
-                alert("Welcome! Claim your 2000 Roast as a welcome bonus!");
-
-                points = 2000;
-                pointsElement.innerText = `${points} Roast`;
-
-                localStorage.setItem("hasClaimedBonus", "true");
-                localStorage.setItem("userPoints", points);
-            }, 1000);
-        } else {
-            points = 0;
+        claimBonusBtn.addEventListener("click", () => {
+            points = 2000;
             pointsElement.innerText = `${points} Roast`;
+
+            // Save bonus claim status
+            localStorage.setItem("hasClaimedBonus", "true");
             localStorage.setItem("userPoints", points);
-        }
+
+            // Hide modal
+            modal.classList.add("hidden");
+        });
     } else {
-        
+        points = 0;
         pointsElement.innerText = `${points} Roast`;
+        localStorage.setItem("userPoints", points);
     }
-// });
+} else {
+    pointsElement.innerText = `${points} Roast`;
+}
+
+
+
 
 
 
