@@ -1,11 +1,9 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const cors = require('cors');
+const cors = require('cors'); 
 const bodyParser = require('body-parser');
-const { ObjectId } = require('mongodb');
-const Task = require('./models/Task'); 
-const User = require('./models/User'); 
-const Referral = require('./models/Referral');
+const Task = require('./models/Task'); // Assuming you have a Task model
+const Referral = require('./models/Referral'); // Importing the Referral model
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -14,26 +12,27 @@ const PORT = process.env.PORT || 5000;
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(cors({
-  origin: 'https://new-mini-telegram-bot.onrender.com', // Update frontend URL
+  origin: 'https://new-mini-telegram-bot.onrender.com', // Update with your frontend URL
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true,
 }));
 
-// MongoDB URI and connection
+// MongoDB connection using environment variable
 const mongoURI = process.env.MONGO_URI;
 if (!mongoURI) {
-  console.error('Error: MONGO_URI is not set.');
+  console.error('Error: MONGO_URI is not set in environment variables.');
   process.exit(1);
 }
 
 mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log('Connected to MongoDB'))
+  .then(() => console.log('Successfully connected to MongoDB'))
   .catch((error) => {
-    console.error('MongoDB connection failed:', error);
+    console.error('Failed to connect to MongoDB:', error);
     process.exit(1);
   });
 
 // Routes
+
 // Fetch tasks
 app.get('/api/tasks', async (req, res) => {
   try {
@@ -45,60 +44,79 @@ app.get('/api/tasks', async (req, res) => {
   }
 });
 
-// Create a task
+// Create a new task
 app.post('/api/tasks', async (req, res) => {
   const { title, description, reward, category, link } = req.body;
   try {
-    const task = new Task({ title, description, reward, category, link });
-    await task.save();
-    res.status(201).json(task);
+    const newTask = new Task({ title, description, reward, category, link });
+    await newTask.save();
+    res.status(201).json(newTask);
   } catch (error) {
     console.error('Error creating task:', error);
     res.status(500).json({ error: 'Failed to create task' });
   }
 });
 
-// Log referral
+// Delete a task by ID
+app.delete('/api/tasks/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const task = await Task.findByIdAndDelete(id);
+    if (!task) return res.status(404).json({ message: 'Task not found' });
+    res.json({ message: 'Task deleted' });
+  } catch (error) {
+    console.error('Error deleting task:', error);
+    res.status(500).json({ error: 'Failed to delete task' });
+  }
+});
+
+// Log a referral
 app.post('/log-referral', async (req, res) => {
   const { referrerId, referredId, referredUsername } = req.body;
   try {
-    const referral = new Referral({ referrerId, referredId, referredUsername, rewardClaimed: false });
-    await referral.save();
-    res.status(200).json({ message: 'Referral logged successfully' });
+    const newReferral = new Referral({
+      referrerId,
+      referredId,
+      referredUsername,
+    });
+    await newReferral.save();
+    res.status(200).send('Referral logged successfully');
   } catch (error) {
     console.error('Error logging referral:', error);
     res.status(500).json({ error: 'Failed to log referral' });
   }
 });
 
-// Claim reward
+// Claim referral reward
 app.post('/claim-reward', async (req, res) => {
   const { referralId } = req.body;
   try {
     const referral = await Referral.findById(referralId);
+
     if (!referral || referral.rewardClaimed) {
-      return res.status(400).json({ error: 'Invalid referral or reward already claimed' });
+      return res.status(400).send('Invalid referral or reward already claimed');
     }
 
-    const user = await User.findOne({ userId: referral.referrerId });
-    if (!user) {
-      return res.status(404).json({ error: 'Referrer not found' });
-    }
+    // Update user balance
+    // Assuming you have a User model
+    const User = mongoose.model('User');
+    await User.updateOne(
+      { userId: referral.referrerId },
+      { $inc: { balance: 2500 } }
+    );
 
-    user.balance += 2500; // Update user balance
-    await user.save();
-
-    referral.rewardClaimed = true; // Mark referral reward as claimed
+    // Mark reward as claimed
+    referral.rewardClaimed = true;
     await referral.save();
 
-    res.status(200).json({ message: 'Reward claimed successfully' });
+    res.status(200).send('Reward claimed successfully');
   } catch (error) {
     console.error('Error claiming reward:', error);
-    res.status(500).json({ error: 'Failed to claim reward' });
+    res.status(500).send('Failed to claim reward');
   }
 });
 
-// Start server
+// Start the server
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
 
