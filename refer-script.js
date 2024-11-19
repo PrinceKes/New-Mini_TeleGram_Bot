@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Copy referral link to clipboard
     inviteButton.addEventListener("click", () => {
-        const referralLink = `https://t.me/roasterboldg_bot/PAWS?startapp=${userId}`;
+        const referralLink = `https://t.me/roasterbold_bot?startapp=${userId}`;
         navigator.clipboard.writeText(referralLink)
             .then(() => {
                 alert("Referral link copied to clipboard!");
@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Fetch referrals for the user
     try {
-        const response = await fetch(`http://localhost:4000/get-referrals?user_id=${userId}`); // Change URL as needed
+        const response = await fetch(`https://sunday-mini-telegram-bot.onrender.com/get-referrals?user_id=${userId}`); // Change URL as needed
         if (!response.ok) throw new Error("Failed to fetch referrals");
 
         const referrals = await response.json();
@@ -44,7 +44,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                     // Claim reward
                     try {
-                        const claimResponse = await fetch("http://localhost:4000/claim-reward", { // Change URL as needed
+                        const claimResponse = await fetch("https://sunday-mini-telegram-bot.onrender.com/claim-reward", { // Change URL as needed
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
                             body: JSON.stringify({ referralId })
