@@ -1,9 +1,11 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const cors = require('cors'); 
+const cors = require('cors');
 const bodyParser = require('body-parser');
-const { MongoClient, ObjectId } = require('mongodb');
-const Task = require('./models/Task'); // Assuming you have Task model
+const { ObjectId } = require('mongodb');
+const Task = require('./models/Task'); // Task model
+const User = require('./models/User'); // User model
+const Referral = require('./models/Referral'); // Referral model
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -12,23 +14,22 @@ const PORT = process.env.PORT || 5000;
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(cors({
-  origin: 'https://new-mini-telegram-bot.onrender.com', // Update with your frontend URL
+  origin: 'https://new-mini-telegram-bot.onrender.com', // Update frontend URL
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true,
 }));
 
-// MongoDB connection using environment variable
+// MongoDB URI and connection
 const mongoURI = process.env.MONGO_URI;
 if (!mongoURI) {
-  console.error('Error: MONGO_URI is not set in environment variables.');
+  console.error('Error: MONGO_URI is not set.');
   process.exit(1);
 }
 
-// Connect to MongoDB using Mongoose
 mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log('Successfully connected to MongoDB'))
+  .then(() => console.log('Connected to MongoDB'))
   .catch((error) => {
-    console.error('Failed to connect to MongoDB:', error);
+    console.error('MongoDB connection failed:', error);
     process.exit(1);
   });
 
@@ -44,209 +45,61 @@ app.get('/api/tasks', async (req, res) => {
   }
 });
 
-// Create a new task
+// Create a task
 app.post('/api/tasks', async (req, res) => {
   const { title, description, reward, category, link } = req.body;
   try {
-    const newTask = new Task({ title, description, reward, category, link });
-    await newTask.save();
-    res.status(201).json(newTask);
+    const task = new Task({ title, description, reward, category, link });
+    await task.save();
+    res.status(201).json(task);
   } catch (error) {
     console.error('Error creating task:', error);
     res.status(500).json({ error: 'Failed to create task' });
   }
 });
 
-// Delete a task by ID
-app.delete('/api/tasks/:id', async (req, res) => {
-  const { id } = req.params;
-  try {
-    const task = await Task.findByIdAndDelete(id);
-    if (!task) return res.status(404).json({ message: 'Task not found' });
-    res.json({ message: 'Task deleted' });
-  } catch (error) {
-    console.error('Error deleting task:', error);
-    res.status(500).json({ error: 'Failed to delete task' });
-  }
-});
-
-// Log a referral
+// Log referral
 app.post('/log-referral', async (req, res) => {
   const { referrerId, referredId, referredUsername } = req.body;
   try {
-    const referrals = db.collection("referrals");
-    await referrals.insertOne({
-      referrerId,
-      referredId,
-      referredUsername,
-      rewardClaimed: false,
-    });
-    res.status(200).send('Referral logged successfully');
+    const referral = new Referral({ referrerId, referredId, referredUsername, rewardClaimed: false });
+    await referral.save();
+    res.status(200).json({ message: 'Referral logged successfully' });
   } catch (error) {
     console.error('Error logging referral:', error);
     res.status(500).json({ error: 'Failed to log referral' });
   }
 });
 
-// Claim referral reward
+// Claim reward
 app.post('/claim-reward', async (req, res) => {
   const { referralId } = req.body;
   try {
-    const referrals = db.collection("referrals");
-    const referral = await referrals.findOne({ _id: new ObjectId(referralId) });
-
+    const referral = await Referral.findById(referralId);
     if (!referral || referral.rewardClaimed) {
-      return res.status(400).send('Invalid referral or reward already claimed');
+      return res.status(400).json({ error: 'Invalid referral or reward already claimed' });
     }
 
-    // Update user balance
-    const users = db.collection("users");
-    await users.updateOne({ userId: referral.referrerId }, { $inc: { balance: 2500 } });
+    const user = await User.findOne({ userId: referral.referrerId });
+    if (!user) {
+      return res.status(404).json({ error: 'Referrer not found' });
+    }
 
-    // Mark reward as claimed
-    await referrals.updateOne(
-      { _id: new ObjectId(referralId) },
-      { $set: { rewardClaimed: true } }
-    );
+    user.balance += 2500; // Update user balance
+    await user.save();
 
-    res.status(200).send('Reward claimed successfully');
+    referral.rewardClaimed = true; // Mark referral reward as claimed
+    await referral.save();
+
+    res.status(200).json({ message: 'Reward claimed successfully' });
   } catch (error) {
     console.error('Error claiming reward:', error);
-    res.status(500).send('Failed to claim reward');
+    res.status(500).json({ error: 'Failed to claim reward' });
   }
 });
 
-// Start the server
+// Start server
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-
-
-
-
-
-document.addEventListener('DOMContentLoaded', () => {
-  fetchTasks();
-});
-
-// Function to fetch tasks from the server
-function fetchTasks() {
-  // fetch('http://localhost:5000/api/tasks')
-  fetch('https://sunday-mini-telegram-bot.onrender.com/api/tasks')
-    .then(response => response.json())
-    .then(data => {
-      const tasks = data.tasks;
-      displayTasks(tasks);
-      updateTaskCounter();
-    })
-    .catch(error => {
-      console.error('Error fetching tasks:', error);
-    });
-}
-
-
-
-// Function to display tasks in the DOM
-function displayTasks(tasks) {
-  const taskList = document.getElementById('taskList');
-  taskList.innerHTML = ''; 
-
-  tasks.forEach(task => {
-    const taskElement = document.createElement('div');
-    taskElement.classList.add('task-item');
-
-    taskElement.innerHTML = `
-      <h3>${task.title}</h3>
-      <p>${task.description}</p>
-      <p>Reward: ${task.reward} points</p>
-      <button id="startButton-${task._id}" onclick="startTask('${task._id}', '${task.link}', ${task.reward})">Start</button>
-    `;
-    taskList.appendChild(taskElement);
-  });
-}
-
-function startTask(taskId, link, reward) {
-
-  window.open(link, '_blank');
-
-  const startButton = document.getElementById(`startButton-${taskId}`);
-  startButton.textContent = 'Claim Reward';
-  startButton.onclick = function() {
-    claimReward(taskId, reward);
-  };
-}
-
-
-
-
-
-// Function to claim the reward for a task
-function claimReward(taskId, reward) {
-  // fetch(`http://localhost:5000/api/tasks/${taskId}`, {
-  fetch(`https://sunday-mini-telegram-bot.onrender.com/api/tasks/${taskId}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ isCompleted: true })
-  })
-    .then(response => response.json())
-    .then(data => {
-      alert('Reward claimed!');
-
-      updateUserBalance(reward);
-
-      fetchTasks();
-    })
-    .catch(error => {
-      console.error('Error claiming reward:', error);
-    });
-}
-
-
-function updateUserBalance(reward) {
-
-  const currentBalance = parseInt(localStorage.getItem('userBalance')) || 0;
-
-  const newBalance = currentBalance + reward;
-
-  localStorage.setItem('userBalance', newBalance);
-
-  const balanceElement = document.getElementById('points');
-  if (balanceElement) {
-    balanceElement.textContent = newBalance + ' Roast';
-  } else {
-    console.error('Error: Could not find the balance element with id "points"');
-  }
-}
-
-
-
-
-
-
-
-
-
-// Change button text and class to "Claim Reward"
-startButton.textContent = 'Claim Reward';
-startButton.classList.add('claim-reward');
-
-// Function to update the task counter for the "general" tasks
-function updateTaskCounter() {
-  const tasks = document.querySelectorAll('.task-item'); 
-  const counterElement = document.getElementById('generalCount'); 
-  counterElement.textContent = `(${tasks.length})`; 
-}
-
-// Function to load and display balance from localStorage
-function displayStoredBalance() {
-  const balanceElement = document.getElementById('points');
-  if (balanceElement) {
-    const storedBalance = parseInt(localStorage.getItem('userBalance')) || 0;
-    balanceElement.textContent = storedBalance + ' Roast';
-  } else {
-    console.error('Error: Could not find the balance element with id "points"');
-  }
-}
-
-document.addEventListener('DOMContentLoaded', displayStoredBalance);
 
 
 
