@@ -3,9 +3,9 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const { ObjectId } = require('mongodb');
-const Task = require('./models/Task'); // Task model
-const User = require('./models/User'); // User model
-const Referral = require('./models/Referral'); // Referral model
+const Task = require('./models/Task'); 
+const User = require('./models/User'); 
+const Referral = require('./models/Referral');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
