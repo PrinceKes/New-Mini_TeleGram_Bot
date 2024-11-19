@@ -26,7 +26,7 @@ mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
   });
 
 app.listen(PORT, () => {
-  
+  console.log(`Server running on port ${PORT}`);
 });
 
 // Route to fetch tasks from the MongoDB collection
@@ -279,7 +279,7 @@ app.post("/claim-reward", async (req, res) => {
     }
 });
 
-app.listen(4000, () => console.log("Referral server running on port 4000"));
+app.listen(5000, () => console.log("Referral server running on port 5000"));
 
 
 
