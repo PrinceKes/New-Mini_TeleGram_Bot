@@ -2,8 +2,8 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors'); 
 const bodyParser = require('body-parser');
-const Task = require('./models/Task'); // Assuming you have a Task model
-const Referral = require('./models/Referral'); // Importing the Referral model
+const Task = require('./models/Task');
+const Referral = require('./models/Referral'); 
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -12,7 +12,7 @@ const PORT = process.env.PORT || 5000;
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(cors({
-  origin: 'https://new-mini-telegram-bot.onrender.com', // Update with your frontend URL
+  origin: 'https://new-mini-telegram-bot.onrender.com',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true,
 }));
@@ -69,6 +69,49 @@ app.delete('/api/tasks/:id', async (req, res) => {
     res.status(500).json({ error: 'Failed to delete task' });
   }
 });
+
+// Claim reward
+app.post('/api/claim-reward', async (req, res) => {
+  const { user_id, task_id, reward } = req.body;
+
+  if (!user_id || !task_id || !reward) {
+    return res.status(400).json({ error: 'Invalid input' });
+  }
+
+  try {
+    // Fetch user data from database
+    const user = await Referral.findOne({ user_id });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Update user's balance
+    user.balance = (user.balance || 0) + reward;
+    await user.save();
+
+    res.json({ success: true, message: 'Reward claimed successfully', balance: user.balance });
+  } catch (error) {
+    console.error('Error claiming reward:', error);
+    res.status(500).json({ error: 'Failed to claim reward' });
+  }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // Log a referral
 app.post('/log-referral', async (req, res) => {

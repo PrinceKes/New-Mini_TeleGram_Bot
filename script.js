@@ -122,6 +122,109 @@ document.addEventListener('DOMContentLoaded', () => {
   balanceElement.textContent = `${savedBalance} Roast`;
 });
 
+
+
+
+// new codes for tasks are here
+// document.addEventListener("DOMContentLoaded", function () {
+  const tasksContainer = document.getElementById("tasks-container");
+  const userId = localStorage.getItem("user_id");
+
+  if (!userId) {
+    console.error("User ID is missing.");
+    return;
+  }
+
+  // Fetch tasks from the server
+  fetch("https://sunday-mini-telegram-bot.onrender.com/api/tasks")
+    .then((response) => response.json())
+    .then((data) => {
+      const tasks = data.tasks;
+      if (tasks && tasks.length > 0) {
+        tasks.forEach((task) => renderTask(task));
+      } else {
+        tasksContainer.innerHTML = "<p>No tasks available right now.</p>";
+      }
+    })
+    .catch((error) => console.error("Error fetching tasks:", error));
+
+  // Render a single task
+  function renderTask(task) {
+    const taskElement = document.createElement("div");
+    taskElement.className = "task";
+
+    taskElement.innerHTML = `
+      <h3>${task.title}</h3>
+      <p>${task.description}</p>
+      <p>Reward: ${task.reward} Roast</p>
+      <a href="${task.link}" target="_blank" class="task-link hidden">View Task</a>
+      <button class="task-action" data-task-id="${task._id}">Start</button>
+    `;
+
+    tasksContainer.appendChild(taskElement);
+
+    // Add event listener to the button
+    const actionButton = taskElement.querySelector(".task-action");
+    const taskLink = taskElement.querySelector(".task-link");
+
+    actionButton.addEventListener("click", function () {
+      if (actionButton.textContent === "Start") {
+        taskLink.classList.remove("hidden");
+        actionButton.textContent = "Claim Reward";
+      } else if (actionButton.textContent === "Claim Reward") {
+        claimReward(task._id, task.reward);
+        taskElement.remove(); // Remove task from the list after claiming
+      }
+    });
+  }
+
+  // Claim reward and update balance
+  function claimReward(taskId, reward) {
+    fetch("https://sunday-mini-telegram-bot.onrender.com/api/claim-reward", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ user_id: userId, task_id: taskId, reward }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          // Update balance locally and on the homepage
+          const currentBalance = parseInt(localStorage.getItem("userBalance")) || 0;
+          const updatedBalance = currentBalance + reward;
+          localStorage.setItem("userBalance", updatedBalance);
+
+          const balanceElement = document.getElementById("points");
+          if (balanceElement) {
+            balanceElement.textContent = `${updatedBalance} Roast`;
+          }
+
+          console.log("Reward claimed successfully:", data.message);
+        } else {
+          console.error("Failed to claim reward:", data.error);
+        }
+      })
+      .catch((error) => console.error("Error claiming reward:", error));
+  }
+// });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // Function to fetch and display users in the admin dashboard
 function fetchAndDisplayUsers() {
   fetch('https://sunday-mini-telegram-bot.onrender.com/api/users')
