@@ -49,7 +49,7 @@ function saveUserIdToDatabase(userId) {
 }
 
 // Navbar loading and active tab handling
-fetch('navbar.html')
+fetch('./navbar.html')
   .then(response => response.text())
   .then(html => {
       document.getElementById('navbar-container').innerHTML = html;
@@ -65,6 +65,8 @@ fetch('navbar.html')
   })
   .catch(error => console.error('Error loading navbar:', error));
 
+
+  
 // Welcome bonus logic
 const pointsElement = document.getElementById("points");
 const modal = document.getElementById("welcome-modal");

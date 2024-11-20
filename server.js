@@ -422,42 +422,42 @@ app.put('/api/users/:user_id/complete-task', async (req, res) => {
 //   }
 // });
 
-// // Route to complete a task and award points
-// app.post('/api/tasks/:id/complete', async (req, res) => {
-//   const { id } = req.params;
-//   const { user_id } = req.body;
+// Route to complete a task and award points
+app.post('/api/tasks/:id/complete', async (req, res) => {
+  const { id } = req.params;
+  const { user_id } = req.body;
 
-//   try {
-//     const task = await Task.findById(id);  
-//     if (!task) return res.status(404).json({ message: 'Task not found' });
+  try {
+    const task = await Task.findById(id);  
+    if (!task) return res.status(404).json({ message: 'Task not found' });
 
-//     const reward = task.reward;
+    const reward = task.reward;
 
-//     // Assuming you have a 'users' collection and logic to update user points
-//     // Here, we assume the user is found and points are updated accordingly
+    // Assuming you have a 'users' collection and logic to update user points
+    // Here, we assume the user is found and points are updated accordingly
 
-//     task.isCompleted = true; 
-//     await task.save();
+    task.isCompleted = true; 
+    await task.save();
 
-//     res.json({ message: 'Task completed and points awarded', points: reward });
-//   } catch (error) {
-//     console.error('Error completing task:', error);
-//     res.status(500).json({ error: 'Failed to complete task' });
-//   }
-// });
+    res.json({ message: 'Task completed and points awarded', points: reward });
+  } catch (error) {
+    console.error('Error completing task:', error);
+    res.status(500).json({ error: 'Failed to complete task' });
+  }
+});
 
-// // Route to update a task as completed
-// app.put('/api/tasks/:id', async (req, res) => {
-//   const { id } = req.params;
-//   try {
-//     const task = await Task.findByIdAndUpdate(id, { isCompleted: true }, { new: true });
-//     if (!task) return res.status(404).json({ message: 'Task not found' });
-//     res.json(task);
-//   } catch (error) {
-//     console.error('Error completing task:', error);
-//     res.status(500).json({ error: 'Failed to complete task' });
-//   }
-// });
+// Route to update a task as completed
+app.put('/api/tasks/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const task = await Task.findByIdAndUpdate(id, { isCompleted: true }, { new: true });
+    if (!task) return res.status(404).json({ message: 'Task not found' });
+    res.json(task);
+  } catch (error) {
+    console.error('Error completing task:', error);
+    res.status(500).json({ error: 'Failed to complete task' });
+  }
+});
 
 
 
