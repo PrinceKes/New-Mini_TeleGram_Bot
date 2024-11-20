@@ -116,6 +116,109 @@ app.post('/claim-reward', async (req, res) => {
   }
 });
 
+// Save or Update User
+app.post('/api/users', async (req, res) => {
+  const { user_id } = req.body;
+
+  if (!user_id) {
+    return res.status(400).json({ error: 'User ID is required' });
+  }
+
+  try {
+    const user = await User.findOneAndUpdate(
+      { user_id },
+      { lastActiveAt: new Date() }, // Update lastActiveAt when user starts the bot
+      { new: true, upsert: true } // Create if doesn't exist
+    );
+
+    res.status(200).json({ message: 'User updated successfully', user });
+  } catch (error) {
+    console.error('Error saving user:', error);
+    res.status(500).json({ error: 'Failed to save user' });
+  }
+});
+
+
+// Fetch All Users
+app.get('/api/users', async (req, res) => {
+  try {
+    const users = await User.find(); // Fetch all users
+    res.status(200).json(users);
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    res.status(500).json({ error: 'Failed to fetch users' });
+  }
+});
+
+
+// Log Referral
+app.post('/api/log-referral', async (req, res) => {
+  const { referrerId, referredId } = req.body;
+
+  if (!referrerId || !referredId) {
+    return res.status(400).json({ error: 'Both referrer and referred IDs are required' });
+  }
+
+  try {
+    const newReferral = new Referral({
+      referrerId,
+      referredId,
+      points: 1050, // Add default points for referral
+    });
+
+    await newReferral.save();
+
+    // Add points to the referrer’s balance
+    const referrer = await User.findOneAndUpdate(
+      { user_id: referrerId },
+      { $inc: { balance: 1050 } },
+      { new: true }
+    );
+
+    res.status(200).json({ message: 'Referral logged successfully', referrer });
+  } catch (error) {
+    console.error('Error logging referral:', error);
+    res.status(500).json({ error: 'Failed to log referral' });
+  }
+});
+
+
+// Fetch All Referrals
+app.get('/api/referrals', async (req, res) => {
+  try {
+    const referrals = await Referral.find(); // Fetch all referrals
+    res.status(200).json(referrals);
+  } catch (error) {
+    console.error('Error fetching referrals:', error);
+    res.status(500).json({ error: 'Failed to fetch referrals' });
+  }
+});
+
+
+// Save or Update User with Balance
+app.post('/api/users', async (req, res) => {
+  const { user_id, balance } = req.body;
+
+  if (!user_id) {
+    return res.status(400).json({ error: 'User ID is required' });
+  }
+
+  try {
+    const user = await User.findOneAndUpdate(
+      { user_id },
+      { $set: { balance }, lastActiveAt: new Date() }, // Update balance and lastActiveAt
+      { new: true, upsert: true }
+    );
+
+    res.status(200).json({ message: 'User updated successfully', user });
+  } catch (error) {
+    console.error('Error saving user:', error);
+    res.status(500).json({ error: 'Failed to save user' });
+  }
+});
+
+
+
 // Start the server
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
