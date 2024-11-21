@@ -78,16 +78,16 @@ async function claimReward(taskId, reward) {
 
     const data = await response.json();
 
-    console.log('Claim Reward Response:', data); // Debug the response
+    console.log('Claim Reward Response:', data);
 
     if (response.ok) {
-      const newBalance = data.newBalance; // Ensure the server returns this value
+      const newBalance = data.balance; // Updated to match server response
       if (newBalance !== undefined) {
         localStorage.setItem('userBalance', newBalance);
-        displayStoredBalance(); // Update the balance on the home page
+        displayStoredBalance();
         alert('Reward claimed!');
       } else {
-        console.error('newBalance not found in response.');
+        console.error('Balance not found in response.');
         alert('Reward claimed, but failed to update balance.');
       }
       fetchTasks(); // Refresh tasks if needed
@@ -101,11 +101,12 @@ async function claimReward(taskId, reward) {
   }
 }
 
+
 // Display stored balance
 function displayStoredBalance() {
   const userBalance = localStorage.getItem('userBalance');
   if (userBalance !== null) {
-    document.getElementById('points').textContent = `${userBalance} Roast`; // Update the correct element
+    document.getElementById('points').textContent = `${userBalance} Roast`;
   } else {
     document.getElementById('points').textContent = '0 Roast'; // Default value
   }
