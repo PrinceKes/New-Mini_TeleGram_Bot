@@ -1,8 +1,9 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const cors = require('cors'); 
+const cors = require('cors');
 const bodyParser = require('body-parser');
 const Task = require('./models/Task');
+const User = require('./models/User');
 const Referral = require('./models/Referral'); 
 
 const app = express();
@@ -17,7 +18,7 @@ app.use(cors({
   credentials: true,
 }));
 
-// MongoDB connection using environment variable
+// MongoDB connection
 const mongoURI = process.env.MONGO_URI;
 if (!mongoURI) {
   console.error('Error: MONGO_URI is not set in environment variables.');
@@ -32,12 +33,11 @@ mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
   });
 
 // Routes
-
-// Fetch tasks
+// Fetch all tasks
 app.get('/api/tasks', async (req, res) => {
   try {
     const tasks = await Task.find();
-    res.json({ tasks });
+    res.status(200).json(tasks);
   } catch (error) {
     console.error('Error fetching tasks:', error);
     res.status(500).json({ error: 'Failed to fetch tasks' });
@@ -59,106 +59,21 @@ app.post('/api/tasks', async (req, res) => {
 
 // Delete a task by ID
 app.delete('/api/tasks/:id', async (req, res) => {
-  const { id } = req.params;
   try {
-    const task = await Task.findByIdAndDelete(id);
-    if (!task) return res.status(404).json({ message: 'Task not found' });
-    res.json({ message: 'Task deleted' });
+    const task = await Task.findByIdAndDelete(req.params.id);
+    if (!task) return res.status(404).json({ error: 'Task not found' });
+    res.status(200).json({ message: 'Task deleted successfully' });
   } catch (error) {
     console.error('Error deleting task:', error);
     res.status(500).json({ error: 'Failed to delete task' });
   }
 });
 
-
-
-
-
-
-// neww
-// Update a task by ID (e.g., mark as completed)
+// Update task completion and user balance
 app.put('/api/tasks/:id', async (req, res) => {
   const { id } = req.params;
   const { userId } = req.body;
 
-  try {
-    // Find the task by ID
-    const task = await Task.findById(id);
-    if (!task) {
-      return res.status(404).json({ error: 'Task not found' });
-    }
-
-    // (Optional) Logic to associate the task completion with a user
-    // Assuming you want to update the user's completed tasks and balance:
-    const user = await User.findOne({ user_id: userId });
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-
-    if (user.completedTasks.includes(id)) {
-      return res.status(400).json({ error: 'Task already completed' });
-    }
-
-    user.completedTasks.push(id);
-    user.balance += task.reward; // Add the reward to the user's balance
-    await user.save();
-
-    res.json({ message: 'Task marked as completed', newBalance: user.balance });
-  } catch (error) {
-    console.error('Error updating task:', error);
-    res.status(500).json({ error: 'Failed to update task' });
-  }
-});
-
-
-
-
-
-
-
-
-
-
-
-
-
-const User = require('./models/User');
-
-app.post('/api/users/register', async (req, res) => {
-  const { user_id } = req.body;
-
-  try {
-    let user = await User.findOne({ user_id });
-    if (!user) {
-      user = new User({
-        user_id,
-        balance: 0,
-        completedTasks: [],
-      });
-
-      await user.save();
-      console.log(`User ${user_id} registered successfully.`);
-    }
-
-    res.status(200).json({ message: 'User registered', user });
-  } catch (error) {
-    console.error('Error registering user:', error);
-    res.status(500).json({ error: 'Failed to register user' });
-  }
-});
-
-
-
-
-
-
-
-
-
-app.put('/api/tasks/:id', async (req, res) => {
-  const { id } = req.params;
-  const { userId } = req.body;
-  console.log(`Marking task ${id} as completed for user ${userId}`);
   try {
     const task = await Task.findById(id);
     if (!task) return res.status(404).json({ error: 'Task not found' });
@@ -174,68 +89,64 @@ app.put('/api/tasks/:id', async (req, res) => {
     user.balance += task.reward;
     await user.save();
 
-    res.json({ message: 'Task marked as completed', newBalance: user.balance });
+    res.status(200).json({ message: 'Task marked as completed', balance: user.balance });
   } catch (error) {
     console.error('Error updating task:', error);
     res.status(500).json({ error: 'Failed to update task' });
   }
 });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-app.get('/api/users/:user_id', async (req, res) => {
-  const { user_id } = req.params;
+// Register or fetch a user
+app.post('/api/users/register', async (req, res) => {
+  const { user_id } = req.body;
   try {
-    const user = await User.findOne({ user_id }).populate('completedTasks');
+    let user = await User.findOne({ user_id });
+    if (!user) {
+      user = new User({ user_id, balance: 0, completedTasks: [] });
+      await user.save();
+    }
+    res.status(200).json({ message: 'User registered successfully', user });
+  } catch (error) {
+    console.error('Error registering user:', error);
+    res.status(500).json({ error: 'Failed to register user' });
+  }
+});
+
+// Get user by ID
+app.get('/api/users/:user_id', async (req, res) => {
+  try {
+    const user = await User.findOne({ user_id: req.params.user_id }).populate('completedTasks');
     if (!user) return res.status(404).json({ error: 'User not found' });
-    res.json(user);
+    res.status(200).json(user);
   } catch (error) {
     console.error('Error fetching user:', error);
     res.status(500).json({ error: 'Failed to fetch user' });
   }
 });
 
-
+// Update user balance
 app.put('/api/users/:user_id/balance', async (req, res) => {
-  const { user_id } = req.params;
   const { amount } = req.body;
 
   try {
-    const user = await User.findOne({ user_id });
+    const user = await User.findOne({ user_id: req.params.user_id });
     if (!user) return res.status(404).json({ error: 'User not found' });
 
     user.balance += amount;
     await user.save();
-    res.json({ message: 'Balance updated', balance: user.balance });
+    res.status(200).json({ message: 'Balance updated', balance: user.balance });
   } catch (error) {
     console.error('Error updating balance:', error);
     res.status(500).json({ error: 'Failed to update balance' });
   }
 });
 
-
+// Complete a specific task for a user
 app.put('/api/users/:user_id/complete-task', async (req, res) => {
-  const { user_id } = req.params;
   const { taskId } = req.body;
 
   try {
-    const user = await User.findOne({ user_id });
+    const user = await User.findOne({ user_id: req.params.user_id });
     if (!user) return res.status(404).json({ error: 'User not found' });
 
     const task = await Task.findById(taskId);
@@ -246,16 +157,18 @@ app.put('/api/users/:user_id/complete-task', async (req, res) => {
     }
 
     user.completedTasks.push(taskId);
-    user.balance += task.reward; // Update balance with task reward
+    user.balance += task.reward;
     await user.save();
 
-    res.json({ message: 'Task completed', balance: user.balance });
+    res.status(200).json({ message: 'Task completed', balance: user.balance });
   } catch (error) {
     console.error('Error completing task:', error);
     res.status(500).json({ error: 'Failed to complete task' });
   }
 });
 
+// Start server
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
 
 
