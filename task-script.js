@@ -60,6 +60,7 @@ function startTask(taskId, link, reward) {
   startButton.onclick = () => claimReward(taskId, reward);
 }
 
+
 // Claim reward for a task
 async function claimReward(taskId, reward) {
   const userId = localStorage.getItem('userId');
@@ -99,6 +100,23 @@ async function claimReward(taskId, reward) {
     alert('An unexpected error occurred.');
   }
 }
+
+// Display stored balance
+function displayStoredBalance() {
+  const userBalance = localStorage.getItem('userBalance');
+  if (userBalance !== null) {
+    document.getElementById('points').textContent = `${userBalance} Roast`; // Update the correct element
+  } else {
+    document.getElementById('points').textContent = '0 Roast'; // Default value
+  }
+}
+
+// Display stored balance on page load
+window.onload = function () {
+  displayStoredBalance();
+};
+
+
 
 
 // Handle user registration
@@ -143,24 +161,6 @@ function getTelegramUserId() {
   return userId;
 }
 
-// Display stored balance
-function displayStoredBalance() {
-  const userBalance = localStorage.getItem('userBalance');
-  if (userBalance !== null) {
-    document.getElementById('user-balance').textContent = userBalance; // Update the correct element on the page
-  } else {
-    document.getElementById('user-balance').textContent = '0'; // Default value if no balance exists
-  }
-}
-// function displayStoredBalance() {
-//   const balanceElement = document.getElementById('points');
-//   const storedBalance = parseInt(localStorage.getItem('userBalance')) || 0;
-//   console.log('User balance:', storedBalance);
-
-//   if (balanceElement) {
-//     balanceElement.textContent = `${storedBalance} Roast`;
-//   }
-// }
 
 // Update task counter
 function updateTaskCounter() {
