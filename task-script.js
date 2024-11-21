@@ -106,7 +106,7 @@ async function claimReward(taskId, reward) {
 function displayStoredBalance() {
   const userBalance = localStorage.getItem('userBalance');
   if (userBalance !== null) {
-    document.getElementById('points').textContent = `${userBalance} Roast`;
+    document.getElementById('points').textContent = `${userBalance} Roast`; // Update the correct element
   } else {
     document.getElementById('points').textContent = '0 Roast'; // Default value
   }
