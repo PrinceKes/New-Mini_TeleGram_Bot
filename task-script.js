@@ -75,24 +75,6 @@ async function claimReward(taskId, reward) {
 
 
 
-
-// Claim reward
-// async function claimReward(taskId, reward) {
-//   try {
-//     const response = await fetch(`https://sunday-mini-telegram-bot.onrender.com/api/tasks/${taskId}`, {
-//       method: 'PUT',
-//       headers: { 'Content-Type': 'application/json' },
-//       body: JSON.stringify({ isCompleted: true }),
-//     });
-//     const data = await response.json();
-//     alert('Reward claimed!');
-//     updateUserBalance(reward);
-//     fetchTasks();
-//   } catch (error) {
-//     console.error('Error claiming reward:', error);
-//   }
-// }
-
 async function claimReward(taskId, reward) {
   const userId = localStorage.getItem('userId'); // Retrieve logged-in user ID
   if (!userId) {
@@ -121,6 +103,52 @@ async function claimReward(taskId, reward) {
     console.error('Error claiming reward:', error);
   }
 }
+
+
+
+
+
+
+
+document.addEventListener('DOMContentLoaded', async () => {
+  let userId = localStorage.getItem('userId');
+
+  // Check if userId exists in localStorage
+  if (!userId) {
+    const telegramUserId = getTelegramUserId(); // Retrieve Telegram user ID from query or bot
+    if (telegramUserId) {
+      try {
+        const response = await fetch('https://sunday-mini-telegram-bot.onrender.com/api/users/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ user_id: telegramUserId }),
+        });
+
+        const result = await response.json();
+        if (response.ok) {
+          localStorage.setItem('userId', telegramUserId); // Store the userId locally
+        } else {
+          console.error('Failed to register user:', result.error);
+        }
+      } catch (error) {
+        console.error('Error registering user:', error);
+      }
+    }
+  }
+
+  fetchTasks();
+  displayStoredBalance();
+});
+
+// Example helper function to get Telegram User ID from the query string
+function getTelegramUserId() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get('userId'); // Ensure the Telegram bot appends `userId` in the URL
+}
+
+
+
+
 
 
 

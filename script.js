@@ -49,8 +49,7 @@ function saveUserIdToDatabase(userId) {
 }
 
 // Navbar loading and active tab handling
-// Navbar loading and active tab handling
-fetch('/navbar.html') // Use an absolute path from the root
+fetch('/navbar.html')
   .then(response => {
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
