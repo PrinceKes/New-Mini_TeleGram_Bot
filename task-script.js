@@ -77,9 +77,12 @@ async function claimReward(taskId, reward) {
 
     const data = await response.json();
 
+    console.log('Claim Reward Response:', data); // Debug the response
+
     if (response.ok) {
+      const newBalance = data.newBalance || parseInt(localStorage.getItem('userBalance'), 10) || 0; // Fallback to existing balance if undefined
       alert('Reward claimed!');
-      localStorage.setItem('userBalance', data.newBalance);
+      localStorage.setItem('userBalance', newBalance);
       displayStoredBalance();
       fetchTasks();
     } else {
@@ -90,6 +93,7 @@ async function claimReward(taskId, reward) {
     console.error('Error claiming reward:', error);
   }
 }
+
 
 // Handle user registration
 async function handleUserRegistration() {
