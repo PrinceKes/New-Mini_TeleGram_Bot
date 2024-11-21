@@ -6,14 +6,21 @@ document.addEventListener('DOMContentLoaded', () => {
 // Fetch tasks from the server
 async function fetchTasks() {
   try {
+    console.log('Fetching tasks...');
     const response = await fetch('https://sunday-mini-telegram-bot.onrender.com/api/tasks');
+    if (!response.ok) {
+      console.error('Failed to fetch tasks:', await response.text());
+      return;
+    }
     const data = await response.json();
+    console.log('Tasks fetched:', data.tasks);
     displayTasks(data.tasks);
     updateTaskCounter();
   } catch (error) {
     console.error('Error fetching tasks:', error);
   }
 }
+
 
 // Display tasks in the DOM
 function displayTasks(tasks) {
@@ -113,6 +120,12 @@ async function claimReward(taskId, reward) {
 document.addEventListener('DOMContentLoaded', async () => {
   let userId = localStorage.getItem('userId');
 
+  if (!userId) {
+    console.log('No userId in localStorage. Attempting to register...');
+  } else {
+    console.log('User ID found in localStorage:', userId);
+  }
+
   // Check if userId exists in localStorage
   if (!userId) {
     const telegramUserId = getTelegramUserId(); // Retrieve Telegram user ID from query or bot
@@ -143,8 +156,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 // Example helper function to get Telegram User ID from the query string
 function getTelegramUserId() {
   const params = new URLSearchParams(window.location.search);
-  return params.get('userId'); // Ensure the Telegram bot appends `userId` in the URL
+  const userId = params.get('userId');
+  if (!userId) {
+    console.error('Telegram userId not found in the URL');
+  }
+  return userId;
 }
+
 
 
 
@@ -167,8 +185,10 @@ function updateUserBalance(reward) {
 function displayStoredBalance() {
   const balanceElement = document.getElementById('points');
   const storedBalance = parseInt(localStorage.getItem('userBalance')) || 0;
+  console.log('User balance:', storedBalance);
   if (balanceElement) balanceElement.textContent = `${storedBalance} Roast`;
 }
+
 
 // Update task counter
 function updateTaskCounter() {

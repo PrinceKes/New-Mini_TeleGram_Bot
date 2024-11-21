@@ -122,20 +122,18 @@ app.put('/api/tasks/:id', async (req, res) => {
 
 
 
-const User = require('./models/User'); // Assuming you have a User model
+const User = require('./models/User');
 
 app.post('/api/users/register', async (req, res) => {
   const { user_id } = req.body;
 
   try {
     let user = await User.findOne({ user_id });
-
-    // If user doesn't exist, create a new one
     if (!user) {
       user = new User({
         user_id,
-        balance: 0, // Default balance
-        completedTasks: [], // Default empty completed tasks
+        balance: 0,
+        completedTasks: [],
       });
 
       await user.save();
@@ -160,32 +158,26 @@ app.post('/api/users/register', async (req, res) => {
 app.put('/api/tasks/:id', async (req, res) => {
   const { id } = req.params;
   const { userId } = req.body;
-
+  console.log(`Marking task ${id} as completed for user ${userId}`);
   try {
     const task = await Task.findById(id);
-    if (!task) {
-      return res.status(404).json({ error: 'Task not found' });
-    }
+    if (!task) return res.status(404).json({ error: 'Task not found' });
 
-    let user = await User.findOne({ user_id: userId });
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
+    const user = await User.findOne({ user_id: userId });
+    if (!user) return res.status(404).json({ error: 'User not found' });
 
-    // Prevent duplicate task completion
     if (user.completedTasks.includes(id)) {
       return res.status(400).json({ error: 'Task already completed' });
     }
 
-    // Update user's balance and tasks
-    user.balance += task.reward;
     user.completedTasks.push(id);
+    user.balance += task.reward;
     await user.save();
 
     res.json({ message: 'Task marked as completed', newBalance: user.balance });
   } catch (error) {
-    console.error('Error completing task:', error);
-    res.status(500).json({ error: 'Failed to complete task' });
+    console.error('Error updating task:', error);
+    res.status(500).json({ error: 'Failed to update task' });
   }
 });
 
