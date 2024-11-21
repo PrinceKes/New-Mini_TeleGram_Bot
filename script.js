@@ -49,19 +49,26 @@ function saveUserIdToDatabase(userId) {
 }
 
 // Navbar loading and active tab handling
-fetch('./navbar.html')
-  .then(response => response.text())
+// Navbar loading and active tab handling
+fetch('/navbar.html') // Use an absolute path from the root
+  .then(response => {
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return response.text();
+  })
   .then(html => {
-      document.getElementById('navbar-container').innerHTML = html;
+    document.getElementById('navbar-container').innerHTML = html;
 
-      const currentPath = window.location.pathname.split('/').pop();
-      const navItems = document.querySelectorAll('.bottom-nav-item');
+    const currentPath = window.location.pathname.split('/').pop();
+    const navItems = document.querySelectorAll('.bottom-nav-item');
 
-      navItems.forEach(item => {
-          if (item.getAttribute('href').includes(currentPath)) {
-              item.classList.add('active');
-          }
-      });
+    navItems.forEach(item => {
+      const href = item.getAttribute('href');
+      if (href && href.includes(currentPath)) {
+        item.classList.add('active');
+      }
+    });
   })
   .catch(error => console.error('Error loading navbar:', error));
 
