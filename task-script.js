@@ -105,12 +105,22 @@ async function claimReward(taskId, reward) {
 // Display stored balance
 function displayStoredBalance() {
   const userBalance = localStorage.getItem('userBalance');
-  if (userBalance !== null) {
-    document.getElementById('points').textContent = `${userBalance} Roast`; // Update the correct element
+  const balanceElement = document.getElementById('points');
+  if (balanceElement) {
+    balanceElement.textContent = userBalance ? `${userBalance} Roast` : '0 Roast';
   } else {
-    document.getElementById('points').textContent = '0 Roast'; // Default value
+    console.error('Balance display element (#points) not found in the DOM.');
   }
 }
+
+// function displayStoredBalance() {
+//   const userBalance = localStorage.getItem('userBalance');
+//   if (userBalance !== null) {
+//     document.getElementById('points').textContent = `${userBalance} Roast`; // Update the correct element
+//   } else {
+//     document.getElementById('points').textContent = '0 Roast'; // Default value
+//   }
+// }
 
 // Display stored balance on page load
 window.onload = function () {
@@ -123,11 +133,8 @@ window.onload = function () {
 // Handle user registration
 async function handleUserRegistration() {
   let userId = localStorage.getItem('userId');
-
   if (!userId) {
-    console.log('No userId in localStorage. Attempting to register...');
     const telegramUserId = getTelegramUserId();
-
     if (telegramUserId) {
       try {
         const response = await fetch('https://sunday-mini-telegram-bot.onrender.com/api/users/register', {
@@ -135,11 +142,12 @@ async function handleUserRegistration() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ user_id: telegramUserId }),
         });
-
         const result = await response.json();
         if (response.ok) {
+          userId = telegramUserId;
           localStorage.setItem('userId', telegramUserId);
-          console.log('User registered successfully.');
+          localStorage.setItem('userBalance', result.user.balance || 1,600);
+          displayStoredBalance();
         } else {
           console.error('Failed to register user:', result.error);
         }
@@ -147,10 +155,9 @@ async function handleUserRegistration() {
         console.error('Error registering user:', error);
       }
     }
-  } else {
-    console.log('User ID found in localStorage:', userId);
   }
 }
+
 
 // Retrieve Telegram User ID from URL
 function getTelegramUserId() {
