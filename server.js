@@ -1,69 +1,7 @@
-// const express = require('express');
-// const mongoose = require('mongoose');
-// const cors = require('cors');
-// const bodyParser = require('body-parser');
-// const Task = require('./models/Task');
-// const User = require('./models/User');
-// const Referral = require('./models/Referral'); 
-
-// const app = express();
-// const PORT = process.env.PORT || 5000;
-
-// // Middleware
-// app.use(express.json());
-// app.use(bodyParser.json());
-// app.use(cors({
-//   origin: 'https://new-mini-telegram-bot.onrender.com',
-//   methods: ['GET', 'POST', 'PUT', 'DELETE'],
-//   credentials: true,
-// }));
-
-// // MongoDB connection
-// const mongoURI = process.env.MONGO_URI;
-// if (!mongoURI) {
-//   console.error('Error: MONGO_URI is not set in environment variables.');
-//   process.exit(1);
-// }
-
-// mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
-//   .then(() => console.log('Successfully connected to MongoDB'))
-//   .catch((error) => {
-//     console.error('Failed to connect to MongoDB:', error);
-//     process.exit(1);
-//   });
-
-// // Routes
-
-// // Fetch user points (Updated or New Endpoint)
-// app.get('/api/user-points', async (req, res) => {
-//   const { user_id } = req.query; 
-
-//   if (!user_id) {
-//     return res.status(400).json({ message: 'User ID is required.' });
-//   }
-
-//   try {
-//     const user = await User.findOne({ user_id });
-
-//     if (!user) {
-//       return res.status(404).json({ message: 'User not found.' });
-//     }
-
-//     res.json({ points: user.balance || 0 });
-//   } catch (error) {
-//     console.error('Error fetching user points:', error);
-//     res.status(500).json({ message: 'Internal server error.' });
-//   }
-// });
-
-
-
-
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const session = require('express-session'); // Add express-session for session management
 const Task = require('./models/Task');
 const User = require('./models/User');
 const Referral = require('./models/Referral'); 
@@ -78,14 +16,6 @@ app.use(cors({
   origin: 'https://new-mini-telegram-bot.onrender.com',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true,
-}));
-
-// Session Middleware
-app.use(session({
-  secret: 'your-secret-key',  // This should be a secure random string in production
-  resave: false,
-  saveUninitialized: true,
-  cookie: { secure: false },  // In production, set to true and ensure you're using HTTPS
 }));
 
 // MongoDB connection
@@ -125,43 +55,6 @@ app.get('/api/user-points', async (req, res) => {
     res.status(500).json({ message: 'Internal server error.' });
   }
 });
-
-// Fetch the currently authenticated user's ID from the session
-app.get('/api/current-user', (req, res) => {
-  if (req.session.user_id) {
-    res.json({ user_id: req.session.user_id });
-  } else {
-    res.status(403).json({ message: 'User is not authenticated.' });
-  }
-});
-
-// Login (for example, set the user ID in the session)
-app.post('/api/login', async (req, res) => {
-  const { user_id, password } = req.body;
-
-  // Verify user credentials (You can customize this as needed)
-  const user = await User.findOne({ user_id });
-
-  if (!user || user.password !== password) {
-    return res.status(401).json({ message: 'Invalid credentials' });
-  }
-
-  // Store user ID in the session
-  req.session.user_id = user.user_id;
-
-  res.json({ message: 'Login successful' });
-});
-
-// Logout (clear session)
-app.post('/api/logout', (req, res) => {
-  req.session.destroy((err) => {
-    if (err) {
-      return res.status(500).json({ message: 'Error logging out.' });
-    }
-    res.json({ message: 'Logout successful' });
-  });
-});
-
 
 
 // Routes
