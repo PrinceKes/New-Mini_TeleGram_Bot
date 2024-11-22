@@ -134,9 +134,7 @@ app.put('/api/users/:user_id/balance', async (req, res) => {
 
     user.balance += amount;
     await user.save();
-    res.status(200).json({ message: 'Task marked as completed', newBalance: user.balance });
-
-    // res.status(200).json({ message: 'Balance updated', balance: user.balance });
+    res.status(200).json({ message: 'Balance updated', balance: user.balance });
   } catch (error) {
     console.error('Error updating balance:', error);
     res.status(500).json({ error: 'Failed to update balance' });
