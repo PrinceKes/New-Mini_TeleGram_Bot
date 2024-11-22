@@ -73,18 +73,61 @@ async function handleUserRegistration() {
   }
 }
 
+
+// async function handleUserRegistration() {
+//   let userId = localStorage.getItem('userId');
+
+//   if (!userId) {
+//     console.log('No userId in localStorage. Attempting to register...');
+//     const telegramUserId = getTelegramUserId();
+
+//     if (telegramUserId) {
+//       try {
+//         const response = await fetch('https://sunday-mini-telegram-bot.onrender.com/api/users/register', {
+//           method: 'POST',
+//           headers: { 'Content-Type': 'application/json' },
+//           body: JSON.stringify({ user_id: telegramUserId }),
+//         });
+
+//         const result = await response.json();
+//         if (response.ok) {
+//           localStorage.setItem('userId', telegramUserId);
+//           console.log('User registered successfully.');
+//         } else {
+//           console.error('Failed to register user:', result.error);
+//         }
+//       } catch (error) {
+//         console.error('Error registering user:', error);
+//       }
+//     }
+//   } else {
+//     console.log('User ID found in localStorage:', userId);
+//   }
+// }
+
 // Retrieve Telegram User ID from URL
 // Retrieve Telegram User ID
 function getTelegramUserId() {
+  // Check if the Telegram WebApp environment is available
   if (window.Telegram && window.Telegram.WebApp) {
     const initDataUnsafe = Telegram.WebApp.initDataUnsafe;
     if (initDataUnsafe && initDataUnsafe.user && initDataUnsafe.user.id) {
+      console.log("User ID from Telegram WebApp:", initDataUnsafe.user.id);
       return initDataUnsafe.user.id.toString();
     }
-    console.error('Telegram initData does not contain user ID.');
+    console.error("Telegram initData does not contain user ID.");
     return null;
   }
-  console.error('Telegram WebApp not initialized.');
+
+  // Fallback to retrieving user ID from the URL query parameter
+  const params = new URLSearchParams(window.location.search);
+  const userId = params.get('user_id');
+  if (userId) {
+    console.log("User ID from URL:", userId);
+    return userId.replace(/[^a-zA-Z0-9_-]/g, ''); // Sanitize input
+  }
+
+  console.error("User ID not found in Telegram or URL.");
   return null;
 }
 
