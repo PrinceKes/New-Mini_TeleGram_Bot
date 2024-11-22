@@ -34,9 +34,9 @@ mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
 
 // Routes
 
-// Fetch user points (New Endpoint)
+// Fetch user points (Updated or New Endpoint)
 app.get('/api/user-points', async (req, res) => {
-  const { user_id } = req.query;
+  const { user_id } = req.query; // User ID passed as a query parameter
 
   if (!user_id) {
     return res.status(400).json({ message: 'User ID is required.' });
@@ -44,14 +44,14 @@ app.get('/api/user-points', async (req, res) => {
 
   try {
     // Query the database for the user's points
-    const user = await User.findOne({ user_id });
+    const user = await User.findOne({ userId: user_id }); // Ensure `userId` matches your schema
 
     if (!user) {
       return res.status(404).json({ message: 'User not found.' });
     }
 
-    // Respond with the user's points
-    res.json({ points: user.points || 0 });
+    // Respond with the user's balance or default it to 0 if not set
+    res.json({ points: user.balance || 0 });
   } catch (error) {
     console.error('Error fetching user points:', error);
     res.status(500).json({ message: 'Internal server error.' });

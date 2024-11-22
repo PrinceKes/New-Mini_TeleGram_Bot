@@ -188,38 +188,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-// this functions here are responsible to handle users balance calculations
 
+// Function to fetch and display the user's rewards points
 
-  // Function to fetch and display the user's rewards points
   async function fetchUserPoints() {
     try {
-      // Replace this with how you're obtaining the user_id (e.g., from localStorage or wallet connection)
-      const userId = localStorage.getItem("user_id");
+      // Get the userId (you can replace this with your auth mechanism)
+      const userId = 'exampleUserId123'; // Replace this with dynamic user identification logic
 
-      if (!userId) {
-        alert("User not logged in!");
-        return;
+      // Fetch points from the backend
+      const response = await fetch(`/api/user-points?userId=${userId}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch user points');
       }
 
-      // Send a request to the backend to fetch the user's points
-      const response = await fetch(`/api/user-points?user_id=${userId}`);
       const data = await response.json();
+      const pointsDiv = document.getElementById('points');
 
-      if (response.ok) {
-        // Update the points in the HTML
-        document.getElementById("points").innerText = `${data.points} Roast`;
-      } else {
-        alert(data.message || "Failed to fetch points.");
-      }
+      // Update the points on the UI
+      pointsDiv.textContent = `${data.balance} Roast`;
     } catch (error) {
-      console.error("Error fetching points:", error);
-      alert("An error occurred while fetching points.");
+      console.error('Error fetching user points:', error);
     }
   }
 
-  // Attach the fetch function to the Connect Wallet button
-  document.querySelector(".wallet-btn").addEventListener("click", fetchUserPoints);
-
-  // Optionally, auto-fetch points when the page loads
-  window.onload = fetchUserPoints;
+  // Call the function when the page loads
+  document.addEventListener('DOMContentLoaded', fetchUserPoints);
