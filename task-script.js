@@ -74,15 +74,29 @@ async function handleUserRegistration() {
 }
 
 // Retrieve Telegram User ID from URL
+// Retrieve Telegram User ID
 function getTelegramUserId() {
-  const params = new URLSearchParams(window.location.search);
-  const userId = params.get('user_id');
-  if (!userId) {
-    console.error('Telegram userId not found in the URL.');
+  if (window.Telegram && window.Telegram.WebApp) {
+    const initDataUnsafe = Telegram.WebApp.initDataUnsafe;
+    if (initDataUnsafe && initDataUnsafe.user && initDataUnsafe.user.id) {
+      return initDataUnsafe.user.id.toString();
+    }
+    console.error('Telegram initData does not contain user ID.');
     return null;
   }
-  return userId.replace(/[^a-zA-Z0-9_-]/g, ''); // Sanitize input
+  console.error('Telegram WebApp not initialized.');
+  return null;
 }
+
+// function getTelegramUserId() {
+//   const params = new URLSearchParams(window.location.search);
+//   const userId = params.get('user_id');
+//   if (!userId) {
+//     console.error('Telegram userId not found in the URL.');
+//     return null;
+//   }
+//   return userId.replace(/[^a-zA-Z0-9_-]/g, ''); // Sanitize input
+// }
 
 // Fetch tasks from the server
 async function fetchTasks() {
