@@ -99,7 +99,9 @@ app.put('/api/tasks/:id', async (req, res) => {
 
 // Register or fetch a user
 app.post('/api/users/register', async (req, res) => {
-  const { user_id } = req.body;
+  const { user_id } = req.body; // Check for POST body
+  if (!user_id) return res.status(400).json({ error: 'user_id is required' });
+
   try {
     let user = await User.findOne({ user_id });
     if (!user) {
@@ -112,6 +114,22 @@ app.post('/api/users/register', async (req, res) => {
     res.status(500).json({ error: 'Failed to register user' });
   }
 });
+
+
+// app.post('/api/users/register', async (req, res) => {
+//   const { user_id } = req.body;
+//   try {
+//     let user = await User.findOne({ user_id });
+//     if (!user) {
+//       user = new User({ user_id, balance: 0, completedTasks: [] });
+//       await user.save();
+//     }
+//     res.status(200).json({ message: 'User registered successfully', user });
+//   } catch (error) {
+//     console.error('Error registering user:', error);
+//     res.status(500).json({ error: 'Failed to register user' });
+//   }
+// });
 
 // Get user by ID
 app.get('/api/users/:user_id', async (req, res) => {

@@ -107,29 +107,37 @@ async function handleUserRegistration() {
 
 // Retrieve Telegram User ID from URL
 // Retrieve Telegram User ID
-function getTelegramUserId() {
-  // Check if the Telegram WebApp environment is available
-  if (window.Telegram && window.Telegram.WebApp) {
-    const initDataUnsafe = Telegram.WebApp.initDataUnsafe;
-    if (initDataUnsafe && initDataUnsafe.user && initDataUnsafe.user.id) {
-      console.log("User ID from Telegram WebApp:", initDataUnsafe.user.id);
-      return initDataUnsafe.user.id.toString();
+(async function () {
+  const userId = getTelegramUserId();
+  if (!userId) {
+    document.getElementById('balance').innerText = 'User ID not found';
+    return;
+  }
+
+  try {
+    const response = await fetch('https://new-mini-telegram-bot.onrender.com/api/users/balance', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ user_id: userId }),
+    });
+
+    if (!response.ok) {
+      console.error('Error fetching balance:', await response.text());
+      document.getElementById('balance').innerText = 'Error fetching balance';
+      return;
     }
-    console.error("Telegram initData does not contain user ID.");
-    return null;
-  }
 
-  // Fallback to retrieving user ID from the URL query parameter
-  const params = new URLSearchParams(window.location.search);
-  const userId = params.get('user_id');
-  if (userId) {
-    console.log("User ID from URL:", userId);
-    return userId.replace(/[^a-zA-Z0-9_-]/g, ''); // Sanitize input
+    const data = await response.json();
+    document.getElementById('balance').innerText = `Your balance: ${data.balance}`;
+  } catch (error) {
+    console.error('Error:', error);
+    document.getElementById('balance').innerText = 'Error retrieving balance';
   }
+})();
 
-  console.error("User ID not found in Telegram or URL.");
-  return null;
-}
+
 
 // function getTelegramUserId() {
 //   const params = new URLSearchParams(window.location.search);
