@@ -1,24 +1,24 @@
 document.addEventListener("DOMContentLoaded", function () {
   const urlParams = new URLSearchParams(window.location.search);
-  const userIdFromUrl = urlParams.get('user_id'); 
+  const userIdFromUrl = urlParams.get('user_id');
   const storedUserId = localStorage.getItem('user_id');
   const userIdElement = document.getElementById('userId');
 
-  let userId = userIdFromUrl || storedUserId;
+  let user_id = userIdFromUrl || storedUserId;
 
-  if (userId) {
-      localStorage.setItem('user_id', userId);
+  if (user_id) {
+    localStorage.setItem('user_id', user_id);
 
-      const avatarUrl = "../assets/Avatar.png";
-      updateHeader(userId, avatarUrl);
+    const avatarUrl = "../assets/Avatar.png";
+    updateHeader(user_id, avatarUrl);
 
-      if (userIdFromUrl) {
-          saveUserIdToDatabase(userId);
-      }
+    if (userIdFromUrl) {
+      saveUserIdToDatabase(user_id);
+    }
   } else {
-      if (userIdElement) {
-          userIdElement.innerText = "User ID: Unknown";
-      }
+    if (userIdElement) {
+      userIdElement.innerText = "User ID: Unknown";
+    }
   }
 });
 
@@ -37,15 +37,15 @@ function updateHeader(userId, avatarUrl) {
 }
 
 // Function to save the user ID to the database via API
-function saveUserIdToDatabase(userId) {
+function saveUserIdToDatabase(user_id) { // Updated parameter name
   fetch('https://sunday-mini-telegram-bot.onrender.com/api/users', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ user_id: userId }),
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ user_id }), // Updated to match backend
   })
-  .then(response => response.json())
-  .then(data => console.log('User ID saved:', data))
-  .catch(error => console.error('Error saving user ID:', error));
+    .then(response => response.json())
+    .then(data => console.log('User ID saved:', data))
+    .catch(error => console.error('Error saving user ID:', error));
 }
 
 // Navbar loading and active tab handling
