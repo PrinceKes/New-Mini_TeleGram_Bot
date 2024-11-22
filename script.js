@@ -31,9 +31,9 @@ function updateHeader(userId, avatarUrl) {
       userIdElement.innerText = `User ID: ${userId}`;
   }
 
-  if (avatarElement && avatarUrl) {
-      avatarElement.src = avatarUrl;
-  }
+  // if (avatarElement && avatarUrl) {
+  //     avatarElement.src = avatarUrl;
+  // }
 }
 
 // Function to save the user ID to the database via API

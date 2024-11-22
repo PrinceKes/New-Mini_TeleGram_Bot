@@ -1,8 +1,20 @@
 document.addEventListener('DOMContentLoaded', async () => {
-  await handleUserRegistration();
-  fetchTasks();
-  displayStoredBalance();
+  const userId = getTelegramUserId();
+  if (userId) {
+    await handleUserRegistration(userId);
+    fetchTasks();
+    fetchUserBalance(userId); // Fetch balance from the server
+  } else {
+    console.error('No user ID detected. Cannot proceed.');
+  }
 });
+
+
+// document.addEventListener('DOMContentLoaded', async () => {
+//   await handleUserRegistration();
+//   fetchTasks();
+//   displayStoredBalance();
+// });
 
 // Fetch tasks from the server
 async function fetchTasks() {
@@ -113,14 +125,6 @@ function displayStoredBalance() {
   }
 }
 
-// function displayStoredBalance() {
-//   const userBalance = localStorage.getItem('userBalance');
-//   if (userBalance !== null) {
-//     document.getElementById('points').textContent = `${userBalance} Roast`; // Update the correct element
-//   } else {
-//     document.getElementById('points').textContent = '0 Roast'; // Default value
-//   }
-// }
 
 // Display stored balance on page load
 window.onload = function () {
@@ -161,16 +165,6 @@ async function handleUserRegistration() {
 
 // Retrieve Telegram User ID from URL
 function getTelegramUserId() {
-  // First, check if the URL contains a user_id parameter
-  const params = new URLSearchParams(window.location.search);
-  const userId = params.get('user_id');
-
-  if (userId) {
-    console.log('Telegram userId found in URL:', userId);
-    return userId;
-  }
-
-  // If not found in URL, check Telegram WebApp initialization data
   if (window.Telegram && window.Telegram.WebApp) {
     const initData = window.Telegram.WebApp.initDataUnsafe;
     if (initData && initData.user && initData.user.id) {
@@ -179,18 +173,54 @@ function getTelegramUserId() {
     }
   }
 
+  // Fallback to URL parameters
+  const params = new URLSearchParams(window.location.search);
+  const userId = params.get('user_id');
+  if (userId) {
+    console.log('Telegram userId found in URL:', userId);
+    return userId;
+  }
+
   console.error('Telegram userId not found in URL or WebApp context.');
-  return null; // Return null if no user ID is found
+  return null;
 }
 
-// function getTelegramUserId() {
-//   const params = new URLSearchParams(window.location.search);
-//   const userId = params.get('user_id'); // Correct parameter name
-//   if (!userId) {
-//     console.error('Telegram userId not found in the URL.');
-//   }
-//   return userId;
-// }
+if (window.Telegram && window.Telegram.WebApp) {
+  window.Telegram.WebApp.ready(); // Signal that your Web App is ready
+}
+
+
+
+// every time the app is loaded, fetch the user's balance from your server:
+async function fetchUserBalance(userId) {
+  if (!userId) {
+    console.error('No userId provided for fetching balance.');
+    return;
+  }
+
+  try {
+    const response = await fetch(`https://sunday-mini-telegram-bot.onrender.com/api/users/${userId}/balance`);
+    const data = await response.json();
+
+    if (response.ok && data.balance !== undefined) {
+      localStorage.setItem('userBalance', data.balance);
+      displayStoredBalance();
+    } else {
+      console.error('Failed to fetch balance:', data.error || 'Unknown error');
+    }
+  } catch (error) {
+    console.error('Error fetching user balance:', error);
+  }
+}
+
+// Call this function on app load
+const userId = getTelegramUserId();
+if (userId) {
+  fetchUserBalance(userId);
+}
+
+
+
 
 
 // Update task counter
