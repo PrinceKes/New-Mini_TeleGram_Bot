@@ -33,6 +33,32 @@ mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
   });
 
 // Routes
+
+// Fetch user points (New Endpoint)
+app.get('/api/user-points', async (req, res) => {
+  const { user_id } = req.query;
+
+  if (!user_id) {
+    return res.status(400).json({ message: 'User ID is required.' });
+  }
+
+  try {
+    // Query the database for the user's points
+    const user = await User.findOne({ user_id });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+
+    // Respond with the user's points
+    res.json({ points: user.points || 0 });
+  } catch (error) {
+    console.error('Error fetching user points:', error);
+    res.status(500).json({ message: 'Internal server error.' });
+  }
+});
+
+// Routes
 // Fetch all tasks
 app.get('/api/tasks', async (req, res) => {
   try {
@@ -115,21 +141,6 @@ app.post('/api/users/register', async (req, res) => {
   }
 });
 
-
-// app.post('/api/users/register', async (req, res) => {
-//   const { user_id } = req.body;
-//   try {
-//     let user = await User.findOne({ user_id });
-//     if (!user) {
-//       user = new User({ user_id, balance: 0, completedTasks: [] });
-//       await user.save();
-//     }
-//     res.status(200).json({ message: 'User registered successfully', user });
-//   } catch (error) {
-//     console.error('Error registering user:', error);
-//     res.status(500).json({ error: 'Failed to register user' });
-//   }
-// });
 
 // Get user by ID
 app.get('/api/users/:user_id', async (req, res) => {

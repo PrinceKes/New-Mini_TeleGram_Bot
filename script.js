@@ -184,3 +184,42 @@ document.addEventListener('DOMContentLoaded', () => {
   fetchAndDisplayUsers();
   fetchAndDisplayReferrals();
 });
+
+
+
+
+// this functions here are responsible to handle users balance calculations
+
+
+  // Function to fetch and display the user's rewards points
+  async function fetchUserPoints() {
+    try {
+      // Replace this with how you're obtaining the user_id (e.g., from localStorage or wallet connection)
+      const userId = localStorage.getItem("user_id");
+
+      if (!userId) {
+        alert("User not logged in!");
+        return;
+      }
+
+      // Send a request to the backend to fetch the user's points
+      const response = await fetch(`/api/user-points?user_id=${userId}`);
+      const data = await response.json();
+
+      if (response.ok) {
+        // Update the points in the HTML
+        document.getElementById("points").innerText = `${data.points} Roast`;
+      } else {
+        alert(data.message || "Failed to fetch points.");
+      }
+    } catch (error) {
+      console.error("Error fetching points:", error);
+      alert("An error occurred while fetching points.");
+    }
+  }
+
+  // Attach the fetch function to the Connect Wallet button
+  document.querySelector(".wallet-btn").addEventListener("click", fetchUserPoints);
+
+  // Optionally, auto-fetch points when the page loads
+  window.onload = fetchUserPoints;
