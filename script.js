@@ -89,31 +89,36 @@ if (points === null) {
           modal.classList.remove("hidden");
       }, 1000);
 
-      claimBonusBtn.addEventListener("click", () => {
-          points = 2000;
-          pointsElement.innerText = `${points} Roast`;
-
-          // Save bonus claim status locally
-          localStorage.setItem("hasClaimedBonus", "true");
-          localStorage.setItem("userPoints", points);
-
-          // Update user balance in the database
-          const userId = localStorage.getItem("user_id");
-
-          if (userId) {
-              fetch("https://sunday-mini-telegram-bot.onrender.com/api/users", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ user_id: userId, balance: points }),
-              })
-              .then(response => response.json())
-              .then(data => console.log("Balance updated:", data))
-              .catch(error => console.error("Error updating balance:", error));
+      claimBonusBtn.addEventListener("click", async () => {
+        points = 2000;
+        pointsElement.innerText = `${points} Roast`;
+      
+        localStorage.setItem("hasClaimedBonus", "true");
+        localStorage.setItem("userBalance", points);
+      
+        const userId = localStorage.getItem("user_id");
+        if (userId) {
+          try {
+            const response = await fetch(`https://sunday-mini-telegram-bot.onrender.com/api/users/${userId}`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ user_id: userId, balance: points }),
+            });
+      
+            const data = await response.json();
+            console.log("Balance updated:", data);
+      
+            if (response.ok) {
+              displayStoredBalance(); // Fetch and display the updated balance
+            }
+          } catch (error) {
+            console.error("Error updating balance:", error);
           }
-
-          // Hide modal
-          modal.classList.add("hidden");
+        }
+      
+        modal.classList.add("hidden");
       });
+      
   } else {
       points = 0;
       pointsElement.innerText = `${points} Roast`;
@@ -129,9 +134,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const savedBalance = localStorage.getItem('userBalance') || '0';
   balanceElement.textContent = `${savedBalance} Roast`;
 });
-
-
-
 
 
 
