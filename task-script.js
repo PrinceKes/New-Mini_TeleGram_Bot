@@ -146,7 +146,7 @@ async function handleUserRegistration() {
         if (response.ok) {
           userId = telegramUserId;
           localStorage.setItem('userId', telegramUserId);
-          localStorage.setItem('userBalance', result.user.balance || 1,600);
+          localStorage.setItem('userBalance', result.user.balance || 0);
           displayStoredBalance();
         } else {
           console.error('Failed to register user:', result.error);
@@ -161,13 +161,36 @@ async function handleUserRegistration() {
 
 // Retrieve Telegram User ID from URL
 function getTelegramUserId() {
+  // First, check if the URL contains a user_id parameter
   const params = new URLSearchParams(window.location.search);
-  const userId = params.get('user_id'); // Correct parameter name
-  if (!userId) {
-    console.error('Telegram userId not found in the URL.');
+  const userId = params.get('user_id');
+
+  if (userId) {
+    console.log('Telegram userId found in URL:', userId);
+    return userId;
   }
-  return userId;
+
+  // If not found in URL, check Telegram WebApp initialization data
+  if (window.Telegram && window.Telegram.WebApp) {
+    const initData = window.Telegram.WebApp.initDataUnsafe;
+    if (initData && initData.user && initData.user.id) {
+      console.log('Telegram userId found in WebApp init data:', initData.user.id);
+      return initData.user.id.toString();
+    }
+  }
+
+  console.error('Telegram userId not found in URL or WebApp context.');
+  return null; // Return null if no user ID is found
 }
+
+// function getTelegramUserId() {
+//   const params = new URLSearchParams(window.location.search);
+//   const userId = params.get('user_id'); // Correct parameter name
+//   if (!userId) {
+//     console.error('Telegram userId not found in the URL.');
+//   }
+//   return userId;
+// }
 
 
 // Update task counter
