@@ -190,18 +190,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 // Function to fetch and display the user's rewards points
+// Function to fetch and display the user's rewards points
 async function fetchUserPoints() {
   try {
-    const userId = 'exampleUserId123';
+    // Dynamically obtain the user's ID (if you have it stored elsewhere, e.g., session, cookies)
+    const userId = getUserIdFromContext(); // Replace this with your own logic to get the user ID
+
+    // Use the full URL of the API to avoid relative URL issues
+    const response = await fetch(`https://sunday-mini-telegram-bot.onrender.com/api/user-points?user_id=${userId}`);
     
-    const response = await fetch(`/api/user-points?user_id=${userId}`);
     if (!response.ok) {
-      throw new Error('Failed to fetch user points');
+      const errorText = await response.text(); // Capture the error response for debugging
+      throw new Error(`Failed to fetch user points: ${errorText}`);
     }
 
+    // Parse and display the points
     const data = await response.json();
     const pointsDiv = document.getElementById('points');
-
     pointsDiv.textContent = `${data.points} Roast`;
   } catch (error) {
     console.error('Error fetching user points:', error);
@@ -210,3 +215,9 @@ async function fetchUserPoints() {
 }
 
 document.addEventListener('DOMContentLoaded', fetchUserPoints);
+
+// Placeholder for getting the user's ID dynamically (replace this function with your logic)
+function getUserIdFromContext() {
+  // Example: Retrieve from local storage, cookies, or session
+  return 'exampleUserId123'; // Replace this with your actual implementation
+}
