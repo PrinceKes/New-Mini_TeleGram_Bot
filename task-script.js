@@ -1,9 +1,88 @@
 document.addEventListener('DOMContentLoaded', async () => {
   await handleUserRegistration();
-  fetchAndDisplayUserId();
+  await fetchAndDisplayBalance();
   fetchTasks();
-  displayStoredBalance();
 });
+
+// Fetch user balance from the server and display it
+async function fetchAndDisplayBalance() {
+  const userId = localStorage.getItem('userId') || getTelegramUserId();
+
+  if (!userId) {
+    console.error('User ID is not available.');
+    return;
+  }
+
+  try {
+    const response = await fetch(`https://sunday-mini-telegram-bot.onrender.com/api/users/balance?user_id=${userId}`);
+    if (!response.ok) {
+      console.error('Failed to fetch user balance:', await response.text());
+      return;
+    }
+
+    const { balance } = await response.json();
+    localStorage.setItem('userBalance', balance); // Cache balance locally
+    displayStoredBalance();
+  } catch (error) {
+    console.error('Error fetching user balance:', error);
+  }
+}
+
+// Display stored balance
+function displayStoredBalance() {
+  const balanceElement = document.getElementById('points');
+  if (!balanceElement) {
+    console.error('Balance display element not found.');
+    return;
+  }
+
+  const storedBalance = parseInt(localStorage.getItem('userBalance')) || 0;
+  balanceElement.textContent = `${storedBalance} Roast`;
+  console.log('User balance displayed:', storedBalance);
+}
+
+// Handle user registration
+async function handleUserRegistration() {
+  let userId = localStorage.getItem('userId');
+
+  if (!userId) {
+    console.log('No userId in localStorage. Attempting to register...');
+    const telegramUserId = getTelegramUserId();
+
+    if (telegramUserId) {
+      try {
+        const response = await fetch('https://sunday-mini-telegram-bot.onrender.com/api/users/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ user_id: telegramUserId }),
+        });
+
+        const result = await response.json();
+        if (response.ok) {
+          localStorage.setItem('userId', telegramUserId);
+          console.log('User registered successfully.');
+        } else {
+          console.error('Failed to register user:', result.error);
+        }
+      } catch (error) {
+        console.error('Error registering user:', error);
+      }
+    }
+  } else {
+    console.log('User ID found in localStorage:', userId);
+  }
+}
+
+// Retrieve Telegram User ID from URL
+function getTelegramUserId() {
+  const params = new URLSearchParams(window.location.search);
+  const userId = params.get('user_id');
+  if (!userId) {
+    console.error('Telegram userId not found in the URL.');
+    return null;
+  }
+  return userId.replace(/[^a-zA-Z0-9_-]/g, ''); // Sanitize input
+}
 
 // Fetch tasks from the server
 async function fetchTasks() {
@@ -59,120 +138,6 @@ function displayTasks(tasks) {
     `;
     taskList.appendChild(taskElement);
   });
-}
-
-function startTask(taskId, link, reward) {
-  window.open(link, '_blank');
-  const startButton = document.getElementById(`startButton-${taskId}`);
-  startButton.textContent = 'Claim Reward';
-  startButton.onclick = () => claimReward(taskId, reward);
-}
-
-// Claim reward for a task
-async function claimReward(taskId, reward) {
-  const userId = localStorage.getItem('userId');
-  if (!userId) {
-    alert('You must be logged in to claim rewards.');
-    return;
-  }
-
-  let attempts = 3; // Retry up to 3 times
-  while (attempts > 0) {
-    try {
-      const response = await fetch(`https://sunday-mini-telegram-bot.onrender.com/api/tasks/${taskId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        alert('Reward claimed!');
-        localStorage.setItem('userBalance', data.newBalance);
-        displayStoredBalance();
-        fetchTasks();
-        return;
-      } else {
-        console.error('Error claiming reward:', data.error);
-        alert(data.error || 'Failed to claim reward.');
-        return;
-      }
-    } catch (error) {
-      console.error('Error claiming reward:', error);
-      attempts--;
-      if (attempts === 0) {
-        alert('Failed to claim reward after multiple attempts. Please try again later.');
-      }
-    }
-  }
-}
-
-// Handle user registration
-async function handleUserRegistration() {
-  let userId = localStorage.getItem('userId');
-
-  if (!userId) {
-    console.log('No userId in localStorage. Attempting to register...');
-    const telegramUserId = getTelegramUserId();
-
-    if (telegramUserId) {
-      try {
-        const response = await fetch('https://sunday-mini-telegram-bot.onrender.com/api/users/register', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ user_id: telegramUserId }),
-        });
-
-        const result = await response.json();
-        if (response.ok) {
-          localStorage.setItem('userId', telegramUserId);
-          console.log('User registered successfully.');
-        } else {
-          console.error('Failed to register user:', result.error);
-        }
-      } catch (error) {
-        console.error('Error registering user:', error);
-      }
-    }
-  } else {
-    console.log('User ID found in localStorage:', userId);
-  }
-}
-
-// Retrieve Telegram User ID from URL
-function getTelegramUserId() {
-  const params = new URLSearchParams(window.location.search);
-  const userId = params.get('user_id');
-  if (!userId) {
-    console.error('Telegram userId not found in the URL.');
-    return null;
-  }
-  return userId.replace(/[^a-zA-Z0-9_-]/g, ''); // Sanitize input
-}
-
-// Fetch and display user ID
-function fetchAndDisplayUserId() {
-  const userId = localStorage.getItem('userId') || getTelegramUserId();
-  const userIdElement = document.getElementById('userId');
-  if (userId && userIdElement) {
-    userIdElement.textContent = `User ID: ${userId}`;
-  } else if (userIdElement) {
-    userIdElement.textContent = 'User ID: Not available';
-  }
-}
-
-// Display stored balance
-function displayStoredBalance() {
-  const balanceElement = document.getElementById('points');
-  if (!balanceElement) {
-    console.error('Balance display element not found.');
-    return;
-  }
-
-  const storedBalance = parseInt(localStorage.getItem('userBalance')) || 0;
-  balanceElement.textContent = `${storedBalance} Roast`;
-  console.log('User balance displayed:', storedBalance);
 }
 
 // Update task counter
