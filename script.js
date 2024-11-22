@@ -190,27 +190,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 // Function to fetch and display the user's rewards points
-
-  async function fetchUserPoints() {
-    try {
-      // Get the userId (you can replace this with your auth mechanism)
-      const userId = 'exampleUserId123'; // Replace this with dynamic user identification logic
-
-      // Fetch points from the backend
-      const response = await fetch(`/api/user-points?userId=${userId}`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch user points');
-      }
-
-      const data = await response.json();
-      const pointsDiv = document.getElementById('points');
-
-      // Update the points on the UI
-      pointsDiv.textContent = `${data.balance} Roast`;
-    } catch (error) {
-      console.error('Error fetching user points:', error);
+async function fetchUserPoints() {
+  try {
+    const userId = 'exampleUserId123';
+    
+    const response = await fetch(`/api/user-points?user_id=${userId}`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch user points');
     }
-  }
 
-  // Call the function when the page loads
-  document.addEventListener('DOMContentLoaded', fetchUserPoints);
+    const data = await response.json();
+    const pointsDiv = document.getElementById('points');
+
+    pointsDiv.textContent = `${data.points} Roast`;
+  } catch (error) {
+    console.error('Error fetching user points:', error);
+    alert('An error occurred while fetching points');
+  }
+}
+
+document.addEventListener('DOMContentLoaded', fetchUserPoints);
