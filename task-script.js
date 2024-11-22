@@ -1,9 +1,9 @@
 document.addEventListener('DOMContentLoaded', async () => {
-  const userId = getTelegramUserId();
+  const userId = getStoredUserId(); // Fetch the user ID from `localStorage` or URL
   if (userId) {
     await handleUserRegistration(userId);
     fetchTasks();
-    fetchUserBalance(userId);
+    fetchUserBalance(userId); // Fetch balance for the user
   } else {
     console.error('No user ID detected. Cannot proceed.');
   }
@@ -14,6 +14,7 @@ async function fetchTasks() {
   try {
     console.log('Fetching tasks...');
     const response = await fetch('https://sunday-mini-telegram-bot.onrender.com/api/tasks');
+
     if (!response.ok) {
       console.error('Failed to fetch tasks:', await response.text());
       return;
@@ -42,9 +43,9 @@ function displayTasks(tasks) {
     return;
   }
 
-  taskList.innerHTML = ''; // Clear existing tasks
+  taskList.innerHTML = '';
 
-  tasks.forEach(task => {
+  tasks.forEach((task) => {
     const taskElement = document.createElement('div');
     taskElement.classList.add('task-item');
     taskElement.innerHTML = `
@@ -57,19 +58,16 @@ function displayTasks(tasks) {
   });
 }
 
-// Start a task and update the button action
 function startTask(taskId, link, reward) {
-  window.open(link, '_blank'); // Open task link in a new tab
+  window.open(link, '_blank');
   const startButton = document.getElementById(`startButton-${taskId}`);
-  if (startButton) {
-    startButton.textContent = 'Claim Reward';
-    startButton.onclick = () => claimReward(taskId, reward);
-  }
+  startButton.textContent = 'Claim Reward';
+  startButton.onclick = () => claimReward(taskId, reward);
 }
 
 // Claim reward for a task
 async function claimReward(taskId, reward) {
-  const userId = localStorage.getItem('userId');
+  const userId = getStoredUserId(); // Fetch user ID
   if (!userId) {
     alert('You must be logged in to claim rewards.');
     return;
@@ -83,10 +81,9 @@ async function claimReward(taskId, reward) {
     });
 
     const data = await response.json();
-    console.log('Claim Reward Response:', data);
 
     if (response.ok) {
-      const newBalance = data.balance;
+      const newBalance = data.balance; // Updated to match server response
       if (newBalance !== undefined) {
         localStorage.setItem('userBalance', newBalance);
         displayStoredBalance();
@@ -95,7 +92,7 @@ async function claimReward(taskId, reward) {
         console.error('Balance not found in response.');
         alert('Reward claimed, but failed to update balance.');
       }
-      fetchTasks(); // Refresh task list
+      fetchTasks(); // Refresh tasks if needed
     } else {
       console.error('Error claiming reward:', data.error);
       alert(data.error || 'Failed to claim reward.');
@@ -106,7 +103,7 @@ async function claimReward(taskId, reward) {
   }
 }
 
-// Display the stored user balance
+// Display stored balance
 function displayStoredBalance() {
   const userBalance = localStorage.getItem('userBalance');
   const balanceElement = document.getElementById('points');
@@ -119,7 +116,7 @@ function displayStoredBalance() {
 
 // Handle user registration
 async function handleUserRegistration(userId) {
-  if (!localStorage.getItem('userId')) {
+  if (!localStorage.getItem('user_id')) {
     try {
       const response = await fetch('https://sunday-mini-telegram-bot.onrender.com/api/users/register', {
         method: 'POST',
@@ -129,7 +126,7 @@ async function handleUserRegistration(userId) {
 
       const result = await response.json();
       if (response.ok) {
-        localStorage.setItem('userId', userId);
+        localStorage.setItem('user_id', userId);
         localStorage.setItem('userBalance', result.user.balance || 0);
         displayStoredBalance();
       } else {
@@ -141,32 +138,19 @@ async function handleUserRegistration(userId) {
   }
 }
 
-// Retrieve Telegram User ID from URL or WebApp
-function getTelegramUserId() {
-  if (window.Telegram && window.Telegram.WebApp) {
-    const initData = window.Telegram.WebApp.initDataUnsafe;
-    if (initData && initData.user && initData.user.id) {
-      console.log('Telegram userId found in WebApp init data:', initData.user.id);
-      return initData.user.id.toString();
-    }
+// Retrieve user ID from `localStorage` or URL
+function getStoredUserId() {
+  const userIdElement = document.getElementById('userId');
+  if (userIdElement) {
+    const userIdText = userIdElement.textContent;
+    const match = userIdText.match(/User ID: (.+)/);
+    return match ? match[1] : null;
   }
-
-  const params = new URLSearchParams(window.location.search);
-  const userId = params.get('user_id');
-  if (userId) {
-    console.log('Telegram userId found in URL:', userId);
-    return userId;
-  }
-
-  console.error('Telegram userId not found in URL or WebApp context.');
-  return null;
+  const storedUserId = localStorage.getItem('user_id');
+  return storedUserId || null;
 }
 
-if (window.Telegram && window.Telegram.WebApp) {
-  window.Telegram.WebApp.ready(); // Signal that the Web App is ready
-}
-
-// Fetch the user's balance from the server
+// Fetch user balance from the server
 async function fetchUserBalance(userId) {
   if (!userId) {
     console.error('No userId provided for fetching balance.');
@@ -188,7 +172,7 @@ async function fetchUserBalance(userId) {
   }
 }
 
-// Update the task counter
+// Update task counter
 function updateTaskCounter() {
   const taskCount = document.querySelectorAll('.task-item').length;
   const counterElement = document.getElementById('generalCount');
@@ -197,8 +181,10 @@ function updateTaskCounter() {
   }
 }
 
-// Display stored balance on page load
-window.onload = displayStoredBalance;
+// Ensure balance is displayed on page load
+window.onload = function () {
+  displayStoredBalance();
+};
 
 
 
