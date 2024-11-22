@@ -150,17 +150,17 @@ function getTelegramUserId() {
 // }
 
 // Display stored balance
-function displayStoredBalance() {
-  const balanceElement = document.getElementById('points');
-  if (!balanceElement) {
-    console.error('Balance display element not found.');
-    return;
-  }
+// function displayStoredBalance() {
+//   const balanceElement = document.getElementById('points');
+//   if (!balanceElement) {
+//     console.error('Balance display element not found.');
+//     return;
+//   }
 
-  const storedBalance = parseInt(localStorage.getItem('userBalance')) || 0;
-  balanceElement.textContent = `${storedBalance} Roast`;
-  console.log('User balance displayed:', storedBalance);
-}
+//   const storedBalance = parseInt(localStorage.getItem('userBalance')) || 0;
+//   balanceElement.textContent = `${storedBalance} Roast`;
+//   console.log('User balance displayed:', storedBalance);
+// }
 
 // function displayStoredBalance() {
 //   const balanceElement = document.getElementById('points');

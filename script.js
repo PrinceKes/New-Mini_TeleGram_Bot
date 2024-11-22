@@ -192,48 +192,28 @@ document.addEventListener('DOMContentLoaded', () => {
 // Function to fetch and display the user's rewards points
 async function fetchUserPoints() {
   try {
-    // Dynamically obtain the user's ID by calling the server to get the current authenticated user
-    const userId = await getUserIdFromContext();
-
+    // Fetch the user_id from localStorage
+    const userId = localStorage.getItem('user_id');
+    
+    // If the userId is not found, alert the user
     if (!userId) {
-      throw new Error('User ID could not be fetched.');
+      throw new Error('User ID is not available');
     }
 
-    // Use the full URL of the API to avoid relative URL issues
+    // Use `user_id` in the query string to match the back-end
     const response = await fetch(`https://sunday-mini-telegram-bot.onrender.com/api/user-points?user_id=${userId}`);
-
     if (!response.ok) {
-      const errorText = await response.text(); // Capture the error response for debugging
-      throw new Error(`Failed to fetch user points: ${errorText}`);
+      throw new Error('Failed to fetch user points');
     }
 
-    // Parse and display the points
     const data = await response.json();
     const pointsDiv = document.getElementById('points');
-    pointsDiv.textContent = `${data.points} Roast`;
+
+    // Update the points on the UI
+    pointsDiv.textContent = `${data.points} Roast`; // Note: Change `balance` to `points`
   } catch (error) {
     console.error('Error fetching user points:', error);
-    alert('An error occurred while fetching points');
-  }
-}
-
-// Fetch the authenticated user's ID from the session
-async function getUserIdFromContext() {
-  try {
-    const response = await fetch('https://sunday-mini-telegram-bot.onrender.com/api/current-user', {
-      method: 'GET',
-      credentials: 'include',  // Include cookies (sessions) with the request
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to fetch the current user.');
-    }
-
-    const data = await response.json();
-    return data.user_id; // Return the user_id from the response
-  } catch (error) {
-    console.error('Error fetching user ID:', error);
-    return null;
+    alert('An error occurred while fetching points'); // Add user feedback
   }
 }
 
