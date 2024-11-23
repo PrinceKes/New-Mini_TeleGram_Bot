@@ -79,7 +79,6 @@ function startTask(taskId, link, reward) {
 
 
 
-
 async function claimReward(taskId, reward) {
     const userId = localStorage.getItem('userId'); // Retrieve user ID from localStorage
     if (!userId) {
@@ -88,17 +87,17 @@ async function claimReward(taskId, reward) {
     }
   
     try {
-      const response = await fetch('https://sunday-mini-telegram-bot.onrender.com/api/users/complete-task', {
+      const response = await fetch(`https://sunday-mini-telegram-bot.onrender.com/api/users/${userId}/complete-task`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ taskId, userId }), // Send userId in the body
+        body: JSON.stringify({ taskId }), // Send only taskId in the body
       });
   
       const data = await response.json();
   
       if (response.ok) {
         alert('Reward claimed!');
-        localStorage.setItem('userBalance', data.newBalance); // Update balance in localStorage
+        localStorage.setItem('userBalance', data.balance); // Update balance in localStorage
         displayStoredBalance(); // Update the UI
         fetchTasks(); // Refresh tasks
       } else {
