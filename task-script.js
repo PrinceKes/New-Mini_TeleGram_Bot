@@ -79,7 +79,7 @@ function startTask(taskId, link, reward) {
 
 
 async function claimReward(taskId) {
-  const userId = localStorage.getItem('userId'); // Retrieve user ID from localStorage
+  const userId = localStorage.getItem('userId');
   if (!userId) {
     alert('You must be logged in to claim rewards.');
     return;
@@ -89,16 +89,16 @@ async function claimReward(taskId) {
     const response = await fetch(`https://sunday-mini-telegram-bot.onrender.com/api/users/${userId}/complete-task`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ taskId }), // Send only taskId in the body
+      body: JSON.stringify({ taskId }),
     });
 
     const data = await response.json();
 
     if (response.ok) {
       alert('Reward claimed successfully!');
-      localStorage.setItem('userBalance', data.balance); // Update balance in localStorage
-      displayStoredBalance(); // Update the UI
-      fetchTasks(); // Refresh tasks
+      localStorage.setItem('userBalance', data.balance);
+      displayStoredBalance(); 
+      fetchTasks();
     } else {
       console.error('Error claiming reward:', data.error);
       alert(data.error || 'Failed to claim reward.');
@@ -130,7 +130,7 @@ async function claimReward(taskId, reward) {
     if (response.ok) {
       alert('Reward claimed!');
       localStorage.setItem('userBalance', data.newBalance);
-      displayStoredBalance(); // Ensure the UI reflects the latest balance
+      displayStoredBalance();
       fetchTasks();
     } else {
       console.error('Error claiming reward:', data.error);

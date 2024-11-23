@@ -234,31 +234,66 @@ app.put('/api/users/complete-task', async (req, res) => {
   }
 });
 
+
+
+
+
 // Complete a specific task for a user
 app.put('/api/users/:user_id/complete-task', async (req, res) => {
+  console.log('PUT request received at /api/users/:user_id/complete-task');
+  console.log('Params:', req.params);
+  console.log('Body:', req.body);
   const { taskId } = req.body;
+  const { user_id } = req.params;
 
   try {
-    const user = await User.findOne({ user_id: req.params.user_id });
+    const user = await User.findOne({ user_id });
     if (!user) return res.status(404).json({ error: 'User not found' });
-
-    const task = await Task.findById(taskId);
-    if (!task) return res.status(404).json({ error: 'Task not found' });
 
     if (user.completedTasks.includes(taskId)) {
       return res.status(400).json({ error: 'Task already completed' });
     }
 
+    const task = await Task.findById(taskId);
+    if (!task) return res.status(404).json({ error: 'Task not found' });
+
     user.completedTasks.push(taskId);
     user.balance += task.reward;
     await user.save();
 
-    res.status(200).json({ message: 'Task completed', balance: user.balance });
+    res.status(200).json({ message: 'Task completed successfully', balance: user.balance });
   } catch (error) {
-    console.error('Error completing task:', error);
-    res.status(500).json({ error: 'Failed to complete task' });
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
+app.put('/api/tasks/:task_id', async (req, res) => {
+  const { userId } = req.body;
+  const { task_id } = req.params;
+
+  try {
+    const user = await User.findOne({ user_id: userId });
+    if (!user) return res.status(404).json({ error: 'User not found' });
+
+    const task = await Task.findById(task_id);
+    if (!task) return res.status(404).json({ error: 'Task not found' });
+
+    if (user.completedTasks.includes(task_id)) {
+      return res.status(400).json({ error: 'Task already completed' });
+    }
+
+    user.completedTasks.push(task_id);
+    user.balance += task.reward;
+    await user.save();
+
+    res.status(200).json({ message: 'Task completed successfully', newBalance: user.balance });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
 
 // Start server
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
