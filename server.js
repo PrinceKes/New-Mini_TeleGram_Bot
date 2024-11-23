@@ -124,7 +124,7 @@ app.put('/api/tasks/:id', async (req, res) => {
 
 // Register or fetch a user
 app.post('/api/users/register', async (req, res) => {
-  const { user_id } = req.body; // Check for POST body
+  const { user_id } = req.body;
   if (!user_id) return res.status(400).json({ error: 'user_id is required' });
 
   try {
@@ -153,22 +153,25 @@ app.get('/api/users/:user_id', async (req, res) => {
   }
 });
 
+
+
+
 // Get user balance by user_id
-// app.post('/api/users/balance', async (req, res) => {
-//   const { user_id } = req.body;
+app.post('/api/users/balance', async (req, res) => {
+  const { user_id } = req.body;
 
-//   try {
-//     const user = await User.findOne({ user_id });
-//     if (!user) {
-//       return res.status(404).json({ error: 'User not found' });
-//     }
+  try {
+    const user = await User.findOne({ user_id });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
 
-//     res.status(200).json({ balance: user.balance });
-//   } catch (error) {
-//     console.error('Error fetching balance:', error);
-//     res.status(500).json({ error: 'Failed to fetch balance' });
-//   }
-// });
+    res.status(200).json({ balance: user.balance });
+  } catch (error) {
+    console.error('Error fetching balance:', error);
+    res.status(500).json({ error: 'Failed to fetch balance' });
+  }
+});
 
 
 // Update user balance
