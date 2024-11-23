@@ -156,6 +156,38 @@ app.get('/api/users/:user_id', async (req, res) => {
   }
 });
 
+
+
+app.put('/api/users/:user_id/complete-task', async (req, res) => {
+  const { taskId } = req.body; // Task ID from the request body
+  const { user_id } = req.params; // User ID from URL parameters
+
+  try {
+    const user = await User.findOne({ user_id });
+    if (!user) return res.status(404).json({ error: 'User not found' });
+
+    const task = await Task.findById(taskId);
+    if (!task) return res.status(404).json({ error: 'Task not found' });
+
+    if (user.completedTasks.includes(taskId)) {
+      return res.status(400).json({ error: 'Task already completed' });
+    }
+
+    // Add task ID to completed tasks and update balance
+    user.completedTasks.push(taskId);
+    user.balance += task.reward;
+    await user.save();
+
+    res.status(200).json({ message: 'Task completed successfully', balance: user.balance });
+  } catch (error) {
+    console.error('Error completing task:', error);
+    res.status(500).json({ error: 'Failed to complete task' });
+  }
+});
+
+
+
+
 // Start server
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 

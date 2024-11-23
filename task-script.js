@@ -78,36 +78,37 @@ function startTask(taskId, link, reward) {
 
 
 
-
-async function claimReward(taskId, reward) {
-    const userId = localStorage.getItem('userId'); // Retrieve user ID from localStorage
-    if (!userId) {
-      alert('You must be logged in to claim rewards.');
-      return;
-    }
-  
-    try {
-      const response = await fetch(`https://sunday-mini-telegram-bot.onrender.com/api/users/${userId}/complete-task`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ taskId }), // Send only taskId in the body
-      });
-  
-      const data = await response.json();
-  
-      if (response.ok) {
-        alert('Reward claimed!');
-        localStorage.setItem('userBalance', data.balance); // Update balance in localStorage
-        displayStoredBalance(); // Update the UI
-        fetchTasks(); // Refresh tasks
-      } else {
-        console.error('Error claiming reward:', data.error);
-        alert(data.error || 'Failed to claim reward.');
-      }
-    } catch (error) {
-      console.error('Error claiming reward:', error);
-    }
+async function claimReward(taskId) {
+  const userId = localStorage.getItem('userId'); // Retrieve user ID from localStorage
+  if (!userId) {
+    alert('You must be logged in to claim rewards.');
+    return;
   }
+
+  try {
+    const response = await fetch(`https://sunday-mini-telegram-bot.onrender.com/api/users/${userId}/complete-task`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ taskId }), // Send only taskId in the body
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      alert('Reward claimed successfully!');
+      localStorage.setItem('userBalance', data.balance); // Update balance in localStorage
+      displayStoredBalance(); // Update the UI
+      fetchTasks(); // Refresh tasks
+    } else {
+      console.error('Error claiming reward:', data.error);
+      alert(data.error || 'Failed to claim reward.');
+    }
+  } catch (error) {
+    console.error('Error claiming reward:', error);
+    alert('Something went wrong. Please try again.');
+  }
+}
+
   
 // // Claim reward for a task
 // async function claimReward(taskId, reward) {
