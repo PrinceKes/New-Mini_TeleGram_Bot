@@ -230,31 +230,31 @@ app.put('/api/users/complete-task', async (req, res) => {
   }
 });
 
-// // Complete a specific task for a user
-// app.put('/api/users/:user_id/complete-task', async (req, res) => {
-//   const { taskId } = req.body;
+// Complete a specific task for a user
+app.put('/api/users/:user_id/complete-task', async (req, res) => {
+  const { taskId } = req.body;
 
-//   try {
-//     const user = await User.findOne({ user_id: req.params.user_id });
-//     if (!user) return res.status(404).json({ error: 'User not found' });
+  try {
+    const user = await User.findOne({ user_id: req.params.user_id });
+    if (!user) return res.status(404).json({ error: 'User not found' });
 
-//     const task = await Task.findById(taskId);
-//     if (!task) return res.status(404).json({ error: 'Task not found' });
+    const task = await Task.findById(taskId);
+    if (!task) return res.status(404).json({ error: 'Task not found' });
 
-//     if (user.completedTasks.includes(taskId)) {
-//       return res.status(400).json({ error: 'Task already completed' });
-//     }
+    if (user.completedTasks.includes(taskId)) {
+      return res.status(400).json({ error: 'Task already completed' });
+    }
 
-//     user.completedTasks.push(taskId);
-//     user.balance += task.reward;
-//     await user.save();
+    user.completedTasks.push(taskId);
+    user.balance += task.reward;
+    await user.save();
 
-//     res.status(200).json({ message: 'Task completed', balance: user.balance });
-//   } catch (error) {
-//     console.error('Error completing task:', error);
-//     res.status(500).json({ error: 'Failed to complete task' });
-//   }
-// });
+    res.status(200).json({ message: 'Task completed', balance: user.balance });
+  } catch (error) {
+    console.error('Error completing task:', error);
+    res.status(500).json({ error: 'Failed to complete task' });
+  }
+});
 
 // Start server
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
