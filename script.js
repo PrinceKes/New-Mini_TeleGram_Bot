@@ -200,7 +200,6 @@ async function fetchUserPoints() {
       throw new Error('User ID is not available');
     }
 
-    // Use `user_id` in the query string to match the back-end
     const response = await fetch(`https://sunday-mini-telegram-bot.onrender.com/api/user-points?user_id=${userId}`);
     if (!response.ok) {
       throw new Error('Failed to fetch user points');
@@ -209,11 +208,10 @@ async function fetchUserPoints() {
     const data = await response.json();
     const pointsDiv = document.getElementById('points');
 
-    // Update the points on the UI
-    pointsDiv.textContent = `${data.points} Roast`; // Note: Change `balance` to `points`
+    pointsDiv.textContent = `${data.points} Roast`;
   } catch (error) {
     console.error('Error fetching user points:', error);
-    alert('An error occurred while fetching points'); // Add user feedback
+    alert('An error occurred while fetching points');
   }
 }
 

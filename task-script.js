@@ -65,6 +65,11 @@ function startTask(taskId, link, reward) {
   startButton.onclick = () => claimReward(taskId, reward);
 }
 
+
+
+
+
+
 // Claim reward for a task
 async function claimReward(taskId, reward) {
   const userId = localStorage.getItem('userId');
@@ -95,6 +100,9 @@ async function claimReward(taskId, reward) {
     console.error('Error claiming reward:', error);
   }
 }
+
+
+
 
 
 // Handle user registration
