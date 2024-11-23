@@ -110,36 +110,36 @@ async function claimReward(taskId) {
 }
 
   
-// // Claim reward for a task
-// async function claimReward(taskId, reward) {
-//   const userId = localStorage.getItem('userId');
-//   if (!userId) {
-//     alert('You must be logged in to claim rewards.');
-//     return;
-//   }
+// Claim reward for a task
+async function claimReward(taskId, reward) {
+  const userId = localStorage.getItem('userId');
+  if (!userId) {
+    alert('You must be logged in to claim rewards.');
+    return;
+  }
 
-//   try {
-//     const response = await fetch(`https://sunday-mini-telegram-bot.onrender.com/api/tasks/${taskId}`, {
-//       method: 'PUT',
-//       headers: { 'Content-Type': 'application/json' },
-//       body: JSON.stringify({ userId }),
-//     });
+  try {
+    const response = await fetch(`https://sunday-mini-telegram-bot.onrender.com/api/tasks/${taskId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId }),
+    });
 
-//     const data = await response.json();
+    const data = await response.json();
 
-//     if (response.ok) {
-//       alert('Reward claimed!');
-//       localStorage.setItem('userBalance', data.newBalance);
-//       displayStoredBalance(); // Ensure the UI reflects the latest balance
-//       fetchTasks();
-//     } else {
-//       console.error('Error claiming reward:', data.error);
-//       alert(data.error || 'Failed to claim reward.');
-//     }
-//   } catch (error) {
-//     console.error('Error claiming reward:', error);
-//   }
-// }
+    if (response.ok) {
+      alert('Reward claimed!');
+      localStorage.setItem('userBalance', data.newBalance);
+      displayStoredBalance(); // Ensure the UI reflects the latest balance
+      fetchTasks();
+    } else {
+      console.error('Error claiming reward:', data.error);
+      alert(data.error || 'Failed to claim reward.');
+    }
+  } catch (error) {
+    console.error('Error claiming reward:', error);
+  }
+}
 
 
 

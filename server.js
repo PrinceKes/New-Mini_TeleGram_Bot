@@ -34,7 +34,7 @@ mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
 
 // Routes
 
-// Fetch user points
+// Fetch user points (Updated or New Endpoint)
 app.get('/api/user-points', async (req, res) => {
   const { user_id } = req.query; 
 
@@ -56,6 +56,8 @@ app.get('/api/user-points', async (req, res) => {
   }
 });
 
+
+// Routes
 // Fetch all tasks
 app.get('/api/tasks', async (req, res) => {
   try {
@@ -92,37 +94,32 @@ app.delete('/api/tasks/:id', async (req, res) => {
   }
 });
 
-// Mark a task as completed and update the user's balance
-app.put('/api/tasks/:id/claim', async (req, res) => {
+
+// Update task completion and user balance
+
+app.put('/api/tasks/:id', async (req, res) => {
+  const { id } = req.params;
   const { user_id } = req.body;
-  const { id: taskId } = req.params;
 
   try {
-    // Find task
-    const task = await Task.findById(taskId);
+    const task = await Task.findById(id);
     if (!task) return res.status(404).json({ error: 'Task not found' });
 
-    // Find user
-    const user = await User.findOne({ user_id });
+    const user = await User.findOne({ user_id }); // Changed from userId
     if (!user) return res.status(404).json({ error: 'User not found' });
 
-    // Check if task already completed
-    if (user.completedTasks.includes(taskId)) {
+    if (user.completedTasks.includes(id)) {
       return res.status(400).json({ error: 'Task already completed' });
     }
 
-    // Mark task as completed and update balance
-    user.completedTasks.push(taskId);
+    user.completedTasks.push(id);
     user.balance += task.reward;
     await user.save();
 
-    res.status(200).json({
-      message: 'Task successfully completed and reward claimed',
-      balance: user.balance,
-    });
+    res.status(200).json({ message: 'Task marked as completed', balance: user.balance });
   } catch (error) {
-    console.error('Error completing task:', error);
-    res.status(500).json({ error: 'Failed to complete task' });
+    console.error('Error updating task:', error);
+    res.status(500).json({ error: 'Failed to update task' });
   }
 });
 
@@ -144,6 +141,7 @@ app.post('/api/users/register', async (req, res) => {
   }
 });
 
+
 // Get user by ID
 app.get('/api/users/:user_id', async (req, res) => {
   try {
@@ -158,12 +156,90 @@ app.get('/api/users/:user_id', async (req, res) => {
 
 
 
-app.put('/api/users/:user_id/complete-task', async (req, res) => {
-  const { taskId } = req.body; // Task ID from the request body
-  const { user_id } = req.params; // User ID from URL parameters
+
+// Get user balance by user_id
+app.post('/api/users/balance', async (req, res) => {
+  const { user_id } = req.body;
 
   try {
     const user = await User.findOne({ user_id });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.status(200).json({ balance: user.balance });
+  } catch (error) {
+    console.error('Error fetching balance:', error);
+    res.status(500).json({ error: 'Failed to fetch balance' });
+  }
+});
+
+
+// Update user balance
+app.put('/api/users/:user_id/balance', async (req, res) => {
+  const { amount } = req.body;
+
+  try {
+    const user = await User.findOne({ user_id: req.params.user_id });
+    if (!user) return res.status(404).json({ error: 'User not found' });
+
+    user.balance += amount;
+    await user.save();
+    res.status(200).json({ message: 'Balance updated', balance: user.balance });
+  } catch (error) {
+    console.error('Error updating balance:', error);
+    res.status(500).json({ error: 'Failed to update balance' });
+  }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Complete a specific task for a user
+app.put('/api/users/complete-task', async (req, res) => {
+  const { taskId, userId } = req.body; // Extract userId from body
+
+  try {
+    // Find user by user_id
+    const user = await User.findOne({ user_id: userId });
+    if (!user) return res.status(404).json({ error: 'User not found' });
+
+    // Find the task by taskId
+    const task = await Task.findById(taskId);
+    if (!task) return res.status(404).json({ error: 'Task not found' });
+
+    // Check if task is already completed
+    if (user.completedTasks.includes(taskId)) {
+      return res.status(400).json({ error: 'Task already completed' });
+    }
+
+    // Update user's completed tasks and balance
+    user.completedTasks.push(taskId);
+    user.balance += task.reward;
+    await user.save();
+
+    res.status(200).json({ message: 'Task completed', newBalance: user.balance });
+  } catch (error) {
+    console.error('Error completing task:', error);
+    res.status(500).json({ error: 'Failed to complete task' });
+  }
+});
+
+// Complete a specific task for a user
+app.put('/api/users/:user_id/complete-task', async (req, res) => {
+  const { taskId } = req.body;
+
+  try {
+    const user = await User.findOne({ user_id: req.params.user_id });
     if (!user) return res.status(404).json({ error: 'User not found' });
 
     const task = await Task.findById(taskId);
@@ -173,20 +249,16 @@ app.put('/api/users/:user_id/complete-task', async (req, res) => {
       return res.status(400).json({ error: 'Task already completed' });
     }
 
-    // Add task ID to completed tasks and update balance
     user.completedTasks.push(taskId);
     user.balance += task.reward;
     await user.save();
 
-    res.status(200).json({ message: 'Task completed successfully', balance: user.balance });
+    res.status(200).json({ message: 'Task completed', balance: user.balance });
   } catch (error) {
     console.error('Error completing task:', error);
     res.status(500).json({ error: 'Failed to complete task' });
   }
 });
-
-
-
 
 // Start server
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
@@ -230,7 +302,7 @@ app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
 // // Routes
 
-// // Fetch user points (Updated or New Endpoint)
+// // Fetch user points
 // app.get('/api/user-points', async (req, res) => {
 //   const { user_id } = req.query; 
 
@@ -252,8 +324,6 @@ app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 //   }
 // });
 
-
-// // Routes
 // // Fetch all tasks
 // app.get('/api/tasks', async (req, res) => {
 //   try {
@@ -290,32 +360,37 @@ app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 //   }
 // });
 
-
-// // Update task completion and user balance
-
-// app.put('/api/tasks/:id', async (req, res) => {
-//   const { id } = req.params;
+// // Mark a task as completed and update the user's balance
+// app.put('/api/tasks/:id/claim', async (req, res) => {
 //   const { user_id } = req.body;
+//   const { id: taskId } = req.params;
 
 //   try {
-//     const task = await Task.findById(id);
+//     // Find task
+//     const task = await Task.findById(taskId);
 //     if (!task) return res.status(404).json({ error: 'Task not found' });
 
-//     const user = await User.findOne({ user_id }); // Changed from userId
+//     // Find user
+//     const user = await User.findOne({ user_id });
 //     if (!user) return res.status(404).json({ error: 'User not found' });
 
-//     if (user.completedTasks.includes(id)) {
+//     // Check if task already completed
+//     if (user.completedTasks.includes(taskId)) {
 //       return res.status(400).json({ error: 'Task already completed' });
 //     }
 
-//     user.completedTasks.push(id);
+//     // Mark task as completed and update balance
+//     user.completedTasks.push(taskId);
 //     user.balance += task.reward;
 //     await user.save();
 
-//     res.status(200).json({ message: 'Task marked as completed', balance: user.balance });
+//     res.status(200).json({
+//       message: 'Task successfully completed and reward claimed',
+//       balance: user.balance,
+//     });
 //   } catch (error) {
-//     console.error('Error updating task:', error);
-//     res.status(500).json({ error: 'Failed to update task' });
+//     console.error('Error completing task:', error);
+//     res.status(500).json({ error: 'Failed to complete task' });
 //   }
 // });
 
@@ -337,7 +412,6 @@ app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 //   }
 // });
 
-
 // // Get user by ID
 // app.get('/api/users/:user_id', async (req, res) => {
 //   try {
@@ -352,90 +426,12 @@ app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
 
 
-
-// // Get user balance by user_id
-// app.post('/api/users/balance', async (req, res) => {
-//   const { user_id } = req.body;
+// app.put('/api/users/:user_id/complete-task', async (req, res) => {
+//   const { taskId } = req.body; // Task ID from the request body
+//   const { user_id } = req.params; // User ID from URL parameters
 
 //   try {
 //     const user = await User.findOne({ user_id });
-//     if (!user) {
-//       return res.status(404).json({ error: 'User not found' });
-//     }
-
-//     res.status(200).json({ balance: user.balance });
-//   } catch (error) {
-//     console.error('Error fetching balance:', error);
-//     res.status(500).json({ error: 'Failed to fetch balance' });
-//   }
-// });
-
-
-// // Update user balance
-// app.put('/api/users/:user_id/balance', async (req, res) => {
-//   const { amount } = req.body;
-
-//   try {
-//     const user = await User.findOne({ user_id: req.params.user_id });
-//     if (!user) return res.status(404).json({ error: 'User not found' });
-
-//     user.balance += amount;
-//     await user.save();
-//     res.status(200).json({ message: 'Balance updated', balance: user.balance });
-//   } catch (error) {
-//     console.error('Error updating balance:', error);
-//     res.status(500).json({ error: 'Failed to update balance' });
-//   }
-// });
-
-
-
-
-
-
-
-
-
-
-
-
-
-// // Complete a specific task for a user
-// app.put('/api/users/complete-task', async (req, res) => {
-//   const { taskId, userId } = req.body; // Extract userId from body
-
-//   try {
-//     // Find user by user_id
-//     const user = await User.findOne({ user_id: userId });
-//     if (!user) return res.status(404).json({ error: 'User not found' });
-
-//     // Find the task by taskId
-//     const task = await Task.findById(taskId);
-//     if (!task) return res.status(404).json({ error: 'Task not found' });
-
-//     // Check if task is already completed
-//     if (user.completedTasks.includes(taskId)) {
-//       return res.status(400).json({ error: 'Task already completed' });
-//     }
-
-//     // Update user's completed tasks and balance
-//     user.completedTasks.push(taskId);
-//     user.balance += task.reward;
-//     await user.save();
-
-//     res.status(200).json({ message: 'Task completed', newBalance: user.balance });
-//   } catch (error) {
-//     console.error('Error completing task:', error);
-//     res.status(500).json({ error: 'Failed to complete task' });
-//   }
-// });
-
-// // Complete a specific task for a user
-// app.put('/api/users/:user_id/complete-task', async (req, res) => {
-//   const { taskId } = req.body;
-
-//   try {
-//     const user = await User.findOne({ user_id: req.params.user_id });
 //     if (!user) return res.status(404).json({ error: 'User not found' });
 
 //     const task = await Task.findById(taskId);
@@ -445,16 +441,20 @@ app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 //       return res.status(400).json({ error: 'Task already completed' });
 //     }
 
+//     // Add task ID to completed tasks and update balance
 //     user.completedTasks.push(taskId);
 //     user.balance += task.reward;
 //     await user.save();
 
-//     res.status(200).json({ message: 'Task completed', balance: user.balance });
+//     res.status(200).json({ message: 'Task completed successfully', balance: user.balance });
 //   } catch (error) {
 //     console.error('Error completing task:', error);
 //     res.status(500).json({ error: 'Failed to complete task' });
 //   }
 // });
+
+
+
 
 // // Start server
 // app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
