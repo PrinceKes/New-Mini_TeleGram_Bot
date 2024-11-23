@@ -74,14 +74,39 @@ function startTask(taskId, link, reward) {
 
 
 
+// new functino that is not there before
 
+// Complete a task
+async function completeTask(taskId) {
+  try {
+    const userId = localStorage.getItem('userId');
+    if (!userId) {
+      alert('User is not registered. Please register first.');
+      return;
+    }
 
+    const response = await fetch('https://sunday-mini-telegram-bot.onrender.com/api/users/complete-task', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ taskId, userId }),
+    });
 
+    const data = await response.json();
+    if (!response.ok) {
+      alert(data.error || 'Failed to complete task.');
+      console.error('Error completing task:', data);
+      return;
+    }
 
-
-
-
-
+    alert('Task completed successfully!');
+    displayStoredBalance();
+  } catch (error) {
+    console.error('Error completing task:', error);
+    alert('An error occurred while completing the task.');
+  }
+}
 
 
 
