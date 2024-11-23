@@ -78,8 +78,19 @@ function startTask(taskId, link, reward) {
 
 
 
+
+
+
+
+
+
+
+
 async function claimReward(taskId) {
   const userId = localStorage.getItem('userId');
+  console.log('User ID from localStorage:', userId);
+  console.log('Task ID being sent:', taskId);
+
   if (!userId) {
     alert('You must be logged in to claim rewards.');
     return;
@@ -92,22 +103,55 @@ async function claimReward(taskId) {
       body: JSON.stringify({ taskId }),
     });
 
-    const data = await response.json();
-
-    if (response.ok) {
-      alert('Reward claimed successfully!');
-      localStorage.setItem('userBalance', data.balance);
-      displayStoredBalance(); 
-      fetchTasks();
-    } else {
-      console.error('Error claiming reward:', data.error);
-      alert(data.error || 'Failed to claim reward.');
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('Error response:', errorData);
+      alert(errorData.error || 'Failed to claim reward.');
+      return;
     }
+
+    const data = await response.json();
+    console.log('Response data:', data);
+    alert('Reward claimed successfully!');
+    localStorage.setItem('userBalance', data.balance);
+    displayStoredBalance();
+    fetchTasks();
   } catch (error) {
-    console.error('Error claiming reward:', error);
+    console.error('Network error:', error);
     alert('Something went wrong. Please try again.');
   }
 }
+
+// async function claimReward(taskId) {
+//   const userId = localStorage.getItem('userId');
+//   if (!userId) {
+//     alert('You must be logged in to claim rewards.');
+//     return;
+//   }
+
+//   try {
+//     const response = await fetch(`https://sunday-mini-telegram-bot.onrender.com/api/users/${userId}/complete-task`, {
+//       method: 'PUT',
+//       headers: { 'Content-Type': 'application/json' },
+//       body: JSON.stringify({ taskId }),
+//     });
+
+//     const data = await response.json();
+
+//     if (response.ok) {
+//       alert('Reward claimed successfully!');
+//       localStorage.setItem('userBalance', data.balance);
+//       displayStoredBalance(); 
+//       fetchTasks();
+//     } else {
+//       console.error('Error claiming reward:', data.error);
+//       alert(data.error || 'Failed to claim reward.');
+//     }
+//   } catch (error) {
+//     console.error('Error claiming reward:', error);
+//     alert('Something went wrong. Please try again.');
+//   }
+// }
 
   
 // Claim reward for a task
