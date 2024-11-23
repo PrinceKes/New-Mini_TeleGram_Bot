@@ -187,14 +187,14 @@ function getTelegramUserId() {
   return userId.replace(/[^a-zA-Z0-9_-]/g, ''); // Sanitize input
 }
 
-// function getTelegramUserId() {
-//   const params = new URLSearchParams(window.location.search);
-//   const userId = params.get('user_id'); // Correct parameter name
-//   if (!userId) {
-//     console.error('Telegram userId not found in the URL.');
-//   }
-//   return userId;
-// }
+function getTelegramUserId() {
+  const params = new URLSearchParams(window.location.search);
+  const userId = params.get('user_id'); // Correct parameter name
+  if (!userId) {
+    console.error('Telegram userId not found in the URL.');
+  }
+  return userId;
+}
 
 // Display stored balance
 // function displayStoredBalance() {

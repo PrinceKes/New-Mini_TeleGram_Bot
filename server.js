@@ -94,6 +94,7 @@ app.delete('/api/tasks/:id', async (req, res) => {
   }
 });
 
+
 // Update task completion and user balance
 
 app.put('/api/tasks/:id', async (req, res) => {
