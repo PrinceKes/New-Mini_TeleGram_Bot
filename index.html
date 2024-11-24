@@ -172,6 +172,106 @@
 }
 
 
+
+
+/* Modal Container */
+.wallet-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.8); /* Dim background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  visibility: hidden;
+  opacity: 0;
+}
+
+.wallet-modal.show {
+  visibility: visible;
+  opacity: 1;
+}
+
+/* Modal Content */
+.wallet-modal-content {
+  background: linear-gradient(135deg, #1e1e1e, #292929);
+  border-radius: 20px;
+  padding: 20px;
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.5);
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+  animation: scaleUp 0.3s ease;
+}
+
+/* Animation */
+@keyframes scaleUp {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Modal Header */
+.modal-header img {
+  width: 60px;
+  margin-bottom: 10px;
+}
+
+.modal-header h2 {
+  font-size: 20px;
+  margin-bottom: 10px;
+  color: #fff;
+}
+
+/* Close Button */
+.close-modal-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #fff;
+  cursor: pointer;
+}
+
+.close-modal-btn:hover {
+  color: #ff5555;
+}
+
+/* Wallet Connect Button */
+.wallet-connect-btn {
+  background-color: #007bff;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-top: 20px;
+}
+
+.wallet-connect-btn:hover {
+  background-color: #0056b3;
+}
+
+.wallet-connect-btn:active {
+  transform: scale(0.95);
+}
+
+
   </style>
   
 <script src="https://unpkg.com/@tonconnect/sdk@latest"></script>
@@ -216,12 +316,26 @@
     </div>
   </div>
 
+  <!-- Wallet Modal -->
+  <div id="wallet-modal" class="wallet-modal hidden">
+    <div class="wallet-modal-content">
+      <button class="close-modal-btn">&times;</button>
+      <div class="modal-header">
+        <img src="./assets/wallet-icon.png" alt="Wallet Icon">
+        <h2>Connect Your Wallet</h2>
+      </div>
+      <p>Open Wallet in Telegram or scan QR with your mobile wallet.</p>
+      <button class="wallet-connect-btn">Open Wallet in Telegram</button>
+    </div>
+  </div>
+
+
   <div id="navbar-container"></div>
 
   <script src="header.js"></script>
   <script src="task-script.js"></script>
   <script src="script.js"></script>
-  <!-- <script src="wallet.js"></script> -->
+  <script src="wallet.js"></script>
   <script src="wallet_script.js"></script>
 </body>
 </html>
