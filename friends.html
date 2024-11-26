@@ -119,6 +119,38 @@
         margin-bottom: 25px;
     }
 
+
+
+
+    .modal {
+    display: none; /* Hidden by default */
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+}
+
+#close-modal {
+    background-color: #f44336;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+
 </style>
 
 </head>
@@ -127,8 +159,6 @@
   <!-- <div id="loading-screen">
     <img src="./assets/roaster.png" alt="Loading..." />
   </div> -->
-
-<!-- <div class="container"> -->
 
   <div class="header">
     <img src="./assets/Avatar.jpg" alt="User Avatar">
@@ -144,9 +174,19 @@
         <p class="empty-text">There is nothing else. Invite to get more rewards.</p>
     </div>
 
+    <div id="referred-modal" class="modal">
+      <div class="modal-content">
+          <h2>Your Referred Friends</h2>
+          <div id="referred-friends-list">
+              <!-- Dynamically populated -->
+          </div>
+          <button id="close-modal">Close</button>
+      </div>
+  </div>
+  
+
 
     <button class="invite-btn">Invite</button>
-<!-- </div> -->
 
 
 <div id="navbar-container"></div>
