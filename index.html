@@ -96,27 +96,113 @@
       color: #ffd700;
     }
 
-    .buttons {
+     .buttons {
       width: 100%;
       display: flex;
       flex-direction: column;
       gap: 10px;
       margin-top: 20px;
     }
-    .button {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background-color: #2c2c2e;
-      padding: 15px;
-      border-radius: 10px;
-      cursor: pointer;
-      font-size: 16px;
-      color: #fff;
-    }
-    .button span {
-      color: #007bff;
-    }
+
+    @keyframes glowing {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(45deg, #ff6ec4, #7873f5, #42e695);
+  background-size: 200% 200%;
+  padding: 15px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 16px;
+  color: #fff;
+  animation: glowing 3s infinite;
+}
+
+.button span {
+  color: #ffffff;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+    /* Modal Styles */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    transition: opacity 0.3s ease;
+}
+
+.modal.hidden {
+    visibility: hidden;
+    opacity: 0;
+}
+
+.modal-content {
+    background-color: rgb(0, 0, 0);
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(50, 50, 50, 0.3);
+    max-width: 300px;
+    width: 100%;
+}
+
+.modal-content h2 {
+    margin-bottom: 10px;
+    font-size: 1.5rem;
+}
+
+.modal-content p {
+    margin-bottom: 20px;
+    font-size: 1rem;
+}
+
+.claim-btn {
+    padding: 10px 20px;
+    background-color: #22027b;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.claim-btn:hover {
+    background-color: #45a049;
+}
+
+
+
+
+
 
 
 
@@ -130,10 +216,10 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(0, 0, 0, 0.8); /* Dim background */
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
-  align-items: flex-end; /* Align at the bottom */
+  align-items: flex-end;
   z-index: 1100;
   transition: opacity 0.3s ease, visibility 0.3s ease;
   visibility: hidden;
@@ -148,12 +234,12 @@
 /* Modal Content */
 .wallet-modal-content {
   background: linear-gradient(135deg, #1e1e1e, #292929);
-  border-radius: 20px 20px 0 0; /* Rounded top corners */
+  border-radius: 20px 20px 0 0;
   padding: 20px;
-  width: 100%; /* Full width of the screen */
+  width: 100%;
   max-width: 800px;
   text-align: center;
-  box-shadow: 0px -5px 15px rgba(0, 0, 0, 0.5); /* Shadow at the top */
+  box-shadow: 0px -5px 15px rgba(0, 0, 0, 0.5);
   color: #fff;
   position: relative;
   overflow: hidden;
@@ -184,7 +270,6 @@
   color: #fff;
 }
 
-/* Close Button */
 .close-modal-btn {
   position: absolute;
   top: 10px;
@@ -200,7 +285,6 @@
   color: #ff5555;
 }
 
-/* Wallet Connect Button */
 .wallet-connect-btn {
   background-color: #007bff;
   color: #fff;
@@ -210,7 +294,7 @@
   cursor: pointer;
   font-size: 16px;
   margin-top: 20px;
-  width: 90%; /* Make button responsive */
+  width: 90%;
 }
 
 .wallet-connect-btn:hover {
@@ -251,10 +335,6 @@
       <span>👥 Join our community</span>
       <span>›</span>
     </div>    
-    <div class="button">
-      <span>⭐ Check your rewards</span>
-      <span>›</span>
-    </div>
   </div>
 
   <!-- Welcome Bonus Modal -->
