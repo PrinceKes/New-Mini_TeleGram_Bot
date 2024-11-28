@@ -1,6 +1,6 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const Referral = require("./refer-model"); // Import the Referral model
+const Referral = require("./refer-model");
 
 const app = express();
 app.use(bodyParser.json());
