@@ -295,6 +295,58 @@ app.put('/api/tasks/:task_id', async (req, res) => {
 });
 
 
+
+
+
+
+
+// const Referral = require("./models/Referral"); // Import Referral model
+
+// Middleware to parse JSON requests
+app.use(express.json());
+
+// Route: GET /api/referrals
+app.get("/api/referrals", async (req, res) => {
+  try {
+    const referrals = await Referral.find(); // Fetch all referrals
+    res.json(referrals);
+  } catch (error) {
+    console.error("Error fetching referrals:", error);
+    res.status(500).json({ error: "Failed to fetch referrals" });
+  }
+});
+
+// Route: POST /api/referrals
+app.post("/api/referrals", async (req, res) => {
+  const { referrerId, referredId, points } = req.body;
+
+  try {
+    // Save new referral record
+    const newReferral = new Referral({ referrerId, referredId, points });
+    await newReferral.save();
+
+    res.status(201).json({ message: "Referral created successfully", newReferral });
+  } catch (error) {
+    console.error("Error creating referral:", error);
+    res.status(500).json({ error: "Failed to create referral" });
+  }
+});
+
+// Connect to MongoDB and start server
+mongoose
+  .connect("mongodb+srv://<username>:<password>@cluster.mongodb.net/test", {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => {
+    console.log("Connected to MongoDB");
+    app.listen(3000, () => console.log("Server is running on port 3000"));
+  })
+  .catch((err) => console.error("Error connecting to MongoDB:", err));
+
+
+
+
 // Start server
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
