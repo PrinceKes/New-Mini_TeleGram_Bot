@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const userId = "USER_ID_FROM_BACKEND"; // Replace with actual user ID logic
     const botUsername = "SunEarner_bot";
     const inviteButton = document.querySelector(".invite-btn");
     const iconSection = document.querySelector(".icon-section");
@@ -10,7 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     async function fetchReferralLink() {
         try {
-            const response = await fetch(`https://sunday-mini-telegram-bot.onrender.com/api/referrals/${userId}`);
+            const response = await fetch(`/api/referrals/${userId}`); // Using dynamic userId
             const data = await response.json();
             return data.referralLink;
         } catch (error) {
@@ -30,7 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     async function fetchReferredFriends() {
         try {
-            const response = await fetch(`https://sunday-mini-telegram-bot.onrender.com/api/referrals/friends/${userId}`);
+            const response = await fetch(`/api/referrals/friends/${userId}`);
             const data = await response.json();
 
             if (data.friends && data.friends.length > 0) {
@@ -66,22 +65,32 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 // document.addEventListener("DOMContentLoaded", () => {
-//     const userId = "USER_ID_FROM_BACKEND";
+//     const userId = "USER_ID_FROM_BACKEND"; // Replace with actual user ID logic
 //     const botUsername = "SunEarner_bot";
 //     const inviteButton = document.querySelector(".invite-btn");
-//     const referredFriendsList = document.querySelector("#referred-friends-list");
+//     const iconSection = document.querySelector(".icon-section");
+//     const referredFriendsList = document.createElement("div"); // Create a container for referred friends
+
+//     referredFriendsList.classList.add("referred-friends");
+//     iconSection.replaceWith(referredFriendsList); // Replace icon section dynamically
 
 //     async function fetchReferralLink() {
 //         try {
 //             const response = await fetch(`/api/referrals/${userId}`);
+            
+//             if (!response.ok) {
+//                 throw new Error(`Server error: ${response.status}`);
+//             }
+    
 //             const data = await response.json();
+//             console.log("Referral Link:", data.referralLink); // Debug
 //             return data.referralLink;
 //         } catch (error) {
 //             console.error("Failed to fetch referral link:", error);
 //             alert("Unable to generate referral link. Please try again.");
 //         }
 //     }
-
+    
 //     inviteButton.addEventListener("click", async () => {
 //         const referralLink = await fetchReferralLink();
 //         if (referralLink) {
@@ -93,22 +102,36 @@ document.addEventListener("DOMContentLoaded", () => {
 
 //     async function fetchReferredFriends() {
 //         try {
-//             const response = await fetch(`/api/referrals/friends/${userId}`);
+//             const response = await fetch(`https://sunday-mini-telegram-bot.onrender.com/api/referrals/friends/${userId}`);
 //             const data = await response.json();
 
 //             if (data.friends && data.friends.length > 0) {
+//                 // Populate the referred friends list
 //                 referredFriendsList.innerHTML = data.friends.map(friend => `
-//                     <div class="friend">
-//                         <p>${friend.referredId} joined using your referral link!</p>
+//                     <div class="friend-card">
+//                         <div class="friend-avatar">👤</div>
+//                         <div class="friend-info">
+//                             <p>${friend.referredId}</p>
+//                             <p>+250 RsT</p>
+//                         </div>
+//                         <button class="claim-btn">Claim</button>
 //                     </div>
 //                 `).join("");
 //             } else {
-//                 referredFriendsList.innerHTML = "<p>No friends referred yet. Start inviting now!</p>";
+//                 // Show default empty state
+//                 referredFriendsList.innerHTML = `
+//                     <div class="icon-section">
+//                         <div class="icon">👥</div>
+//                         <p class="empty-text">There is nothing else. Invite to get more rewards.</p>
+//                     </div>
+//                 `;
 //             }
 //         } catch (error) {
 //             console.error("Failed to fetch referred friends:", error);
 //         }
+        
 //     }
 
 //     fetchReferredFriends();
 // });
+

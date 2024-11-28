@@ -347,12 +347,12 @@ app.get('/api/referrals/friends/:referrerId', async (req, res) => {
 
 
 
-
+// All other codes are above
 // Endpoint to get the referral link
 router.get('/api/referrals/:userId', async (req, res) => {
   const { userId } = req.params;
   try {
-      // Fetch the referral link for the user (you can customize this logic)
+      // Generate referral link dynamically
       const referralLink = `https://t.me/SunEarner_bot?start=${userId}`;
       res.json({ referralLink });
   } catch (error) {
@@ -360,6 +360,13 @@ router.get('/api/referrals/:userId', async (req, res) => {
       res.status(500).json({ message: "Failed to generate referral link" });
   }
 });
+
+// Example of route where you render the friends page
+router.get('/friends', (req, res) => {
+  const userId = req.user.id; // Or fetch it from the session, DB, or wherever it's stored
+  res.render('friends', { userId }); // Pass userId to the template
+});
+
 
 module.exports = router;
 
