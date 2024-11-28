@@ -7,7 +7,9 @@ const User = require('./models/User');
 const Referral = require('./models/Referral'); 
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+// const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT;
+
 
 // Middleware
 app.use(express.json());
@@ -344,9 +346,9 @@ app.get('/api/referrals/friends/:referrerId', async (req, res) => {
 
 // Start server
 // const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-});
+// app.listen(PORT, () => {
+//     console.log(`Server is running on port ${PORT}`);
+// });
 
 
 // Start server
