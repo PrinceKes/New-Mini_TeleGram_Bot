@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     async function fetchReferralLink() {
         try {
-            const response = await fetch(`/api/referrals/${userId}`);
+            const response = await fetch(`https://sunday-mini-telegram-bot.onrender.com/api/referrals/${userId}`);
             const data = await response.json();
             return data.referralLink;
         } catch (error) {
@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     async function fetchReferredFriends() {
         try {
-            const response = await fetch(`/api/referrals/friends/${userId}`);
+            const response = await fetch(`https://sunday-mini-telegram-bot.onrender.com/api/referrals/friends/${userId}`);
             const data = await response.json();
 
             if (data.friends && data.friends.length > 0) {

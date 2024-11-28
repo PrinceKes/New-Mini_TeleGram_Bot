@@ -4,7 +4,9 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const Task = require('./models/Task');
 const User = require('./models/User');
-const Referral = require('./models/Referral'); 
+const Referral = require('./models/Referral');
+
+const router = express.Router();
 
 const app = express();
 const PORT = process.env.PORT;
@@ -342,6 +344,26 @@ app.get('/api/referrals/friends/:referrerId', async (req, res) => {
         res.status(500).json({ message: "Server error." });
     }
 });
+
+
+
+
+// Endpoint to get the referral link
+router.get('/api/referrals/:userId', async (req, res) => {
+  const { userId } = req.params;
+  try {
+      // Fetch the referral link for the user (you can customize this logic)
+      const referralLink = `https://t.me/SunEarner_bot?start=${userId}`;
+      res.json({ referralLink });
+  } catch (error) {
+      console.error("Error fetching referral link:", error);
+      res.status(500).json({ message: "Failed to generate referral link" });
+  }
+});
+
+module.exports = router;
+
+
 
 
 // Start server
