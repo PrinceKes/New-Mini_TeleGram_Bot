@@ -4,7 +4,8 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const Task = require('./models/Task');
 const User = require('./models/User');
-const Referral = require('./models/Referral'); 
+const Referral = require('./models/Referral');
+const Referral = require("./refer-model");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -345,6 +346,70 @@ mongoose
   .catch((err) => console.error("Error connecting to MongoDB:", err));
 
 
+
+
+
+
+
+
+
+
+
+// Here are the scripts that controls all referral programs
+
+// Track referrals
+app.post('/api/referrals/track', async (req, res) => {
+    const { referrerId, referredId, referredUsername } = req.body;
+
+    try {
+        if (referrerId === referredId) {
+            return res.status(400).json({ message: "You cannot refer yourself." });
+        }
+
+        // Check if referral exists
+        const existingReferral = await Referral.findOne({ referrerId, referredId });
+        if (existingReferral) {
+            return res.status(400).json({ message: "Referral already exists." });
+        }
+
+        // Create a new referral
+        const newReferral = new Referral({
+            referrerId,
+            referredId,
+            referredUsername,
+        });
+        await newReferral.save();
+
+        res.status(201).json({ message: "Referral tracked successfully." });
+    } catch (err) {
+        console.error("Error tracking referral:", err);
+        res.status(500).json({ message: "Server error." });
+    }
+});
+
+// Fetch all referrals
+app.get('/api/referrals', async (req, res) => {
+    try {
+        const referrals = await Referral.find();
+        res.status(200).json(referrals);
+    } catch (err) {
+        console.error("Error fetching referrals:", err);
+        res.status(500).json({ message: "Server error." });
+    }
+});
+
+// Fetch friends referred by a specific user
+app.get('/api/referrals/friends/:referrerId', async (req, res) => {
+    const { referrerId } = req.params;
+
+    try {
+        const referrals = await Referral.find({ referrerId });
+        res.status(200).json(referrals);
+    } catch (err) {
+        console.error("Error fetching referred friends:", err);
+        res.status(500).json({ message: "Server error." });
+    }
+});
 
 
 // Start server
