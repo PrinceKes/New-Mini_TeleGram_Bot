@@ -91,7 +91,7 @@ if (points === null) {
 
       claimBonusBtn.addEventListener("click", async () => {
         points = 2000;
-        pointsElement.innerText = `${points} Roast`;
+        pointsElement.innerText = `${points} Rst`;
       
         localStorage.setItem("hasClaimedBonus", "true");
         localStorage.setItem("userBalance", points);
@@ -121,18 +121,18 @@ if (points === null) {
       
   } else {
       points = 0;
-      pointsElement.innerText = `${points} Roast`;
+      pointsElement.innerText = `${points} Rst`;
       localStorage.setItem("userPoints", points);
   }
 } else {
-  pointsElement.innerText = `${points} Roast`;
+  pointsElement.innerText = `${points} Rst`;
 }
 
 // Function to update user balance based on the tasks they do
 document.addEventListener('DOMContentLoaded', () => {
   const balanceElement = document.getElementById('points');
   const savedBalance = localStorage.getItem('userBalance') || '0';
-  balanceElement.textContent = `${savedBalance} Roast`;
+  balanceElement.textContent = `${savedBalance} Rst`;
 });
 
 
@@ -149,7 +149,7 @@ function fetchAndDisplayUsers() {
           const row = document.createElement('tr');
           row.innerHTML = `
               <td>${user.user_id}</td>
-              <td>${user.balance || 0} Roast</td>
+              <td>${user.balance || 0} Rst</td>
               <td>${user.referrals ? user.referrals.length : 0}</td>
           `;
           userTableBody.appendChild(row);
@@ -208,10 +208,10 @@ async function fetchUserPoints() {
     const data = await response.json();
     const pointsDiv = document.getElementById('points');
 
-    pointsDiv.textContent = `${data.points} Roast`;
+    pointsDiv.textContent = `${data.points} Rst`;
   } catch (error) {
     console.error('Error fetching user points:', error);
-    alert('An error occurred while fetching points');
+    // alert('An error occurred while fetching points');
   }
 }
 
