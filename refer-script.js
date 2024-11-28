@@ -1,15 +1,40 @@
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
     const botUsername = "SunEarner_bot";
     const inviteButton = document.querySelector(".invite-btn");
     const iconSection = document.querySelector(".icon-section");
-    const referredFriendsList = document.createElement("div"); // Create a container for referred friends
+    const referredFriendsList = document.createElement("div");
 
     referredFriendsList.classList.add("referred-friends");
-    iconSection.replaceWith(referredFriendsList); // Replace icon section dynamically
+    iconSection.replaceWith(referredFriendsList);
 
-    async function fetchReferralLink() {
+    let userId = null;
+
+    // Fetch the user ID
+    async function fetchUserId() {
         try {
-            const response = await fetch(`/api/referrals/${userId}`); // Using dynamic userId
+            const response = await fetch("https://sunday-mini-telegram-bot.onrender.com/api/user");
+            if (!response.ok) throw new Error("Failed to fetch user ID");
+            const data = await response.json();
+            userId = data.users[0]?.user_id || null; // Use the first user_id for now
+            if (!userId) {
+                alert("User ID not found. Please ensure you're logged in.");
+            }
+        } catch (error) {
+            console.error("Error fetching user ID:", error);
+            alert("Unable to retrieve user ID.");
+        }
+    }
+
+    // Fetch the referral link
+    async function fetchReferralLink() {
+        if (!userId) {
+            alert("User ID is not available. Please refresh the page.");
+            return;
+        }
+
+        try {
+            const response = await fetch(`https://sunday-mini-telegram-bot.onrender.com/api/referrals/${userId}`);
+            if (!response.ok) throw new Error("Network response was not ok");
             const data = await response.json();
             return data.referralLink;
         } catch (error) {
@@ -27,9 +52,16 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
+    // Fetch referred friends
     async function fetchReferredFriends() {
+        if (!userId) {
+            console.error("User ID is not set.");
+            return;
+        }
+
         try {
-            const response = await fetch(`/api/referrals/friends/${userId}`);
+            const response = await fetch(`https://sunday-mini-telegram-bot.onrender.com/api/referrals/friends/${userId}`);
+            if (!response.ok) throw new Error("Network response was not ok");
             const data = await response.json();
 
             if (data.friends && data.friends.length > 0) {
@@ -58,6 +90,8 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    // Initialize
+    await fetchUserId();
     fetchReferredFriends();
 });
 
@@ -65,25 +99,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 // document.addEventListener("DOMContentLoaded", () => {
-//     const userId = "USER_ID_FROM_BACKEND"; // Replace with actual user ID logic
 //     const botUsername = "SunEarner_bot";
 //     const inviteButton = document.querySelector(".invite-btn");
 //     const iconSection = document.querySelector(".icon-section");
-//     const referredFriendsList = document.createElement("div"); // Create a container for referred friends
+//     const referredFriendsList = document.createElement("div");
 
 //     referredFriendsList.classList.add("referred-friends");
-//     iconSection.replaceWith(referredFriendsList); // Replace icon section dynamically
+//     iconSection.replaceWith(referredFriendsList);
 
 //     async function fetchReferralLink() {
-//         try {
-//             const response = await fetch(`/api/referrals/${userId}`);
-            
-//             if (!response.ok) {
-//                 throw new Error(`Server error: ${response.status}`);
-//             }
+//         if (!userId) {
+//             alert("User ID is not available. Please refresh the page.");
+//             return;
+//         }
     
+//         try {
+//             const response = await fetch(`https://sunday-mini-telegram-bot.onrender.com/api/referrals/${userId}`);
+//             if (!response.ok) throw new Error("Network response was not ok");
 //             const data = await response.json();
-//             console.log("Referral Link:", data.referralLink); // Debug
 //             return data.referralLink;
 //         } catch (error) {
 //             console.error("Failed to fetch referral link:", error);
@@ -91,6 +124,7 @@ document.addEventListener("DOMContentLoaded", () => {
 //         }
 //     }
     
+
 //     inviteButton.addEventListener("click", async () => {
 //         const referralLink = await fetchReferralLink();
 //         if (referralLink) {
@@ -103,8 +137,9 @@ document.addEventListener("DOMContentLoaded", () => {
 //     async function fetchReferredFriends() {
 //         try {
 //             const response = await fetch(`https://sunday-mini-telegram-bot.onrender.com/api/referrals/friends/${userId}`);
+//             if (!response.ok) throw new Error("Network response was not ok");
 //             const data = await response.json();
-
+    
 //             if (data.friends && data.friends.length > 0) {
 //                 // Populate the referred friends list
 //                 referredFriendsList.innerHTML = data.friends.map(friend => `
@@ -129,9 +164,7 @@ document.addEventListener("DOMContentLoaded", () => {
 //         } catch (error) {
 //             console.error("Failed to fetch referred friends:", error);
 //         }
-        
 //     }
-
+    
 //     fetchReferredFriends();
 // });
-

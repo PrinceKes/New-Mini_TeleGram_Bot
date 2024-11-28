@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const Task = require('./models/Task');
 const User = require('./models/User');
 const Referral = require('./models/Referral');
+// const User = require("./models/User");
 
 const router = express.Router();
 
@@ -14,6 +15,7 @@ const PORT = process.env.PORT;
 
 // Middleware
 app.use(express.json());
+app.use("/api", router);
 app.use(bodyParser.json());
 app.use(cors({
   origin: 'https://new-mini-telegram-bot.onrender.com',
@@ -352,7 +354,6 @@ app.get('/api/referrals/friends/:referrerId', async (req, res) => {
 router.get('/api/referrals/:userId', async (req, res) => {
   const { userId } = req.params;
   try {
-      // Generate referral link dynamically
       const referralLink = `https://t.me/SunEarner_bot?start=${userId}`;
       res.json({ referralLink });
   } catch (error) {
@@ -361,10 +362,24 @@ router.get('/api/referrals/:userId', async (req, res) => {
   }
 });
 
+
+// Endpoint to get all user IDs
+router.get("/api/user", async (req, res) => {
+    try {
+        const users = await User.find({}, "user_id"); // Fetch all user IDs
+        res.json({ users });
+    } catch (error) {
+        console.error("Error fetching user IDs:", error);
+        res.status(500).json({ message: "Failed to fetch user IDs" });
+    }
+});
+
+
+
 // Example of route where you render the friends page
 router.get('/friends', (req, res) => {
-  const userId = req.user.id; // Or fetch it from the session, DB, or wherever it's stored
-  res.render('friends', { userId }); // Pass userId to the template
+  const userId = req.user.id;
+  res.render('friends', { userId });
 });
 
 

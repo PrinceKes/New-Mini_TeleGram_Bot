@@ -121,8 +121,6 @@
     }
 
 
-
-
     .modal {
     display: none; /* Hidden by default */
     position: fixed;
@@ -152,6 +150,45 @@
 }
 
 
+
+.referred-friends {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.friend-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #333;
+    border-radius: 10px;
+    padding: 10px 15px;
+    color: white;
+}
+
+.friend-avatar {
+    font-size: 24px;
+}
+
+.friend-info {
+    flex-grow: 1;
+    margin-left: 10px;
+}
+
+.claim-btn {
+    background-color: #6c63ff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 8px 12px;
+    cursor: pointer;
+}
+
+.claim-btn:hover {
+    background-color: #5b53e5;
+}
 </style>
 
 </head>
@@ -193,7 +230,19 @@
 <div id="navbar-container"></div>
 <script src="header.js"></script>
 <script src="script.js"></script>
-<script>const userId = "<%= userId %>";</script>
+<script>
+    let userId;
+    fetch('https://sunday-mini-telegram-bot.onrender.com/api/user')
+        .then(response => response.json())
+        .then(data => {
+            userId = data.userId;
+            document.getElementById('userId').textContent = `User ID: ${userId}`;
+        })
+        .catch(error => {
+            console.error("Failed to fetch user ID:", error);
+            document.getElementById('userId').textContent = "User ID: Not Found";
+        });
+</script>
 <script src="refer-script.js"></script>
 </body>
 </html>
