@@ -7,7 +7,6 @@ const User = require('./models/User');
 const Referral = require('./models/Referral'); 
 
 const app = express();
-// const PORT = process.env.PORT || 5000;
 const PORT = process.env.PORT;
 
 
@@ -343,12 +342,6 @@ app.get('/api/referrals/friends/:referrerId', async (req, res) => {
         res.status(500).json({ message: "Server error." });
     }
 });
-
-// Start server
-// const PORT = process.env.PORT || 3000;
-// app.listen(PORT, () => {
-//     console.log(`Server is running on port ${PORT}`);
-// });
 
 
 // Start server
