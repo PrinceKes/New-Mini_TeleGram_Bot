@@ -6,7 +6,7 @@ from telegram.ext import Application, CommandHandler, ContextTypes
 async def start(update, context):
     user_id = update.message.from_user.id
     web_app = WebAppInfo(
-        url=f'https://sunday-mini-telegram-bot.onrender.com?user_id={user_id}'  # Pass user_id to the mini app
+        url=f'https://new-mini-telegram-bot.onrender.com?user_id={user_id}'  # Pass user_id to the mini app
     )
 
     keyboard = [[KeyboardButton(text="Open Mini App 🚀", web_app=web_app)]]
