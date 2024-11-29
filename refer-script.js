@@ -3,6 +3,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const inviteButton = document.querySelector(".invite-btn");
     const iconSection = document.querySelector(".icon-section");
     const referredFriendsList = document.createElement("div");
+    
 
     referredFriendsList.classList.add("referred-friends");
     iconSection.replaceWith(referredFriendsList);
@@ -28,7 +29,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 // Fetch the referral link
 async function fetchReferralLink() {
-    const userId = window.userId;
+    const userId = window.userId; // Access the global userId
     if (!userId) {
         alert("User ID is not available. Please refresh the page.");
         return;
@@ -43,9 +44,6 @@ async function fetchReferralLink() {
         console.error("Failed to fetch referral link:", error);
         alert("Unable to generate referral link. Please try again.");
     }
-    
-    console.log("Using userId for referral link:", window.userId);
-
 }
 
     inviteButton.addEventListener("click", async () => {

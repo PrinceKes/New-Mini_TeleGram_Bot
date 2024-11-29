@@ -231,21 +231,19 @@
 <script src="header.js"></script>
 <script src="script.js"></script>
 <script>
-    window.userId = null; // Make userId globally accessible
+    document.addEventListener("DOMContentLoaded", function () {
+        const storedUserId = localStorage.getItem('user_id');
+        window.userId = storedUserId; // Set it globally
 
-    fetch('https://sunday-mini-telegram-bot.onrender.com/api/user')
-        .then(response => response.json())
-        .then(data => {
-            window.userId = data.userId; // Assign userId globally
-            document.getElementById('userId').textContent = `User ID: ${window.userId}`;
-        })
-        .catch(error => {
-            console.error("Failed to fetch user ID:", error);
-            document.getElementById('userId').textContent = "User ID: Not Found";
-        });
-    console.log("Fetched userId from API:", window.userId);
-
+        const userIdElement = document.getElementById('userId');
+        if (userIdElement) {
+            userIdElement.innerText = storedUserId 
+                ? `User ID: ${storedUserId}` 
+                : "User ID: Unknown";
+        }
+    });
 </script>
+
 
 <script src="refer-script.js"></script>
 </body>
