@@ -352,10 +352,20 @@ app.get('/api/referrals/friends/:referrerId', async (req, res) => {
 // All other codes are above
 
 // Define your API routes
-router.get('/api/user', (req, res) => {
-  const userId = "12345"; // Replace with actual logic to fetch user ID from DB
-  res.json({ userId });
+router.get('/api/user', async (req, res) => {
+  try {
+    const users = await User.find({}); // Fetch all users from MongoDB
+    res.json({ users });
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    res.status(500).json({ error: "Failed to fetch users" });
+  }
 });
+
+// router.get('/api/user', (req, res) => {
+//   const userId = "12345";
+//   res.json({ userId });
+// });
 
 router.get('/api/referrals/:userId', (req, res) => {
   const userId = req.params.userId;
@@ -370,47 +380,6 @@ router.get('/api/referrals/friends/:userId', (req, res) => {
 });
 
 app.use("/", router);
-
-
-
-
-// // Endpoint to get the referral link
-// router.get('/api/referrals/:userId', async (req, res) => {
-//   const { userId } = req.params;
-//   try {
-//       const referralLink = `https://t.me/SunEarner_bot?start=${userId}`;
-//       res.json({ referralLink });
-//   } catch (error) {
-//       console.error("Error fetching referral link:", error);
-//       res.status(500).json({ message: "Failed to generate referral link" });
-//   }
-// });
-
-
-// // Endpoint to get all user IDs
-// router.get("/api/user", async (req, res) => {
-//     try {
-//         const users = await User.find({}, "user_id"); // Fetch all user IDs
-//         res.json({ users });
-//     } catch (error) {
-//         console.error("Error fetching user IDs:", error);
-//         res.status(500).json({ message: "Failed to fetch user IDs" });
-//     }
-// });
-
-
-
-// // Example of route where you render the friends page
-// router.get('/friends', (req, res) => {
-//   const userId = req.user.id;
-//   res.render('friends', { userId });
-// });
-
-
-// module.exports = router;
-
-
-
 
 // Start server
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
