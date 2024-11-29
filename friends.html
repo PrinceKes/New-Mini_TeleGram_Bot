@@ -121,6 +121,50 @@
     }
 
 
+
+
+
+
+    #custom-alert {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  background-color: black;
+  color: white;
+  border-radius: 8px;
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+#custom-alert img {
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+}
+
+#custom-alert span {
+  font-size: 16px;
+}
+
+#custom-alert.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.hidden {
+  display: none;
+}
+
+
+
+
+
     .modal {
     display: none; /* Hidden by default */
     position: fixed;
@@ -198,6 +242,12 @@
     <img src="./assets/roaster.png" alt="Loading..." />
   </div> -->
 
+  <div id="custom-alert" class="hidden">
+    <img src="./assets/success-icon.png" alt="Success" />
+    <span id="custom-alert-message"></span>
+  </div>
+
+  
   <div class="header">
     <img src="./assets/Avatar.jpg" alt="User Avatar">
     <span id="userId">User ID: Loading...</span>
