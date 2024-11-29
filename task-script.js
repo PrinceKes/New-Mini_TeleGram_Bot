@@ -72,24 +72,21 @@ function startTask(taskId, link, reward) {
 
 
 
-
-
-// new functino that is not there before
 // Complete a task
 async function completeTask(taskId) {
   try {
-    const userId = localStorage.getItem('userId');
-    if (!userId) {
+    const user_id = localStorage.getItem('user_id'); // Use user_id instead of userId
+    if (!user_id) {
       alert('User is not registered. Please register first.');
       return;
     }
 
-    const response = await fetch('https://sunday-mini-telegram-bot.onrender.com/api/users/complete-task', {
+    const response = await fetch('https://sunday-mini-telegram-bot.onrender.com/api/users/' + user_id + '/complete-task', {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ taskId, userId }),
+      body: JSON.stringify({ taskId }),
     });
 
     const data = await response.json();
@@ -107,22 +104,19 @@ async function completeTask(taskId) {
   }
 }
 
-
-
-
-
+// Claim reward for a task
 async function claimReward(taskId) {
-  const userId = localStorage.getItem('userId');
-  console.log('User ID from localStorage:', userId);
+  const user_id = localStorage.getItem('user_id'); // Use user_id instead of userId
+  console.log('User ID from localStorage:', user_id);
   console.log('Task ID being sent:', taskId);
 
-  if (!userId) {
+  if (!user_id) {
     alert('You must be logged in to claim rewards.');
     return;
   }
 
   try {
-    const response = await fetch(`https://sunday-mini-telegram-bot.onrender.com/api/users/${userId}/complete-task`, {
+    const response = await fetch(`https://sunday-mini-telegram-bot.onrender.com/api/users/${user_id}/complete-task`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ taskId }),
@@ -148,37 +142,114 @@ async function claimReward(taskId) {
 }
 
 
+
+
+
+// // new functino that is not there before
+// // Complete a task
+// async function completeTask(taskId) {
+//   try {
+//     const userId = localStorage.getItem('userId');
+//     if (!userId) {
+//       alert('User is not registered. Please register first.');
+//       return;
+//     }
+
+//     const response = await fetch('https://sunday-mini-telegram-bot.onrender.com/api/users/complete-task', {
+//       method: 'PUT',
+//       headers: {
+//         'Content-Type': 'application/json',
+//       },
+//       body: JSON.stringify({ taskId, userId }),
+//     });
+
+//     const data = await response.json();
+//     if (!response.ok) {
+//       alert(data.error || 'Failed to complete task.');
+//       console.error('Error completing task:', data);
+//       return;
+//     }
+
+//     alert('Task completed successfully!');
+//     displayStoredBalance();
+//   } catch (error) {
+//     console.error('Error completing task:', error);
+//     alert('An error occurred while completing the task.');
+//   }
+// }
+
+
+
+
+
+// async function claimReward(taskId) {
+//   const userId = localStorage.getItem('userId');
+//   console.log('User ID from localStorage:', userId);
+//   console.log('Task ID being sent:', taskId);
+
+//   if (!userId) {
+//     alert('You must be logged in to claim rewards.');
+//     return;
+//   }
+
+//   try {
+//     const response = await fetch(`https://sunday-mini-telegram-bot.onrender.com/api/users/${userId}/complete-task`, {
+//       method: 'PUT',
+//       headers: { 'Content-Type': 'application/json' },
+//       body: JSON.stringify({ taskId }),
+//     });
+
+//     if (!response.ok) {
+//       const errorData = await response.json();
+//       console.error('Error response:', errorData);
+//       alert(errorData.error || 'Failed to claim reward.');
+//       return;
+//     }
+
+//     const data = await response.json();
+//     console.log('Response data:', data);
+//     alert('Reward claimed successfully!');
+//     localStorage.setItem('userBalance', data.balance);
+//     displayStoredBalance();
+//     fetchTasks();
+//   } catch (error) {
+//     console.error('Network error:', error);
+//     alert('Something went wrong. Please try again.');
+//   }
+// }
+
+
   
-// Claim reward for a task
-async function claimReward(taskId, reward) {
-  const userId = localStorage.getItem('userId');
-  if (!userId) {
-    alert('You must be logged in to claim rewards.');
-    return;
-  }
+// // Claim reward for a task
+// async function claimReward(taskId, reward) {
+//   const userId = localStorage.getItem('userId');
+//   if (!userId) {
+//     alert('You must be logged in to claim rewards.');
+//     return;
+//   }
 
-  try {
-    const response = await fetch(`https://sunday-mini-telegram-bot.onrender.com/api/tasks/${taskId}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId }),
-    });
+//   try {
+//     const response = await fetch(`https://sunday-mini-telegram-bot.onrender.com/api/tasks/${taskId}`, {
+//       method: 'PUT',
+//       headers: { 'Content-Type': 'application/json' },
+//       body: JSON.stringify({ userId }),
+//     });
 
-    const data = await response.json();
+//     const data = await response.json();
 
-    if (response.ok) {
-      alert('Reward claimed!');
-      localStorage.setItem('userBalance', data.newBalance);
-      displayStoredBalance();
-      fetchTasks();
-    } else {
-      console.error('Error claiming reward:', data.error);
-      alert(data.error || 'Failed to claim reward.');
-    }
-  } catch (error) {
-    console.error('Error claiming reward:', error);
-  }
-}
+//     if (response.ok) {
+//       alert('Reward claimed!');
+//       localStorage.setItem('userBalance', data.newBalance);
+//       displayStoredBalance();
+//       fetchTasks();
+//     } else {
+//       console.error('Error claiming reward:', data.error);
+//       alert(data.error || 'Failed to claim reward.');
+//     }
+//   } catch (error) {
+//     console.error('Error claiming reward:', error);
+//   }
+// }
 
 
 
@@ -235,29 +306,6 @@ function getTelegramUserId() {
   }
   return userId;
 }
-
-// Display stored balance
-// function displayStoredBalance() {
-//   const balanceElement = document.getElementById('points');
-//   if (!balanceElement) {
-//     console.error('Balance display element not found.');
-//     return;
-//   }
-
-//   const storedBalance = parseInt(localStorage.getItem('userBalance')) || 0;
-//   balanceElement.textContent = `${storedBalance} Roast`;
-//   console.log('User balance displayed:', storedBalance);
-// }
-
-// function displayStoredBalance() {
-//   const balanceElement = document.getElementById('points');
-//   const storedBalance = parseInt(localStorage.getItem('userBalance')) || 0;
-//   console.log('User balance:', storedBalance);
-
-//   if (balanceElement) {
-//     balanceElement.textContent = `${storedBalance} Roast`;
-//   }
-// }
 
 // Update task counter
 function updateTaskCounter() {

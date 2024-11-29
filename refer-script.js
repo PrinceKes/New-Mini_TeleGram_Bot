@@ -42,7 +42,6 @@ async function fetchReferralLink() {
         return data.referralLink;
     } catch (error) {
         console.error("Failed to fetch referral link:", error);
-        alert("Unable to generate referral link. Please try again.");
     }
 }
 
