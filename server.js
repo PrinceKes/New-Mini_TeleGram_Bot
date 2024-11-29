@@ -350,40 +350,64 @@ app.get('/api/referrals/friends/:referrerId', async (req, res) => {
 
 
 // All other codes are above
-// Endpoint to get the referral link
-router.get('/api/referrals/:userId', async (req, res) => {
-  const { userId } = req.params;
-  try {
-      const referralLink = `https://t.me/SunEarner_bot?start=${userId}`;
-      res.json({ referralLink });
-  } catch (error) {
-      console.error("Error fetching referral link:", error);
-      res.status(500).json({ message: "Failed to generate referral link" });
-  }
+
+// Define your API routes
+router.get('/api/user', (req, res) => {
+  const userId = "12345"; // Replace with actual logic to fetch user ID from DB
+  res.json({ userId });
 });
 
-
-// Endpoint to get all user IDs
-router.get("/api/user", async (req, res) => {
-    try {
-        const users = await User.find({}, "user_id"); // Fetch all user IDs
-        res.json({ users });
-    } catch (error) {
-        console.error("Error fetching user IDs:", error);
-        res.status(500).json({ message: "Failed to fetch user IDs" });
-    }
+router.get('/api/referrals/:userId', (req, res) => {
+  const userId = req.params.userId;
+  // Replace this with your logic to fetch referral link
+  res.json({ referralLink: `https://t.me/SunEarner_bot?start=${userId}` });
 });
 
-
-
-// Example of route where you render the friends page
-router.get('/friends', (req, res) => {
-  const userId = req.user.id;
-  res.render('friends', { userId });
+router.get('/api/referrals/friends/:userId', (req, res) => {
+  const userId = req.params.userId;
+  // Replace this with your logic to fetch referred friends
+  res.json({ friends: [{ referredId: "Friend1" }, { referredId: "Friend2" }] });
 });
 
+app.use("/", router);
 
-module.exports = router;
+
+
+
+// // Endpoint to get the referral link
+// router.get('/api/referrals/:userId', async (req, res) => {
+//   const { userId } = req.params;
+//   try {
+//       const referralLink = `https://t.me/SunEarner_bot?start=${userId}`;
+//       res.json({ referralLink });
+//   } catch (error) {
+//       console.error("Error fetching referral link:", error);
+//       res.status(500).json({ message: "Failed to generate referral link" });
+//   }
+// });
+
+
+// // Endpoint to get all user IDs
+// router.get("/api/user", async (req, res) => {
+//     try {
+//         const users = await User.find({}, "user_id"); // Fetch all user IDs
+//         res.json({ users });
+//     } catch (error) {
+//         console.error("Error fetching user IDs:", error);
+//         res.status(500).json({ message: "Failed to fetch user IDs" });
+//     }
+// });
+
+
+
+// // Example of route where you render the friends page
+// router.get('/friends', (req, res) => {
+//   const userId = req.user.id;
+//   res.render('friends', { userId });
+// });
+
+
+// module.exports = router;
 
 
 
