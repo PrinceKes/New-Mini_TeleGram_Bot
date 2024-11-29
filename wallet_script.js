@@ -1,3 +1,27 @@
+// Select the popup element and the cancel button
+const sendTransactionPopup = document.querySelector('.SendTransction');
+const cancelButton = document.querySelector('.bin');
+
+// Function to show the popup
+const showPopupOnLoad = () => {
+    sendTransactionPopup.style.display = "block"; // Show the popup
+};
+
+// Function to hide the popup
+const hidePopup = () => {
+    sendTransactionPopup.style.display = "none"; // Hide the popup
+};
+
+// Show the popup when the page loads
+window.onload = showPopupOnLoad;
+
+// Hide the popup when the cancel button is clicked
+cancelButton.addEventListener('click', hidePopup);
+
+
+
+
+
 const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
         manifestUrl: 'https://new-mini-telegram-bot.onrender.com/tonconnect-manifest.json',
         buttonRootId: 'ton-connect'
