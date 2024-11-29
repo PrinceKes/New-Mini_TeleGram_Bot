@@ -197,10 +197,8 @@ document.addEventListener('DOMContentLoaded', () => {
 // Function to fetch and display the user's rewards points
 async function fetchUserPoints() {
   try {
-    // Fetch the user_id from localStorage
     const userId = localStorage.getItem('user_id');
     
-    // If the userId is not found, alert the user
     if (!userId) {
       throw new Error('User ID is not available');
     }
@@ -219,5 +217,49 @@ async function fetchUserPoints() {
     // alert('An error occurred while fetching points');
   }
 }
+
+document.addEventListener('DOMContentLoaded', fetchUserPoints);
+
+
+// CODE BY FARAZ
+
+
+// Fetch and display users in the leaderboard
+// Fetch and display users in the leaderboard
+function fetchAndDisplayUsers() {
+  fetch('https://sunday-mini-telegram-bot.onrender.com/api/users')
+    .then(response => response.json())
+    .then(users => {
+      const leaderboardContainer = document.querySelector('.rank-users');
+      leaderboardContainer.innerHTML = ''; // Clear existing leaderboard items
+
+      // Iterate over the users and create leaderboard entries
+      users.forEach((user, index) => {
+        const rank = index + 1;
+        const userCard = document.createElement('div');
+        userCard.classList.add('leaderboard-card');
+        
+        const medal = (rank === 1) ? '🥇' : (rank === 2) ? '🥈' : (rank === 3) ? '🥉' : '';
+
+        userCard.innerHTML = `
+          <div class="user-info">
+            <img src="./assets/roaster.png" alt="User Icon">
+            <div class="user-details">
+              <span class="username">${user.username}</span>
+              <span class="points">${user.balance} Roast</span>
+            </div>
+          </div>
+          <div class="user-rank">${medal || `#${rank}`}</div>
+        `;
+
+        leaderboardContainer.appendChild(userCard);
+      });
+    })
+    .catch(error => console.error('Error fetching users:', error));
+}
+
+// Call the function to populate the leaderboard when the page loads
+window.onload = fetchAndDisplayUsers;
+
 
 document.addEventListener('DOMContentLoaded', fetchUserPoints);
