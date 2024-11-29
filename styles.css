@@ -197,15 +197,6 @@
 }
 
 
-
-
-
-
-
-
-
-
-
 /* Modal Container */
 .wallet-modal {
   position: fixed;
@@ -301,3 +292,175 @@
 .wallet-connect-btn:active {
   transform: scale(0.95);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.WalletSection {
+
+    background-color: rgba(32, 32, 32, 0.5);
+    border-radius: 30px;
+    font-size: 20px;
+    color:rgb(239, 229, 229);
+  min-width:max-content;
+  
+  font-weight: 900;
+    display: flex;
+    flex-direction: column;
+    justify-content:space-between;
+    align-items: center;
+  padding: 8px;
+  }
+  .WalletSection>span{
+    margin: 3px;
+  }
+  .show-TransactionInput {
+    padding: 5px;
+    display: none;
+    display: flex;
+    margin-top: 10px;
+    margin-bottom: 20px;
+    flex-direction: column;
+  }
+  .SendTransction{
+    position: fixed;
+    top: 70%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 400px;
+    height: 440px;
+    background-color: rgba(0, 0,0, 0.8);
+    color: white;
+    padding: 20px;
+    border-radius: 20px;
+    text-align: center;
+    transition: all 0.4s ease-in-out;
+  
+  flex-direction: column;
+  
+  }
+  .show-TransactionInput>button{
+    min-width:140px ;
+    height: 40px;
+    font-size: 17px;
+    text-align: center;
+              text-transform: uppercase;
+              transition: 0.5s;
+              background-size: 200% auto;
+              color: white;            
+              box-shadow: 0 0 5px #eee;
+              border-radius: 10px;
+    font-weight: 600;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    background-image: linear-gradient(to right, #1c2020 0%, #31353b  51%, #030505  100%)
+  }
+  .h4:hover{
+    cursor: pointer;
+    background-color: #1e1e1e;
+    transition: all 0.7s ease-in-out;
+  
+  }@media only screen and (max-width:768px) {
+    .paws-icon {
+        font-size: 40px;
+        margin-bottom: 10px;
+      }
+      .points {
+        font-size: 20px;
+        font-weight: bold;
+      }
+  }
+  
+  .img-bin {
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+  
+  }
+  .bin{
+    display: flex;
+  justify-content: end;
+  position: relative;
+  top: -35px;
+  right: 10px;
+  }
+  .Instruction{
+    position: relative;
+    left: -136px;
+    margin-bottom: 30px;
+  }
+  .check{
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+  }
+  .checkdiv{
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    background-color: rgba(255, 255, 255, 0.2);
+    padding: 4px;
+    margin-top: 25px;
+    border-radius: 20px;
+  }
+  .navbar-container{
+    position: relative;
+    bottom: 0;
+  }
+  
+  .sendButton {background-image: linear-gradient(to right, #1c2020 0%, #31353b  51%, #030505  100%)}
+           .sendButton{
+              margin-left: 5px;
+              height: 40px;
+              width: 140px;
+              text-align: center;
+              text-transform: uppercase;
+              transition: 0.5s;
+              background-size: 200% auto;
+              color: rgba(143, 138, 138, 0);            
+              box-shadow: 0 0 2px #eee;
+              border-radius: 10px;
+              display: block;
+              border: none;
+              color: white;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+            }
+  
+            .sendButton:hover,.h4:hover {
+              background-position: right center; /* change the direction of the change here */
+              color: #fff;
+              text-decoration: none;
+            }
+           
+  .tonbutton{
+    width: 20px;
+    height: 20px;
+    margin-left: 5px;
+  
+  }
+  li{
+    margin-top: 20px;
+    font-size: 12px;
+  }
