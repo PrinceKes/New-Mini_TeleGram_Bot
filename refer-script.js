@@ -46,6 +46,34 @@ async function fetchReferralLink() {
     }
 }
 
+
+function showCustomAlert(message, duration = 3000) {
+    const alertBox = document.getElementById("custom-alert");
+    const alertMessage = document.getElementById("custom-alert-message");
+  
+    // Set the message and show the alert
+    alertMessage.textContent = message;
+    alertBox.classList.remove("hidden");
+    alertBox.classList.add("show");
+  
+    // Hide the alert after the duration
+    setTimeout(() => {
+      alertBox.classList.remove("show");
+      setTimeout(() => {
+        alertBox.classList.add("hidden");
+      }, 300); // Ensure CSS transition is completed
+    }, duration);
+  }
+  
+  // Example: Call this function after copying the link
+  document.querySelector(".invite-btn").addEventListener("click", () => {
+    navigator.clipboard.writeText("Your referral link goes here").then(() => {
+      showCustomAlert("Referral Link copied successfully!");
+    });
+  });
+  
+
+
     inviteButton.addEventListener("click", async () => {
         const referralLink = await fetchReferralLink();
         if (referralLink) {
