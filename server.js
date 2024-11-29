@@ -354,7 +354,7 @@ app.get('/api/referrals/friends/:referrerId', async (req, res) => {
 // Define your API routes
 router.get('/api/user', async (req, res) => {
   try {
-    const users = await User.find({}); // Fetch all users from MongoDB
+    const users = await User.find({});
     res.json({ users });
   } catch (error) {
     console.error("Error fetching users:", error);
@@ -362,14 +362,9 @@ router.get('/api/user', async (req, res) => {
   }
 });
 
-// router.get('/api/user', (req, res) => {
-//   const userId = "12345";
-//   res.json({ userId });
-// });
 
 router.get('/api/referrals/:userId', (req, res) => {
   const userId = req.params.userId;
-  // Replace this with your logic to fetch referral link
   res.json({ referralLink: `https://t.me/SunEarner_bot?start=${userId}` });
 });
 
