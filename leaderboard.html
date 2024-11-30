@@ -372,8 +372,8 @@
       }
 
       // Update the DOM with the user's details
-      const usernameElement = document.querySelector(".myusername");
-      const pointsElement = document.querySelector(".mypoints");
+      const usernameElement = document.getElementById("myusername");
+      const pointsElement = document.getElementById("mypoints");
 
       usernameElement.textContent = user.username; // Assuming `username` exists in the API response
       pointsElement.textContent = `${user.points} Roast`; // Assuming `points` exists in the API response
