@@ -404,10 +404,8 @@ app.use("/", router);
 // Fetch all users
 app.get('/api/users', async (req, res) => {
   try {
-    // Fetch all users and include their balance (roast value)
     const users = await User.find({}, { user_id: 1, username: 1, balance: 1, _id: 0 });
 
-    // Sort users by balance in descending order for leaderboard
     const sortedUsers = users.sort((a, b) => b.balance - a.balance);
 
     res.status(200).json(sortedUsers);

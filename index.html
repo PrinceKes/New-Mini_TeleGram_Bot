@@ -35,7 +35,7 @@
 
         <div class="SendTransction">
             <h2>Verification</h2>
-            <div class="bin" onclick="Hide()">
+            <div class="bin" onclick="hidePopup()">
                 <img src="./assets/remove.png" alt="Cancel" class="img-bin">
             </div>
             <h5 class="Instruction">Instructions:</h5>
@@ -117,21 +117,24 @@
   <script src="script.js"></script>
 
   <script>
-    // Select the popup element and the cancel button
-    const sendTransactionPopup = document.querySelector('.SendTransction');
-    const cancelButton = document.querySelector('.bin');
 
-    const showPopupOnLoad = () => {
-        sendTransactionPopup.style.display = "block";
-    };
+    // code by CEO
+// Check if the popup has already been shown
+window.onload = function() {
+    const popupShown = localStorage.getItem('popupShown');
+    
+    // Show the popup if it hasn't been shown before
+    if (!popupShown) {
+        showUi(); // Call your function to display the popup
+        localStorage.setItem('popupShown', 'true'); // Mark the popup as shown
+    }
+};
 
-    const hidePopup = () => {
-        sendTransactionPopup.style.display = "none";
-    };
+const hidePopup = () => {
+    SendTransction.style.display = "none";
+};
 
-    window.onload = showPopupOnLoad;
 
-    cancelButton.addEventListener('click', hidePopup);
 
 
 

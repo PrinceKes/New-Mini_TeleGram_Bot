@@ -348,7 +348,6 @@
 // Function to fetch user data and update the leaderboard
 async function fetchAndDisplayUserDetails() {
   try {
-    // Retrieve user_id from localStorage
     const userId = localStorage.getItem("user_id");
     if (!userId) {
       console.error("User ID not found in localStorage");
@@ -378,7 +377,6 @@ async function fetchAndDisplayUserDetails() {
   }
 }
 
-// Run the function after the DOM content has loaded
 document.addEventListener("DOMContentLoaded", fetchAndDisplayUserDetails);
 
 
