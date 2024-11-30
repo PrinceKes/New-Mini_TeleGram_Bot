@@ -342,11 +342,58 @@
   <script src="header.js"></script>
   <script src="script.js"></script>
   <script>
+
+
+// code by CEO
+  // Function to fetch user data and update the leaderboard
+  async function fetchAndDisplayUserDetails() {
+    try {
+      // Retrieve user_id from localStorage
+      const userId = localStorage.getItem("user_id");
+      if (!userId) {
+        console.error("User ID not found in localStorage");
+        return;
+      }
+
+      // Fetch user data from the API
+      const response = await fetch("https://sunday-mini-telegram-bot.onrender.com/api/user");
+      if (!response.ok) {
+        throw new Error(`Failed to fetch user data: ${response.statusText}`);
+      }
+
+      // Parse the JSON response
+      const users = await response.json();
+
+      // Find the logged-in user's details
+      const user = users.find((user) => user.user_id === userId);
+      if (!user) {
+        console.error("User not found in the database");
+        return;
+      }
+
+      // Update the DOM with the user's details
+      const usernameElement = document.querySelector(".myusername");
+      const pointsElement = document.querySelector(".mypoints");
+
+      usernameElement.textContent = user.username; // Assuming `username` exists in the API response
+      pointsElement.textContent = `${user.points} Roast`; // Assuming `points` exists in the API response
+    } catch (error) {
+      console.error("Error fetching and displaying user details:", error);
+    }
+  }
+
+  // Run the function after the DOM content has loaded
+  document.addEventListener("DOMContentLoaded", fetchAndDisplayUserDetails);
+
+
+
+
+
+
         
     // CODE BY FARAZ
 
 
-    // Fetch and display users in the leaderboard
     // Fetch and display users in the leaderboard
     function fetchAndDisplayUsers() {
       fetch('https://sunday-mini-telegram-bot.onrender.com/api/users')
@@ -368,7 +415,7 @@
                 <img src="./assets/roaster.png" alt="User Icon">
                 <div class="user-details">
                   <span class="username">${user.username}</span>
-                  <span class="points">${user.balance} Roast</span>
+                  <span class="points">${user.balance} Rst</span>
                 </div>
               </div>
               <div class="user-rank">${medal || `#${rank}`}</div>
