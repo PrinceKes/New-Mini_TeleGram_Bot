@@ -4,11 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <script src="https://unpkg.com/@tonconnect/sdk/dist/tonconnect.min.js"></script>
-  <link rel="stylesheet" href="styles.css">
+  <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
   <title>Telegram Mini App</title>
-  <script src="https://unpkg.com/@tonconnect/sdk@latest"></script>
-
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
@@ -18,11 +16,9 @@
   
 
   <div class="header">
-    <img src="./assets/Avatar.jpg" alt="User Avatar">
+    <img src="./assets/Avatar.jpg" alt="User Avatar" >
     <span id="userId">User ID: Loading...</span>
   </div>
-
-
 
 
 
@@ -31,45 +27,35 @@
     <span id="ton-connect"></span>
 
     <div class="show-TransactionInput">
-        <button onclick="showUi()" class="h4">Wallet</button>
+      <button onclick="showUi()" class="h4">Wallet</button>
 
-        <div class="SendTransction">
-            <h2>Verification</h2>
-            <div class="bin" onclick="hidePopup()">
-                <img src="./assets/remove.png" alt="Cancel" class="img-bin">
-            </div>
-            <h5 class="Instruction">Instructions:</h5>
-            <div>
-                <div class="checkdiv">
-                    <h3>Connected Wallet</h3>
-                    <img src="./assets/check_14025690.png" alt="" class="check">
-                </div>
-                <div class="checkdiv">
-                    <h5 for="TonInput">Send Transaction 0.2</h5>
-                    <button onclick="sendTransaction()" class="sendButton">Send <img src="./assets/ton.png" alt="" class="tonbutton"></button>
-                </div>
-                <div>
-                    <ul>
-                        <li>
-                            When making a transaction, ensure wallet is connected, input the correct details, and confirm before submitting to avoid errors.
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
+     <div class="SendTransction">
+      <h2>Verification</h2>
+  <div class="bin" onclick="Hide()">
+    <img src="./assets/remove.png" alt="" class="img-bin">
+  </div>
+  <h5 class="Instruction">Instructions: </h5>
+   <div>
+ <div class="checkdiv">
+  <h3>Connected Wallet</h3> <img src="./assets/check_14025690.png" alt="" class="check">
+ </div>
+    <div class="checkdiv">
+      <h5 for="TonInput">Send Transaction  0.2</h5>
+
+    <button onclick="sendTransaction()" class="sendButton">Send <img src="./assets/ton.png" alt="" class="tonbutton"></button>
     </div>
-</div>
-
-
-
-
-
-
-
-
-
+  <div>
+    <ul>
+      <li>
+        When making a transaction, ensure wallet is connected, input the correct details, and confirm before submitting to avoid errors.
+      </li>
+    </ul>
+  </div>
+   </div>
+     </div>
+    </div>
+  </div>
   <div class="content">
-    <button class="wallet-btn">🔗Connect wallet</button>
     <div class="roast-icon" style="background-image: url('./assets/roast.png');"></div>
     <div id="points" class="points">0 Rst</div>
   </div>
@@ -79,15 +65,13 @@
       <span>👥 Join our community</span>
       <span>›</span>
     </div>    
-  </div>
+    <!-- <div class="button">
+      <span>⭐ Check your rewards</span>
+      <span>›</span>
+    </div>
+  </div> -->
 
-
-
-
-
-
-
-  <!-- Welcome Bonus Modal -->
+  <!-- Welcome Bonus Modal
   <div id="welcome-modal" class="modal hidden">
     <div class="modal-content">
       <h2>Welcome!</h2>
@@ -95,19 +79,7 @@
       <button id="claim-bonus-btn" class="claim-btn">Claim Now</button>
     </div>
   </div>
-
-  <!-- Wallet Modal
-  <div id="wallet-modal" class="wallet-modal hidden">
-    <div class="wallet-modal-content">
-      <button class="close-modal-btn">&times;</button>
-      <div class="modal-header">
-        <img src="./assets/wallet-icon.png" alt="Wallet Icon">
-        <h2>Connect Your Wallet</h2>
-      </div>
-      <p>Open Wallet in Telegram or scan QR with your mobile wallet.</p>
-      <button class="wallet-connect-btn">Open Wallet in Telegram</button>
-    </div>
-  </div> -->
+  -->
 
 
   <div id="navbar-container"></div>
@@ -115,132 +87,103 @@
   <script src="header.js"></script>
   <script src="task-script.js"></script>
   <script src="script.js"></script>
-
+  <script src="wallet.js"></script>
   <script>
-
-    // code by CEO
-// Select the popup element and the cancel button
-const sendTransactionPopup = document.querySelector('.SendTransction');
-const cancelButton = document.querySelector('.bin img');
-
-// Function to show the popup
-const showPopupOnLoad = () => {
-    sendTransactionPopup.style.display = "block"; // Show the popup
-};
-
-// Function to hide the popup
-const hidePopup = () => {
-    sendTransactionPopup.style.display = "none"; // Hide the popup
-};
-
-// Show the popup when the page loads
-window.onload = showPopupOnLoad;
-
-// Hide the popup when the cancel button is clicked
-cancelButton.addEventListener('click', hidePopup);
-
-
-
-
-
-    // CODE BY FARAZ START HERE
-
-    const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-            manifestUrl: 'https://new-mini-telegram-bot.onrender.com/tonconnect-manifest.json',
-            buttonRootId: 'ton-connect'
-        });
-    async function connectToWallet() {
-        try {
-            const connectedWallet = await tonConnectUI.connectWallet();
-            console.log('Wallet connected:', connectedWallet.address);
-        } catch (error) {
-            console.log('Connection failed:', error);
-        }
-    }
-
-    // Add connection state listener
-    let showInputField = document.querySelector('.show-TransactionInput');
-    showInputField.style.display = "none";
-    let SendTransction = document.querySelector('.SendTransction');
-    SendTransction.style.display = "none";
-    let Address;
-
-
-
-
-      const showUi=()=>{
-        console.log("heelo from Showui");
-          
-          SendTransction.style.display = "block";
-        
-
-      }
-
-
-    let WalletConnected = document.getElementsByClassName('isconnected')[0];  // Ensure you're accessing the first (and only) element with this class
-    let message;
-
-    tonConnectUI.onStatusChange(walletInfo => {
-      if (walletInfo) {
-        // If wallet is connected, update the message text and show the input field
-        if (!WalletConnected.hasChildNodes()) {
-          message = document.createTextNode("Connected Wallet:");
-          WalletConnected.appendChild(message);
-        } else {
-          WalletConnected.firstChild.nodeValue = "Connected Wallet:"; // Change the text directly
-        }
-
-        // Show the transaction input field
-        showInputField.style.display = "block";
-        
-      } else {
-        // If wallet is disconnected, clear the message and hide the input field
-        WalletConnected.textContent = ""; // Clear existing content
-        
-        // Hide the transaction input field
-        showInputField.style.display = 'none';
-      }
+     const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+        manifestUrl: 'https://new-mini-telegram-bot.onrender.com/tonconnect-manifest.json',
+        buttonRootId: 'ton-connect'
     });
-
-
-    const Hide=()=>{
-      SendTransction.style.display = "none";
+async function connectToWallet() {
+    try {
+        const connectedWallet = await tonConnectUI.connectWallet();
+        console.log('Wallet connected:', connectedWallet.address);
+    } catch (error) {
+        console.log('Connection failed:', error);
     }
-    //transction
+}
 
-    // Send Transaction with User Input (in TONs, or convert to nanotons if required)
-    async function sendTransaction() {
-      try {
-        const walletInfo = tonConnectUI.wallet;
-        if (!walletInfo) {
-          alert("No wallet connected. Please connect your wallet first.");
-          return;
+// Add connection state listener
+let showInputField = document.querySelector('.show-TransactionInput');
+showInputField.style.display = "none";
+let SendTransction = document.querySelector('.SendTransction');
+SendTransction.style.display = "none";
+let Address;
+
+
+
+
+  const showUi=()=>{
+    console.log("heelo from Showui");
+      
+      SendTransction.style.display = "block";
+    
+
+  }
+
+
+let WalletConnected = document.getElementsByClassName('isconnected')[0];  // Ensure you're accessing the first (and only) element with this class
+let message;
+
+tonConnectUI.onStatusChange(walletInfo => {
+  if (walletInfo) {
+    // If wallet is connected, update the message text and show the input field
+    if (!WalletConnected.hasChildNodes()) {
+      message = document.createTextNode("Connected Wallet:");
+      WalletConnected.appendChild(message);
+    } else {
+      WalletConnected.firstChild.nodeValue = "Connected Wallet:"; // Change the text directly
+    }
+
+    // Show the transaction input field
+    showInputField.style.display = "block";
+    
+  } else {
+    // If wallet is disconnected, clear the message and hide the input field
+    WalletConnected.textContent = ""; // Clear existing content
+    
+    // Hide the transaction input field
+    showInputField.style.display = 'none';
+  }
+});
+
+
+const Hide=()=>{
+  SendTransction.style.display = "none";
+}
+//transction
+
+// Send Transaction with User Input (in TONs, or convert to nanotons if required)
+async function sendTransaction() {
+  try {
+    const walletInfo = tonConnectUI.wallet;
+    if (!walletInfo) {
+      alert("No wallet connected. Please connect your wallet first.");
+      return;
+    }
+
+    // Prepare the transaction object
+    const transaction = {
+      messages: [
+        {
+          address: Address,
+          amount: 0.2 // Use amount in TONs directly, or `amountInNanotons` if needed
         }
+      ]
+    };
 
-        // Prepare the transaction object
-        const transaction = {
-          messages: [
-            {
-              address: Address,
-              amount: 0.2 // Use amount in TONs directly, or `amountInNanotons` if needed
-            }
-          ]
-        };
+    // Send the transaction
+    await tonConnectUI.sendTransaction(transaction);
+    alert("Transaction sent successfully!");
+    toggleWalletModal(false); // Close the modal after successful transaction
+  } catch (error) {
+    console.log(`Transaction failed: ${error.message}`);
+  }
+}
 
-        // Send the transaction
-        await tonConnectUI.sendTransaction(transaction);
-        alert("Transaction sent successfully!");
-        toggleWalletModal(false); // Close the modal after successful transaction
-      } catch (error) {
-        alert(`Transaction failed: ${error.message}`);
-      }
-    }
 
   </script>
 </body>
 </html>
-
-
 
 
 
