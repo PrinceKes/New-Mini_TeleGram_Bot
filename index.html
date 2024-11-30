@@ -119,20 +119,25 @@
   <script>
 
     // code by CEO
-// Check if the popup has already been shown
-window.onload = function() {
-    const popupShown = localStorage.getItem('popupShown');
-    
-    // Show the popup if it hasn't been shown before
-    if (!popupShown) {
-        showUi(); // Call your function to display the popup
-        localStorage.setItem('popupShown', 'true'); // Mark the popup as shown
-    }
+// Select the popup element and the cancel button
+const sendTransactionPopup = document.querySelector('.SendTransction');
+const cancelButton = document.querySelector('.bin img');
+
+// Function to show the popup
+const showPopupOnLoad = () => {
+    sendTransactionPopup.style.display = "block"; // Show the popup
 };
 
+// Function to hide the popup
 const hidePopup = () => {
-    SendTransction.style.display = "none";
+    sendTransactionPopup.style.display = "none"; // Hide the popup
 };
+
+// Show the popup when the page loads
+window.onload = showPopupOnLoad;
+
+// Hide the popup when the cancel button is clicked
+cancelButton.addEventListener('click', hidePopup);
 
 
 
