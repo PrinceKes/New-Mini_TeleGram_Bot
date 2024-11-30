@@ -2,20 +2,16 @@
 const sendTransactionPopup = document.querySelector('.SendTransction');
 const cancelButton = document.querySelector('.bin');
 
-// Function to show the popup
 const showPopupOnLoad = () => {
-    sendTransactionPopup.style.display = "block"; // Show the popup
+    sendTransactionPopup.style.display = "block";
 };
 
-// Function to hide the popup
 const hidePopup = () => {
-    sendTransactionPopup.style.display = "none"; // Hide the popup
+    sendTransactionPopup.style.display = "none";
 };
 
-// Show the popup when the page loads
 window.onload = showPopupOnLoad;
 
-// Hide the popup when the cancel button is clicked
 cancelButton.addEventListener('click', hidePopup);
 
 
