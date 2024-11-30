@@ -249,7 +249,7 @@
         <img src="./assets/Avatar.jpg" alt="User Icon">
         <div class="user-card-details">
           <h3 id="myusername" class="myusername">Reutercom</h3>
-          <p id="mypoints" class="mypoints">1,529 Roast</p>
+          <p id="mypoints" class="mypoints">1,529 Rst</p>
         </div>
       </div>
       <div class="all-user-rank">#28,517,114</div>
@@ -261,7 +261,7 @@
           <img src="./assets/roaster.png" alt="User Icon">
           <div class="user-details">
             <span class="username">imGet</span>
-            <span class="points">72,729,032 Roast</span>
+            <span class="points">72,729,032 Rst</span>
           </div>
         </div>
         <div class="user-rank medal">🥇</div>
@@ -272,7 +272,7 @@
           <img src="./assets/roaster.png" alt="User Icon">
           <div class="user-details">
             <span class="username">Pishnahad_Sup</span>
-            <span class="points">57,642,584 Roast</span>
+            <span class="points">57,642,584 Rst</span>
           </div>
         </div>
         <div class="user-rank medal">🥈</div>
@@ -283,7 +283,7 @@
           <img src="./assets/roaster.png" alt="User Icon">
           <div class="user-details">
             <span class="username">Esalat</span>
-            <span class="points">49,256,421 Roast</span>
+            <span class="points">49,256,421 Rst</span>
           </div>
         </div>
         <div class="user-rank medal">🥉</div>
@@ -294,7 +294,7 @@
           <img src="./assets/roaster.png" alt="User Icon">
           <div class="user-details">
             <span class="username">mehranseyedi</span>
-            <span class="points">48,601,772 Roast</span>
+            <span class="points">48,601,772 Rst</span>
           </div>
         </div>
         <div class="user-rank">#4</div>
@@ -305,7 +305,7 @@
           <img src="./assets/roaster.png" alt="User Icon">
           <div class="user-details">
             <span class="username">mehranseyedi</span>
-            <span class="points">48,601,772 Roast</span>
+            <span class="points">48,601,772 Rst</span>
           </div>
         </div>
         <div class="user-rank">#3</div>
@@ -316,7 +316,7 @@
           <img src="./assets/roaster.png" alt="User Icon">
           <div class="user-details">
             <span class="username">mehranseyedi</span>
-            <span class="points">48,601,772 Roast</span>
+            <span class="points">48,601,772 Rst</span>
           </div>
         </div>
         <div class="user-rank">#2</div>
@@ -327,7 +327,7 @@
           <img src="./assets/roaster.png" alt="User Icon">
           <div class="user-details">
             <span class="username">mehranseyedi</span>
-            <span class="points">48,601,772 Roast</span>
+            <span class="points">48,601,772 Rst</span>
           </div>
         </div>
         <div class="user-rank">#1</div>
@@ -345,45 +345,41 @@
 
 
 // code by CEO
-  // Function to fetch user data and update the leaderboard
-  async function fetchAndDisplayUserDetails() {
-    try {
-      // Retrieve user_id from localStorage
-      const userId = localStorage.getItem("user_id");
-      if (!userId) {
-        console.error("User ID not found in localStorage");
-        return;
-      }
-
-      // Fetch user data from the API
-      const response = await fetch("https://sunday-mini-telegram-bot.onrender.com/api/users");
-      if (!response.ok) {
-        throw new Error(`Failed to fetch user data: ${response.statusText}`);
-      }
-
-      // Parse the JSON response
-      const users = await response.json();
-
-      // Find the logged-in user's details
-      const user = users.find((user) => user.user_id === userId);
-      if (!user) {
-        console.error("User not found in the database");
-        return;
-      }
-
-      // Update the DOM with the user's details
-      const usernameElement = document.getElementById("myusername");
-      const pointsElement = document.getElementById("mypoints");
-
-      usernameElement.textContent = user.username; // Assuming `username` exists in the API response
-      pointsElement.textContent = `${user.points} Roast`; // Assuming `points` exists in the API response
-    } catch (error) {
-      console.error("Error fetching and displaying user details:", error);
+// Function to fetch user data and update the leaderboard
+async function fetchAndDisplayUserDetails() {
+  try {
+    // Retrieve user_id from localStorage
+    const userId = localStorage.getItem("user_id");
+    if (!userId) {
+      console.error("User ID not found in localStorage");
+      return;
     }
-  }
 
-  // Run the function after the DOM content has loaded
-  document.addEventListener("DOMContentLoaded", fetchAndDisplayUserDetails);
+    const response = await fetch("https://sunday-mini-telegram-bot.onrender.com/api/users");
+    if (!response.ok) {
+      throw new Error(`Failed to fetch user data: ${response.statusText}`);
+    }
+
+    const users = await response.json();
+
+    const user = users.find((user) => user.user_id === userId);
+    if (!user) {
+      console.error("User not found in the database");
+      return;
+    }
+
+    const usernameElement = document.getElementById("myusername");
+    const pointsElement = document.getElementById("mypoints");
+
+    usernameElement.textContent = user.username;
+    pointsElement.textContent = `${user.balance} Rst`;
+  } catch (error) {
+    console.error("Error fetching and displaying user details:", error);
+  }
+}
+
+// Run the function after the DOM content has loaded
+document.addEventListener("DOMContentLoaded", fetchAndDisplayUserDetails);
 
 
 
