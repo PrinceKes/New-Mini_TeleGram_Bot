@@ -268,158 +268,271 @@ app.put('/api/tasks/:task_id', async (req, res) => {
 
 
 
-// Route: GET /api/referrals script
-app.get("/api/referrals", async (req, res) => {
+
+
+
+// Referral schema
+const referralSchema = new mongoose.Schema({
+  referrerId: String,
+  referredId: String,
+  referredUsername: String,
+  points: { type: Number, default: 250 },
+});
+
+const Referral = mongoose.model('Referral', referralSchema);
+
+// User schema
+const userSchema = new mongoose.Schema({
+  user_id: String,
+  username: String,
+});
+
+const User = mongoose.model('User', userSchema);
+
+// Route: GET /api/referrals
+app.get('/api/referrals', async (req, res) => {
   try {
     const referrals = await Referral.find(); // Fetch all referrals
     res.json(referrals);
   } catch (error) {
-    console.error("Error fetching referrals:", error);
-    res.status(500).json({ error: "Failed to fetch referrals" });
+    console.error('Error fetching referrals:', error);
+    res.status(500).json({ error: 'Failed to fetch referrals' });
   }
 });
 
 // Route: POST /api/referrals
-app.post("/api/referrals", async (req, res) => {
-  const { referrerId, referredId, points } = req.body;
+app.post('/api/referrals', async (req, res) => {
+  const { referrerId, referredId, referredUsername, points } = req.body;
 
   try {
-    // Save new referral record
-    const newReferral = new Referral({ referrerId, referredId, points });
+    if (referrerId === referredId) {
+      return res.status(400).json({ message: 'You cannot refer yourself.' });
+    }
+
+    const existingReferral = await Referral.findOne({ referrerId, referredId });
+    if (existingReferral) {
+      return res.status(400).json({ message: 'Referral already exists.' });
+    }
+
+    const newReferral = new Referral({ referrerId, referredId, referredUsername, points });
     await newReferral.save();
 
-    res.status(201).json({ message: "Referral created successfully", newReferral });
+    res.status(201).json({ message: 'Referral created successfully', newReferral });
   } catch (error) {
-    console.error("Error creating referral:", error);
-    res.status(500).json({ error: "Failed to create referral" });
+    console.error('Error creating referral:', error);
+    res.status(500).json({ error: 'Failed to create referral' });
   }
 });
 
-// Connect to MongoDB and start server
-mongoose
-  .connect("mongodb+srv://<username>:<password>@cluster.mongodb.net/test", {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(() => {
-    console.log("Connected to MongoDB");
-    app.listen(3000, () => console.log("Server is running on port 3000"));
-  })
-  .catch((err) => console.error("Error connecting to MongoDB:", err));
-
-
-
-// Newly updated for referral system
-  app.post('/api/referrals/track', async (req, res) => {
-    const { referrerId, referredId, referredUsername } = req.body;
-
-    try {
-        if (referrerId === referredId) {
-            return res.status(400).json({ message: "You cannot refer yourself." });
-        }
-
-        // Check if referral exists
-        const existingReferral = await Referral.findOne({ referrerId, referredId });
-        if (existingReferral) {
-            return res.status(400).json({ message: "Referral already exists." });
-        }
-
-        // Add the referral record
-        const newReferral = new Referral({
-            referrerId,
-            referredId,
-            referredUsername,
-            points: 250 // Assign reward points
-        });
-        await newReferral.save();
-
-        // Optionally notify referrer about the new referral
-        res.status(201).json({ message: "Referral tracked successfully." });
-    } catch (err) {
-        console.error("Error tracking referral:", err);
-        res.status(500).json({ message: "Server error." });
-    }
-});
-
-
-
-
-
-// Fetch all referrals
-app.get('/api/referrals', async (req, res) => {
-    try {
-        const referrals = await Referral.find();
-        res.status(200).json(referrals);
-    } catch (err) {
-        console.error("Error fetching referrals:", err);
-        res.status(500).json({ message: "Server error." });
-    }
-});
-
-// Fetch friends referred by a specific user
+// Fetch referred friends for a specific user
 app.get('/api/referrals/friends/:referrerId', async (req, res) => {
   const { referrerId } = req.params;
 
   try {
-      const referrals = await Referral.find({ referrerId });
-      res.status(200).json(referrals);
-  } catch (err) {
-      console.error("Error fetching referred friends:", err);
-      res.status(500).json({ message: "Server error." });
-  }
-});
-
-
-
-
-// All other codes are above
-
-// Define your API routes
-router.get('/api/user', async (req, res) => {
-  try {
-    const users = await User.find({});
-    res.json({ users });
+    const referrals = await Referral.find({ referrerId });
+    res.json(referrals);
   } catch (error) {
-    console.error("Error fetching users:", error);
-    res.status(500).json({ error: "Failed to fetch users" });
+    console.error('Error fetching referred friends:', error);
+    res.status(500).json({ error: 'Failed to fetch referred friends' });
   }
 });
 
-
-router.get('/api/referrals/:userId', (req, res) => {
-  const userId = req.params.userId;
-  res.json({ referralLink: `https://t.me/SunEarner_bot?start=${userId}` });
-});
-
-router.get('/api/referrals/friends/:userId', (req, res) => {
-  const userId = req.params.userId;
-  // Replace this with your logic to fetch referred friends
-  res.json({ friends: [{ referredId: "Friend1" }, { referredId: "Friend2" }] });
-});
-
-app.use("/", router);
-
-
-
+// Route: POST /api/referrals/claim
 app.post('/api/referrals/claim', async (req, res) => {
   const { referredId } = req.body;
 
   try {
-      const referral = await Referral.findOne({ referredId });
-      if (!referral) {
-          return res.status(404).json({ message: "Referral not found." });
-      }
+    const referral = await Referral.findOne({ referredId });
+    if (!referral) {
+      return res.status(404).json({ message: 'Referral not found.' });
+    }
 
-      // Add logic to mark points as claimed
-      referral.points = 0; // Mark points as claimed
-      await referral.save();
+    referral.points = 0; // Mark points as claimed
+    await referral.save();
 
-      res.status(200).json({ message: "Points claimed successfully." });
-  } catch (err) {
-      console.error("Error claiming points:", err);
-      res.status(500).json({ message: "Server error." });
+    res.status(200).json({ message: 'Points claimed successfully.' });
+  } catch (error) {
+    console.error('Error claiming points:', error);
+    res.status(500).json({ message: 'Failed to claim points.' });
   }
 });
+
+// Route: GET /api/user (mock endpoint for users)
+app.get('/api/user', async (req, res) => {
+  try {
+    const users = await User.find({});
+    res.json({ users });
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    res.status(500).json({ error: 'Failed to fetch users' });
+  }
+});
+
+// Route: GET /api/referrals/:userId
+app.get('/api/referrals/:userId', (req, res) => {
+  const { userId } = req.params;
+  res.json({ referralLink: `https://t.me/SunEarner_bot?start=${userId}` });
+});
+
+
+
+
+
+
+
+
+// // Route: GET /api/referrals script
+// app.get("/api/referrals", async (req, res) => {
+//   try {
+//     const referrals = await Referral.find();
+//     res.json(referrals);
+//   } catch (error) {
+//     console.error("Error fetching referrals:", error);
+//     res.status(500).json({ error: "Failed to fetch referrals" });
+//   }
+// });
+
+// // Route: POST /api/referrals
+// app.post("/api/referrals", async (req, res) => {
+//   const { referrerId, referredId, points } = req.body;
+
+//   try {
+//     // Save new referral record
+//     const newReferral = new Referral({ referrerId, referredId, points });
+//     await newReferral.save();
+
+//     res.status(201).json({ message: "Referral created successfully", newReferral });
+//   } catch (error) {
+//     console.error("Error creating referral:", error);
+//     res.status(500).json({ error: "Failed to create referral" });
+//   }
+// });
+
+// // Connect to MongoDB and start server
+// mongoose
+//   .connect("mongodb+srv://<username>:<password>@cluster.mongodb.net/test", {
+//     useNewUrlParser: true,
+//     useUnifiedTopology: true,
+//   })
+//   .then(() => {
+//     console.log("Connected to MongoDB");
+//     app.listen(3000, () => console.log("Server is running on port 3000"));
+//   })
+//   .catch((err) => console.error("Error connecting to MongoDB:", err));
+
+
+
+// // Newly updated for referral system
+//   app.post('/api/referrals/track', async (req, res) => {
+//     const { referrerId, referredId, referredUsername } = req.body;
+
+//     try {
+//         if (referrerId === referredId) {
+//             return res.status(400).json({ message: "You cannot refer yourself." });
+//         }
+
+//         // Check if referral exists
+//         const existingReferral = await Referral.findOne({ referrerId, referredId });
+//         if (existingReferral) {
+//             return res.status(400).json({ message: "Referral already exists." });
+//         }
+
+//         // Add the referral record
+//         const newReferral = new Referral({
+//             referrerId,
+//             referredId,
+//             referredUsername,
+//             points: 250 // Assign reward points
+//         });
+//         await newReferral.save();
+
+//         // Optionally notify referrer about the new referral
+//         res.status(201).json({ message: "Referral tracked successfully." });
+//     } catch (err) {
+//         console.error("Error tracking referral:", err);
+//         res.status(500).json({ message: "Server error." });
+//     }
+// });
+
+
+
+
+
+// // Fetch all referrals
+// app.get('/api/referrals', async (req, res) => {
+//     try {
+//         const referrals = await Referral.find();
+//         res.status(200).json(referrals);
+//     } catch (err) {
+//         console.error("Error fetching referrals:", err);
+//         res.status(500).json({ message: "Server error." });
+//     }
+// });
+
+// // Fetch friends referred by a specific user
+// app.get('/api/referrals/friends/:referrerId', async (req, res) => {
+//   const { referrerId } = req.params;
+
+//   try {
+//       const referrals = await Referral.find({ referrerId });
+//       res.status(200).json(referrals);
+//   } catch (err) {
+//       console.error("Error fetching referred friends:", err);
+//       res.status(500).json({ message: "Server error." });
+//   }
+// });
+
+
+
+
+// // All other codes are above
+
+// // Define your API routes
+// router.get('/api/user', async (req, res) => {
+//   try {
+//     const users = await User.find({});
+//     res.json({ users });
+//   } catch (error) {
+//     console.error("Error fetching users:", error);
+//     res.status(500).json({ error: "Failed to fetch users" });
+//   }
+// });
+
+
+// router.get('/api/referrals/:userId', (req, res) => {
+//   const userId = req.params.userId;
+//   res.json({ referralLink: `https://t.me/SunEarner_bot?start=${userId}` });
+// });
+
+// router.get('/api/referrals/friends/:userId', (req, res) => {
+//   const userId = req.params.userId;
+//   // Replace this with your logic to fetch referred friends
+//   res.json({ friends: [{ referredId: "Friend1" }, { referredId: "Friend2" }] });
+// });
+
+// app.use("/", router);
+
+
+
+// app.post('/api/referrals/claim', async (req, res) => {
+//   const { referredId } = req.body;
+
+//   try {
+//       const referral = await Referral.findOne({ referredId });
+//       if (!referral) {
+//           return res.status(404).json({ message: "Referral not found." });
+//       }
+
+//       // Add logic to mark points as claimed
+//       referral.points = 0; // Mark points as claimed
+//       await referral.save();
+
+//       res.status(200).json({ message: "Points claimed successfully." });
+//   } catch (err) {
+//       console.error("Error claiming points:", err);
+//       res.status(500).json({ message: "Server error." });
+//   }
+// });
 
 
 

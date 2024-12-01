@@ -237,10 +237,86 @@
 
 </head>
 <body>
-
-  <!-- <div id="loading-screen">
+  <!-- Loading Screen 
+  <div id="loading-screen" style="display: none;">
     <img src="./assets/roaster.png" alt="Loading..." />
-  </div> -->
+  </div>-->
+
+  <!-- Custom Alert -->
+  <div id="custom-alert" class="hidden">
+    <img src="./assets/success-icon.png" alt="Success" />
+    <span id="custom-alert-message"></span>
+  </div>
+
+  <!-- Header Section -->
+  <div class="header">
+    <img src="./assets/Avatar.jpg" alt="User Avatar">
+    <span id="userId">User ID: Loading...</span>
+  </div>
+
+  <!-- Main Content -->
+  <main>
+    <h1>Invite Friends to Earn Extra</h1>
+    <p class="description">Share your invitation link & get 250 RsT extra points!</p>
+
+    <div id="referred-friends" class="icon-section">
+      <div class="icon">👥</div>
+      <p class="empty-text">There is nothing else. Invite to get more rewards.</p>
+    </div>
+
+    <!-- Invite Button -->
+    <button class="invite-btn">Invite</button>
+
+    <!-- Modal -->
+    <div id="friend-modal" class="modal">
+      <div class="modal-content">
+        <span id="close-modal">&times;</span>
+        <h2>Referral Claimed</h2>
+        <p>Referred friend: <span id="friend-name"></span></p>
+        <p>Points: 250 RsT</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- Navbar -->
+  <div id="navbar-container"></div>
+
+  <!-- Scripts -->
+  <script src="header.js"></script>
+  <script src="script.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const storedUserId = localStorage.getItem('user_id');
+      window.userId = storedUserId || null;
+
+      const userIdElement = document.getElementById('userId');
+      userIdElement.innerText = storedUserId
+        ? `User ID: ${storedUserId}`
+        : "User ID: Unknown";
+    });
+  </script>
+  <script src="refer-script.js"></script>
+</body>
+
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 
+<body>
+
+  <div id="loading-screen">
+    <img src="./assets/roaster.png" alt="Loading..." />
+  </div>
 
   <div id="custom-alert" class="hidden">
     <img src="./assets/success-icon.png" alt="Success" />
@@ -296,5 +372,4 @@
 
 
 <script src="refer-script.js"></script>
-</body>
-</html>
+</body> -->
