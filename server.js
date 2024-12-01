@@ -344,22 +344,6 @@ app.post('/api/referrals/claim', async (req, res) => {
 });
 
 
-// // Route: GET /api/user (mock endpoint for users)
-// app.get('/api/user', async (req, res) => {
-//   try {
-//     const users = await User.find({});
-//     res.json({ users });
-//   } catch (error) {
-//     console.error('Error fetching users:', error);
-//     res.status(500).json({ error: 'Failed to fetch users' });
-//   }
-// });
-
-// // Route: GET /api/referrals/:userId
-// app.get('/api/referrals/:userId', (req, res) => {
-//   const { userId } = req.params;
-//   res.json({ referralLink: `https://t.me/SunEarner_bot?start=${userId}` });
-// });
 
 
 
@@ -390,6 +374,10 @@ router.get('/api/referrals/friends/:userId', (req, res) => {
 });
 
 app.use("/", router);
+
+
+
+
 
 
 
