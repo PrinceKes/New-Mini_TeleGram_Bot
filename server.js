@@ -268,6 +268,69 @@ app.put('/api/tasks/:task_id', async (req, res) => {
 
 
 
+// Endpoint to handle referral link usage
+app.post('/referral', async (req, res) => {
+  const { referrerId, referredId, referredUsername } = req.body;
+
+  try {
+    // Check if the referral already exists
+    const existingReferral = await Referral.findOne({ referrerId, referredId });
+    if (existingReferral) {
+      return res.status(200).json({ message: 'Referral already exists' });
+    }
+
+    // Save the referral
+    const referral = new Referral({ referrerId, referredId, referredUsername });
+    await referral.save();
+
+    res.status(201).json({ message: 'Referral recorded successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Endpoint to fetch referrals for a specific user
+app.get('/referrals/:referrerId', async (req, res) => {
+  const { referrerId } = req.params;
+
+  try {
+    const referrals = await Referral.find({ referrerId });
+    res.status(200).json(referrals);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Endpoint to claim points
+app.post('/claim', async (req, res) => {
+  const { referrerId, referredId } = req.body;
+
+  try {
+    const referral = await Referral.findOne({ referrerId, referredId });
+    if (!referral) {
+      return res.status(404).json({ message: 'Referral not found' });
+    }
+
+    // Add points to referrer's balance
+    const user = await User.findOne({ user_id: referrerId });
+    if (user) {
+      user.balance += referral.points;
+      await user.save();
+
+      // Optionally remove or mark referral as claimed
+      await Referral.deleteOne({ _id: referral._id });
+    }
+
+    res.status(200).json({ message: 'Points claimed successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+
 
 
 
@@ -289,90 +352,90 @@ app.put('/api/tasks/:task_id', async (req, res) => {
 
 // const User = mongoose.model('User', userSchema);
 
-// Route: GET /api/referrals
-app.get('/api/referrals', async (req, res) => {
-  try {
-    const referrals = await Referral.find(); // Fetch all referrals
-    res.json(referrals);
-  } catch (error) {
-    console.error('Error fetching referrals:', error);
-    res.status(500).json({ error: 'Failed to fetch referrals' });
-  }
-});
+// // Route: GET /api/referrals
+// app.get('/api/referrals', async (req, res) => {
+//   try {
+//     const referrals = await Referral.find(); // Fetch all referrals
+//     res.json(referrals);
+//   } catch (error) {
+//     console.error('Error fetching referrals:', error);
+//     res.status(500).json({ error: 'Failed to fetch referrals' });
+//   }
+// });
 
-// Route: POST /api/referrals
-app.post('/api/referrals', async (req, res) => {
-  const { referrerId, referredId, referredUsername, points } = req.body;
+// // Route: POST /api/referrals
+// app.post('/api/referrals', async (req, res) => {
+//   const { referrerId, referredId, referredUsername, points } = req.body;
 
-  try {
-    if (referrerId === referredId) {
-      return res.status(400).json({ message: 'You cannot refer yourself.' });
-    }
+//   try {
+//     if (referrerId === referredId) {
+//       return res.status(400).json({ message: 'You cannot refer yourself.' });
+//     }
 
-    const existingReferral = await Referral.findOne({ referrerId, referredId });
-    if (existingReferral) {
-      return res.status(400).json({ message: 'Referral already exists.' });
-    }
+//     const existingReferral = await Referral.findOne({ referrerId, referredId });
+//     if (existingReferral) {
+//       return res.status(400).json({ message: 'Referral already exists.' });
+//     }
 
-    const newReferral = new Referral({ referrerId, referredId, referredUsername, points });
-    await newReferral.save();
+//     const newReferral = new Referral({ referrerId, referredId, referredUsername, points });
+//     await newReferral.save();
 
-    res.status(201).json({ message: 'Referral created successfully', newReferral });
-  } catch (error) {
-    console.error('Error creating referral:', error);
-    res.status(500).json({ error: 'Failed to create referral' });
-  }
-});
+//     res.status(201).json({ message: 'Referral created successfully', newReferral });
+//   } catch (error) {
+//     console.error('Error creating referral:', error);
+//     res.status(500).json({ error: 'Failed to create referral' });
+//   }
+// });
 
-// Fetch referred friends for a specific user
-app.get('/api/referrals/friends/:referrerId', async (req, res) => {
-  const { referrerId } = req.params;
+// // Fetch referred friends for a specific user
+// app.get('/api/referrals/friends/:referrerId', async (req, res) => {
+//   const { referrerId } = req.params;
 
-  try {
-    const referrals = await Referral.find({ referrerId });
-    res.json(referrals);
-  } catch (error) {
-    console.error('Error fetching referred friends:', error);
-    res.status(500).json({ error: 'Failed to fetch referred friends' });
-  }
-});
+//   try {
+//     const referrals = await Referral.find({ referrerId });
+//     res.json(referrals);
+//   } catch (error) {
+//     console.error('Error fetching referred friends:', error);
+//     res.status(500).json({ error: 'Failed to fetch referred friends' });
+//   }
+// });
 
-// Route: POST /api/referrals/claim
-app.post('/api/referrals/claim', async (req, res) => {
-  const { referredId } = req.body;
+// // Route: POST /api/referrals/claim
+// app.post('/api/referrals/claim', async (req, res) => {
+//   const { referredId } = req.body;
 
-  try {
-    const referral = await Referral.findOne({ referredId });
-    if (!referral) {
-      return res.status(404).json({ message: 'Referral not found.' });
-    }
+//   try {
+//     const referral = await Referral.findOne({ referredId });
+//     if (!referral) {
+//       return res.status(404).json({ message: 'Referral not found.' });
+//     }
 
-    referral.points = 0; // Mark points as claimed
-    await referral.save();
+//     referral.points = 0; // Mark points as claimed
+//     await referral.save();
 
-    res.status(200).json({ message: 'Points claimed successfully.' });
-  } catch (error) {
-    console.error('Error claiming points:', error);
-    res.status(500).json({ message: 'Failed to claim points.' });
-  }
-});
+//     res.status(200).json({ message: 'Points claimed successfully.' });
+//   } catch (error) {
+//     console.error('Error claiming points:', error);
+//     res.status(500).json({ message: 'Failed to claim points.' });
+//   }
+// });
 
-// Route: GET /api/user (mock endpoint for users)
-app.get('/api/user', async (req, res) => {
-  try {
-    const users = await User.find({});
-    res.json({ users });
-  } catch (error) {
-    console.error('Error fetching users:', error);
-    res.status(500).json({ error: 'Failed to fetch users' });
-  }
-});
+// // Route: GET /api/user (mock endpoint for users)
+// app.get('/api/user', async (req, res) => {
+//   try {
+//     const users = await User.find({});
+//     res.json({ users });
+//   } catch (error) {
+//     console.error('Error fetching users:', error);
+//     res.status(500).json({ error: 'Failed to fetch users' });
+//   }
+// });
 
-// Route: GET /api/referrals/:userId
-app.get('/api/referrals/:userId', (req, res) => {
-  const { userId } = req.params;
-  res.json({ referralLink: `https://t.me/SunEarner_bot?start=${userId}` });
-});
+// // Route: GET /api/referrals/:userId
+// app.get('/api/referrals/:userId', (req, res) => {
+//   const { userId } = req.params;
+//   res.json({ referralLink: `https://t.me/SunEarner_bot?start=${userId}` });
+// });
 
 
 
