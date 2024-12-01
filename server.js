@@ -279,7 +279,7 @@ const referralSchema = new mongoose.Schema({
   points: { type: Number, default: 250 },
 });
 
-const Referral = mongoose.model('Referral', referralSchema);
+// const Referral = mongoose.model('Referral', referralSchema);
 
 // User schema
 const userSchema = new mongoose.Schema({
