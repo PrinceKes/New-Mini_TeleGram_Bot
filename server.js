@@ -267,10 +267,13 @@ app.put('/api/tasks/:task_id', async (req, res) => {
 
 
 
-
 // Endpoint to handle referral link usage
-app.post('/referral', async (req, res) => {
+app.post('/api/referrals', async (req, res) => {
   const { referrerId, referredId, referredUsername } = req.body;
+
+  if (!referrerId || !referredId || !referredUsername) {
+    return res.status(400).json({ message: 'Invalid input data' });
+  }
 
   try {
     // Check if the referral already exists
@@ -285,27 +288,35 @@ app.post('/referral', async (req, res) => {
 
     res.status(201).json({ message: 'Referral recorded successfully' });
   } catch (error) {
-    console.error(error);
+    console.error('Error saving referral:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 });
 
 // Endpoint to fetch referrals for a specific user
-app.get('/referrals/:referrerId', async (req, res) => {
+app.get('/api/referrals/:referrerId', async (req, res) => {
   const { referrerId } = req.params;
+
+  if (!referrerId) {
+    return res.status(400).json({ message: 'Referrer ID is required' });
+  }
 
   try {
     const referrals = await Referral.find({ referrerId });
     res.status(200).json(referrals);
   } catch (error) {
-    console.error(error);
+    console.error('Error fetching referrals:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 });
 
 // Endpoint to claim points
-app.post('/claim', async (req, res) => {
+app.post('/api/referrals/claim', async (req, res) => {
   const { referrerId, referredId } = req.body;
+
+  if (!referrerId || !referredId) {
+    return res.status(400).json({ message: 'Referrer ID and Referred ID are required' });
+  }
 
   try {
     const referral = await Referral.findOne({ referrerId, referredId });
@@ -315,17 +326,19 @@ app.post('/claim', async (req, res) => {
 
     // Add points to referrer's balance
     const user = await User.findOne({ user_id: referrerId });
-    if (user) {
-      user.balance += referral.points;
-      await user.save();
-
-      // Optionally remove or mark referral as claimed
-      await Referral.deleteOne({ _id: referral._id });
+    if (!user) {
+      return res.status(404).json({ message: 'Referrer not found' });
     }
 
-    res.status(200).json({ message: 'Points claimed successfully' });
+    user.balance += referral.points;
+    await user.save();
+
+    // Mark referral as claimed or delete it
+    await Referral.deleteOne({ _id: referral._id });
+
+    res.status(200).json({ message: 'Points claimed successfully', newBalance: user.balance });
   } catch (error) {
-    console.error(error);
+    console.error('Error claiming points:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 });
