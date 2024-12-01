@@ -81,11 +81,9 @@ document.addEventListener('DOMContentLoaded', () => {
   
     // Initial fetch
     fetchReferrals();
-  });
-  
 
 
-  document.addEventListener('DOMContentLoaded', () => {
+
     const copyButton = document.getElementById('copy-referral-link');
     const referralLinkInput = document.getElementById('referral-link');
 
@@ -120,5 +118,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Fetch the referral link when the page loads
     fetchReferralLink();
-});
 
+
+
+
+  });
+  
