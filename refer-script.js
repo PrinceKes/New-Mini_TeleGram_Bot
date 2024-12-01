@@ -88,26 +88,32 @@ function showCustomAlert(message, duration = 3000) {
             console.error("User ID is not set.");
             return;
         }
-
+    
         try {
             const response = await fetch(`https://sunday-mini-telegram-bot.onrender.com/api/referrals/friends/${userId}`);
             if (!response.ok) throw new Error("Network response was not ok");
             const data = await response.json();
-
-            if (data.friends && data.friends.length > 0) {
-                // Populate the referred friends list
-                referredFriendsList.innerHTML = data.friends.map(friend => `
+    
+            if (data && data.length > 0) {
+                referredFriendsList.innerHTML = data.map(friend => `
                     <div class="friend-card">
                         <div class="friend-avatar">👤</div>
                         <div class="friend-info">
-                            <p>${friend.referredId}</p>
-                            <p>+250 RsT</p>
+                            <p>${friend.referredUsername}</p>
+                            <p>${friend.points} RsT</p>
                         </div>
-                        <button class="claim-btn">Claim</button>
+                        <button class="claim-btn" data-referred-id="${friend.referredId}">Claim</button>
                     </div>
                 `).join("");
+    
+                // Add event listeners for claim buttons
+                document.querySelectorAll(".claim-btn").forEach(button => {
+                    button.addEventListener("click", async (e) => {
+                        const referredId = e.target.getAttribute("data-referred-id");
+                        await claimPoints(referredId);
+                    });
+                });
             } else {
-                // Show default empty state
                 referredFriendsList.innerHTML = `
                     <div class="icon-section">
                         <div class="icon">👥</div>
@@ -119,6 +125,56 @@ function showCustomAlert(message, duration = 3000) {
             console.error("Failed to fetch referred friends:", error);
         }
     }
+    
+    async function claimPoints(referredId) {
+        try {
+            const response = await fetch("https://sunday-mini-telegram-bot.onrender.com/api/referrals/claim", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ referredId })
+            });
+    
+            if (response.ok) {
+                alert("Points claimed successfully!");
+                fetchReferredFriends(); // Refresh the list
+            } else {
+                const errorData = await response.json();
+                alert(errorData.message || "Failed to claim points.");
+            }
+        } catch (error) {
+            console.error("Failed to claim points:", error);
+        }
+    }
+
+
+
+
+// function to Update the claim button logic to show the modal.
+function showClaimModal(friendName) {
+    const modal = document.getElementById("friend-modal");
+    const friendNameSpan = document.getElementById("friend-name");
+    const closeModal = document.getElementById("close-modal");
+
+    friendNameSpan.textContent = friendName;
+    modal.style.display = "block";
+
+    closeModal.onclick = () => {
+        modal.style.display = "none";
+    };
+
+    window.onclick = (event) => {
+        if (event.target === modal) {
+            modal.style.display = "none";
+        }
+    };
+}
+
+
+
+
+
 
     // Initialize
     await fetchUserId();

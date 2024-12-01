@@ -309,11 +309,8 @@ mongoose
 
 
 
-
-// here are the scripts for referring:
-
-// Track referrals
-app.post('/api/referrals/track', async (req, res) => {
+// Newly updated for referral system
+  app.post('/api/referrals/track', async (req, res) => {
     const { referrerId, referredId, referredUsername } = req.body;
 
     try {
@@ -327,20 +324,26 @@ app.post('/api/referrals/track', async (req, res) => {
             return res.status(400).json({ message: "Referral already exists." });
         }
 
-        // Create a new referral
+        // Add the referral record
         const newReferral = new Referral({
             referrerId,
             referredId,
             referredUsername,
+            points: 250 // Assign reward points
         });
         await newReferral.save();
 
+        // Optionally notify referrer about the new referral
         res.status(201).json({ message: "Referral tracked successfully." });
     } catch (err) {
         console.error("Error tracking referral:", err);
         res.status(500).json({ message: "Server error." });
     }
 });
+
+
+
+
 
 // Fetch all referrals
 app.get('/api/referrals', async (req, res) => {
@@ -355,16 +358,17 @@ app.get('/api/referrals', async (req, res) => {
 
 // Fetch friends referred by a specific user
 app.get('/api/referrals/friends/:referrerId', async (req, res) => {
-    const { referrerId } = req.params;
+  const { referrerId } = req.params;
 
-    try {
-        const referrals = await Referral.find({ referrerId });
-        res.status(200).json(referrals);
-    } catch (err) {
-        console.error("Error fetching referred friends:", err);
-        res.status(500).json({ message: "Server error." });
-    }
+  try {
+      const referrals = await Referral.find({ referrerId });
+      res.status(200).json(referrals);
+  } catch (err) {
+      console.error("Error fetching referred friends:", err);
+      res.status(500).json({ message: "Server error." });
+  }
 });
+
 
 
 
@@ -394,6 +398,29 @@ router.get('/api/referrals/friends/:userId', (req, res) => {
 });
 
 app.use("/", router);
+
+
+
+app.post('/api/referrals/claim', async (req, res) => {
+  const { referredId } = req.body;
+
+  try {
+      const referral = await Referral.findOne({ referredId });
+      if (!referral) {
+          return res.status(404).json({ message: "Referral not found." });
+      }
+
+      // Add logic to mark points as claimed
+      referral.points = 0; // Mark points as claimed
+      await referral.save();
+
+      res.status(200).json({ message: "Points claimed successfully." });
+  } catch (err) {
+      console.error("Error claiming points:", err);
+      res.status(500).json({ message: "Server error." });
+  }
+});
+
 
 
 
