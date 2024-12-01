@@ -1,11 +1,17 @@
-// models/Referral.js
-const mongoose = require("mongoose");
-
+// Referral schema
 const referralSchema = new mongoose.Schema({
-  referrerId: { type: String, required: true },
-  referredId: { type: String, required: true },
-  points: { type: Number, default: 0 },
-  createdAt: { type: Date, default: Date.now },
+  referrerId: String,
+  referredId: String,
+  referredUsername: String,
+  points: { type: Number, default: 250 },
 });
 
-module.exports = mongoose.model("Referral", referralSchema);
+const Referral = mongoose.model('Referral', referralSchema);
+
+// User schema
+const userSchema = new mongoose.Schema({
+  user_id: String,
+  username: String,
+});
+
+const User = mongoose.model('User', userSchema);
