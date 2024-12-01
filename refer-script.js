@@ -84,43 +84,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-    const copyButton = document.getElementById('copy-referral-link');
-    const referralLinkInput = document.getElementById('referral-link');
 
-    // Fetch and display the referral link
-    async function fetchReferralLink() {
-        const userId = localStorage.getItem('user_id'); // Ensure user ID is properly set
-        if (!userId) {
-            console.error('User ID not found in localStorage.');
-            return;
-        }
 
-        try {
-            const response = await fetch(`${API_BASE_URL}/referrals/${userId}`);
-            if (!response.ok) {
-                console.error(`Error fetching referral link: ${response.status} ${response.statusText}`);
-                return;
-            }
-
-            const { referralLink } = await response.json();
-            referralLinkInput.value = referralLink; // Populate input with the referral link
-        } catch (error) {
-            console.error('Error fetching referral link:', error);
-        }
+    // Update invite button's referral link dynamically
+    const inviteButton = document.querySelector('.invite-btn');
+    if (referrerId && inviteButton) {
+        const referralLink = `https://t.me/SunEarner_bot?start=${referrerId}`;
+        inviteButton.setAttribute('data-referral-link', referralLink);
     }
 
-    // Copy functionality
-    copyButton.addEventListener('click', () => {
-        referralLinkInput.select();
-        document.execCommand('copy');
-        alert('Referral link copied to clipboard!');
+    // Copy referral link to clipboard
+    inviteButton.addEventListener('click', () => {
+        const referralLink = inviteButton.getAttribute('data-referral-link');
+        if (referralLink) {
+        navigator.clipboard.writeText(referralLink)
+            .then(() => {
+            alert('Referral link copied to clipboard!');
+            })
+            .catch((error) => {
+            console.error('Error copying referral link:', error);
+            alert('Failed to copy referral link.');
+            });
+        } else {
+        alert('Referral link not found.');
+        }
     });
-
-    // Fetch the referral link when the page loads
-    fetchReferralLink();
+});
 
 
-
-
-  });
   
