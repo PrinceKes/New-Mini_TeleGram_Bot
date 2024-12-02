@@ -225,34 +225,34 @@
       }
     }
 
-    // Call this function after a successful transaction
-    async function sendTransaction() {
-      try {
-        const walletInfo = tonConnectUI.wallet;
-        if (!walletInfo) {
-          alert("No wallet connected. Please connect your wallet first.");
-          return;
-        }
+    // // // Call this function after a successful transaction
+    // // async function sendTransaction() {
+    // //   try {
+    // //     const walletInfo = tonConnectUI.wallet;
+    // //     if (!walletInfo) {
+    // //       alert("No wallet connected. Please connect your wallet first.");
+    // //       return;
+    // //     }
 
-        const transaction = {
-          messages: [
-            {
-              address: "UQBx2kbigJVm3ywKu6TJhfkyw77v0bcOjKvUEgWTgCrcg5NF",
-              amount: 0.2, // Use amount in TONs directly, or `amountInNanotons` if needed
-            },
-          ],
-        };
+    // //     const transaction = {
+    // //       messages: [
+    // //         {
+    // //           address: "UQBx2kbigJVm3ywKu6TJhfkyw77v0bcOjKvUEgWTgCrcg5NF",
+    // //           amount: 0.2, // Use amount in TONs directly, or `amountInNanotons` if needed
+    // //         },
+    // //       ],
+    // //     };
 
-        await tonConnectUI.sendTransaction(transaction);
-        alert("Transaction sent successfully!");
+    //     await tonConnectUI.sendTransaction(transaction);
+    //     alert("Transaction sent successfully!");
 
-        // Call the function to handle the balance update
-        handleTransactionSuccess();
-      } catch (error) {
-        console.log(`Transaction failed: ${error.message}`);
-        alert("Transaction failed. Please try again.");
-      }
-    }
+    //     // Call the function to handle the balance update
+    //     handleTransactionSuccess();
+    //   } catch (error) {
+    //     console.log(`Transaction failed: ${error.message}`);
+    //     alert("Transaction failed. Please try again.");
+    //   }
+    // }
 
   </script>
 
