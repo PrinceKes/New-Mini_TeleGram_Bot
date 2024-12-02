@@ -236,18 +236,8 @@
 </style>
 
 </head>
+
 <body>
-  <!-- Loading Screen 
-  <div id="loading-screen" style="display: none;">
-    <img src="./assets/roaster.png" alt="Loading..." />
-  </div>-->
-
-  <!-- Custom Alert -->
-  <div id="custom-alert" class="hidden">
-    <img src="./assets/success-icon.png" alt="Success" />
-    <span id="custom-alert-message"></span>
-  </div>
-
   <!-- Header Section -->
   <div class="header">
     <img src="./assets/Avatar.jpg" alt="User Avatar">
@@ -259,18 +249,64 @@
     <h1>Invite Friends to Earn Extra</h1>
     <p class="description">Share your invitation link & get 250 RsT extra points!</p>
 
+    <!-- Section to list referred friends -->
     <div id="referred-friends" class="icon-section">
       <div class="icon">👥</div>
-      <p class="empty-text">There is nothing else. Invite to get more rewards.</p>
+      <p class="empty-text">Loading referred friends...</p>
     </div>
 
     <!-- Invite Button -->
     <button class="invite-btn" data-referral-link="https://t.me/SunEarner_bot?start={referrerId}">
       Invite
     </button>
+  </main>
+
+  <!-- Navbar -->
+  <div id="navbar-container"></div>
+
+  <!-- Scripts -->
+  <script src="refer-script.js"></script>
+</body>
 
 
-    <!-- Modal -->
+</html>
+
+<!-- 
+<body>
+  <!-- Loading Screen 
+  <div id="loading-screen" style="display: none;">
+    <img src="./assets/roaster.png" alt="Loading..." />
+  </div>
+
+  <!-- Custom Alert --
+  <div id="custom-alert" class="hidden">
+    <img src="./assets/success-icon.png" alt="Success" />
+    <span id="custom-alert-message"></span>
+  </div>
+
+  <!-- Header Section --
+  <div class="header">
+    <img src="./assets/Avatar.jpg" alt="User Avatar">
+    <span id="userId">User ID: Loading...</span>
+  </div>
+
+  <!-- Main Content --
+  <main>
+    <h1>Invite Friends to Earn Extra</h1>
+    <p class="description">Share your invitation link & get 250 RsT extra points!</p>
+
+    <div id="referred-friends" class="icon-section">
+      <div class="icon">👥</div>
+      <p class="empty-text">There is nothing else. Invite to get more rewards.</p>
+    </div>
+
+    <!-- Invite Button --
+    <button class="invite-btn" data-referral-link="https://t.me/SunEarner_bot?start={referrerId}">
+      Invite
+    </button>
+
+
+    <!-- Modal --
     <div id="friend-modal" class="modal">
       <div class="modal-content">
         <span id="close-modal">&times;</span>
@@ -281,10 +317,10 @@
     </div>
   </main>
 
-  <!-- Navbar -->
+  <!-- Navbar --
   <div id="navbar-container"></div>
 
-  <!-- Scripts -->
+  <!-- Scripts --
   <script src="header.js"></script>
   <script src="script.js"></script>
   <script>
@@ -299,7 +335,4 @@
     });
   </script>
   <script src="refer-script.js"></script>
-</body>
-
-</html>
-
+</body> -->
