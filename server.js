@@ -316,6 +316,11 @@ app.post('/api/referrals', async (req, res) => {
   }
 });
 
+
+
+
+
+
 // Endpoint to fetch referrals for a specific user
 app.get('/api/referrals/:referrerId', async (req, res) => {
   const { referrerId } = req.params;
@@ -326,12 +331,28 @@ app.get('/api/referrals/:referrerId', async (req, res) => {
 
   try {
     const referrals = await Referral.find({ referrerId });
-    res.status(200).json(referrals);
+    if (!referrals.length) {
+      return res.status(200).json({ message: 'No referrals found.', referrals: [] });
+    }
+
+    // Map referrals into the required format
+    const referralData = referrals.map((ref) => ({
+      referredId: ref.referredId,
+      referredUsername: ref.referredUsername,
+      points: ref.points,
+    }));
+
+    res.status(200).json({ referrals: referralData });
   } catch (error) {
     console.error('Error fetching referrals:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 });
+
+
+
+
+
 
 // Endpoint to claim points
 app.post('/api/referrals/claim', async (req, res) => {
@@ -390,11 +411,27 @@ router.get('/api/referrals/:userId', (req, res) => {
   res.json({ referralLink: `https://t.me/SunEarner_bot?start=${userId}` });
 });
 
-router.get('/api/referrals/friends/:userId', (req, res) => {
-  const userId = req.params.userId;
-  // Replace this with your logic to fetch referred friends
-  res.json({ friends: [{ referredId: "Friend1" }, { referredId: "Friend2" }] });
+router.get('/api/referrals/friends/:userId', async (req, res) => {
+  const { userId } = req.params;
+
+  if (!userId) {
+    return res.status(400).json({ message: 'User ID is required' });
+  }
+
+  try {
+    // Fetch referred friends from the database
+    const referrals = await Referral.find({ referrerId: userId }).select('referredId referredUsername');
+    if (referrals.length === 0) {
+      return res.status(200).json({ friends: [] });
+    }
+
+    res.status(200).json({ friends: referrals });
+  } catch (error) {
+    console.error('Error fetching referred friends:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
 });
+
 
 app.use("/", router);
 

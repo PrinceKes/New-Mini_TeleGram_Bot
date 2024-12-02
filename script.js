@@ -36,6 +36,13 @@ function updateHeader(userId, avatarUrl) {
   // }
 }
 
+
+
+
+
+
+
+
 // Function to save the user ID and username to the database via API
 function saveUserIdToDatabase(user_id) {
   const urlParams = new URLSearchParams(window.location.search);
@@ -50,6 +57,12 @@ function saveUserIdToDatabase(user_id) {
     .then(data => console.log('User saved:', data))
     .catch(error => console.error('Error saving user:', error));
 }
+
+
+
+
+
+
 
 
 // Navbar loading and active tab handling

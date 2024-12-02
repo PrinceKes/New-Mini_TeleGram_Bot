@@ -1,15 +1,11 @@
-//   Here are the updated once
-document.addEventListener('DOMContentLoaded', () => {
-    const referrerId = localStorage.getItem('userId'); // Assuming the logged-in user's ID is stored in localStorage
-    const referralList = document.getElementById('referral-list');
-    const claimModal = document.getElementById('claim-modal');
-    const claimButton = document.getElementById('claim-button');
+document.addEventListener('DOMContentLoaded', async () => {
+    const referrerId = localStorage.getItem('user_id'); // Assuming user ID is stored in localStorage
+    const referredFriendsSection = document.getElementById('referred-friends');
   
-    // Base API URL for the mini app
     const API_BASE_URL = 'https://new-mini-telegram-bot.onrender.com/api';
   
-    // Fetch referrals for the user
-    async function fetchReferrals() {
+    // Function to fetch referred friends
+    async function fetchReferredFriends() {
       if (!referrerId) {
         console.error('User ID not found in localStorage.');
         return;
@@ -17,70 +13,49 @@ document.addEventListener('DOMContentLoaded', () => {
   
       try {
         const response = await fetch(`${API_BASE_URL}/referrals/${referrerId}`);
-        if (!response.ok) {
-          console.error(`Error fetching referrals: ${response.status} ${response.statusText}`);
+        const data = await response.json();
+  
+        if (!data.referrals || data.referrals.length === 0) {
+          referredFriendsSection.innerHTML = `
+            <div class="icon">👥</div>
+            <p class="empty-text">There is nothing else. Invite to get more rewards.</p>`;
           return;
         }
   
-        const referrals = await response.json();
-        referralList.innerHTML = '';
-  
-        referrals.forEach((referral) => {
-          const listItem = document.createElement('li');
-          listItem.textContent = `${referral.referredUsername} (ID: ${referral.referredId}) - ${referral.points} points`;
-  
-          const button = document.createElement('button');
-          button.textContent = 'Claim Points';
-          button.onclick = () => claimPoints(referral.referredId);
-  
-          listItem.appendChild(button);
-          referralList.appendChild(listItem);
+        // Populate referrals dynamically
+        referredFriendsSection.innerHTML = ''; // Clear existing content
+        data.referrals.forEach((friend) => {
+          const friendBox = document.createElement('div');
+          friendBox.classList.add('friend-box');
+          friendBox.innerHTML = `
+            <div class="friend-info">
+              <span class="friend-username">${friend.referredUsername}</span>
+              <span class="friend-id">ID: ${friend.referredId}</span>
+              <span class="friend-points">${friend.points} points</span>
+            </div>`;
+          referredFriendsSection.appendChild(friendBox);
         });
-  
-        // Show the modal if there are referrals
-        if (referrals.length > 0) {
-          claimModal.style.display = 'block';
-        }
       } catch (error) {
-        console.error('Error fetching referrals:', error);
+        console.error('Error fetching referred friends:', error);
       }
     }
   
-    // Claim points for a specific referral
-    async function claimPoints(referredId) {
-      if (!referrerId || !referredId) {
-        console.error('Missing referrerId or referredId for claiming points.');
-        return;
-      }
+    // Fetch referred friends on page load
+    fetchReferredFriends();
+//   });
   
-      try {
-        const response = await fetch(`${API_BASE_URL}/referrals/claim`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ referrerId, referredId }),
-        });
-  
-        if (!response.ok) {
-          const errorText = await response.text();
-          console.error(`Error claiming points: ${response.status} ${response.statusText} - ${errorText}`);
-          alert('Failed to claim points.');
-          return;
-        }
-  
-        const result = await response.json();
-        alert(result.message);
-  
-        // Refresh referrals
-        fetchReferrals();
-      } catch (error) {
-        console.error('Error claiming points:', error);
-      }
-    }
-  
-    // Initial fetch
-    fetchReferrals();
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
