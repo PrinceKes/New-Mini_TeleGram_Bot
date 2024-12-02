@@ -354,7 +354,7 @@
     border-radius: 20px;
     text-align: center;
     transition: all 0.4s ease-in-out;
-    border-radius: 0, 30px, 0, 30px;  
+    border-radius: 0, 50px, 0, 50px;  
     flex-direction: column;
     display: none;
   } 

@@ -125,16 +125,32 @@ app.put('/api/tasks/:id', async (req, res) => {
   }
 });
 
+
+
+
+
+
+
 // Register or fetch a user
 app.post('/api/users/register', async (req, res) => {
-  const { user_id } = req.body;
+  const { user_id, username } = req.body;
   if (!user_id) return res.status(400).json({ error: 'user_id is required' });
 
   try {
     let user = await User.findOne({ user_id });
     if (!user) {
-      user = new User({ user_id, balance: 0, completedTasks: [] });
+      user = new User({
+        user_id,
+        username: username || null,
+        balance: 0,
+        completedTasks: [],
+      });
       await user.save();
+    } else {
+      if (username && user.username !== username) {
+        user.username = username;
+        await user.save();
+      }
     }
     res.status(200).json({ message: 'User registered successfully', user });
   } catch (error) {
@@ -142,6 +158,13 @@ app.post('/api/users/register', async (req, res) => {
     res.status(500).json({ error: 'Failed to register user' });
   }
 });
+
+
+
+
+
+
+
 
 
 // Get user by ID

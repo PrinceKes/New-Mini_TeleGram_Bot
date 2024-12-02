@@ -36,17 +36,21 @@ function updateHeader(userId, avatarUrl) {
   // }
 }
 
-// Function to save the user ID to the database via API
-function saveUserIdToDatabase(user_id) { // Updated parameter name
+// Function to save the user ID and username to the database via API
+function saveUserIdToDatabase(user_id) {
+  const urlParams = new URLSearchParams(window.location.search);
+  const username = urlParams.get('tg.username');
+
   fetch('https://sunday-mini-telegram-bot.onrender.com/api/users', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ user_id }), // Updated to match backend
+    body: JSON.stringify({ user_id, username }), 
   })
     .then(response => response.json())
-    .then(data => console.log('User ID saved:', data))
-    .catch(error => console.error('Error saving user ID:', error));
+    .then(data => console.log('User saved:', data))
+    .catch(error => console.error('Error saving user:', error));
 }
+
 
 // Navbar loading and active tab handling
 fetch('/navbar.html')
@@ -162,6 +166,12 @@ function fetchAndDisplayUsers() {
   })
   .catch(error => console.error('Error fetching users:', error));
 }
+
+
+
+
+
+
 
 // Function to fetch and display referrals in the admin dashboard
 function fetchAndDisplayReferrals() {
