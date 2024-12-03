@@ -46,17 +46,22 @@ function updateHeader(userId, avatarUrl) {
 // Function to save the user ID and username to the database via API
 function saveUserIdToDatabase(user_id) {
   const urlParams = new URLSearchParams(window.location.search);
-  const username = urlParams.get('tg.username');
+  const username = urlParams.get('tg.username'); // Ensure username is fetched correctly
 
-  fetch('https://sunday-mini-telegram-bot.onrender.com/api/users', {
+  fetch('https://sunday-mini-telegram-bot.onrender.com/api/users/register', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ user_id, username }), 
+    body: JSON.stringify({ user_id, username }) 
   })
     .then(response => response.json())
-    .then(data => console.log('User saved:', data))
-    .catch(error => console.error('Error saving user:', error));
+    .then(data => {
+      console.log('User saved:', data);
+    })
+    .catch(error => {
+      console.error('Error saving user:', error);
+    });
 }
+
 
 
 

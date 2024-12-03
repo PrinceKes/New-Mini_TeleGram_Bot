@@ -134,11 +134,15 @@ app.put('/api/tasks/:id', async (req, res) => {
 // Register or fetch a user
 app.post('/api/users/register', async (req, res) => {
   const { user_id, username } = req.body;
+  console.log('Received data:', { user_id, username });
+
   if (!user_id) return res.status(400).json({ error: 'user_id is required' });
 
   try {
     let user = await User.findOne({ user_id });
+    console.log('Found user:', user);
     if (!user) {
+
       user = new User({
         user_id,
         username: username || null,
@@ -147,6 +151,7 @@ app.post('/api/users/register', async (req, res) => {
       });
       await user.save();
     } else {
+
       if (username && user.username !== username) {
         user.username = username;
         await user.save();
@@ -158,6 +163,7 @@ app.post('/api/users/register', async (req, res) => {
     res.status(500).json({ error: 'Failed to register user' });
   }
 });
+
 
 
 
@@ -291,13 +297,12 @@ app.put('/api/tasks/:task_id', async (req, res) => {
 
 
 
+// referral handles
 
-
-
-// Endpoint to handle referral data
 app.post('/api/referrals', async (req, res) => {
   const { referrer_id, user_id, username } = req.body;
 
+  // Validate required fields
   if (!referrer_id || !user_id || !username) {
     return res.status(400).json({ message: 'Missing required fields' });
   }
@@ -307,26 +312,34 @@ app.post('/api/referrals', async (req, res) => {
     const referrerProfile = await Referral.findOne({ referral_id: referrer_id });
 
     if (!referrerProfile) {
-      // If referrer profile doesn't exist, create one
+      // Create a new referral profile if it doesn't exist
       const newReferralProfile = new Referral({
         referral_id: referrer_id,
-        referred_Users: [{
-          user_id,
-          username,
-          reward: 250,
-        }],
+        referred_Users: [
+          {
+            user_id,
+            username,
+            reward: 250,
+          },
+        ],
       });
 
       await newReferralProfile.save();
-      return res.status(201).json({ message: 'Referrer profile created', profile: newReferralProfile });
+      return res.status(201).json({
+        message: 'Referrer profile created',
+        profile: newReferralProfile,
+      });
     }
 
-    // If referrer profile exists, add the referred user to their profile
-    const userExists = referrerProfile.referred_Users.find(user => user.user_id === user_id);
+    // Check if the referred user already exists in the profile
+    const userExists = referrerProfile.referred_Users.some(
+      (user) => user.user_id === user_id
+    );
     if (userExists) {
-      return res.status(200).json({ message: 'User already referred' });
+      return res.status(409).json({ message: 'User already referred' });
     }
 
+    // Add the referred user to the referrer's profile
     referrerProfile.referred_Users.push({
       user_id,
       username,
@@ -334,8 +347,10 @@ app.post('/api/referrals', async (req, res) => {
     });
 
     await referrerProfile.save();
-    return res.status(200).json({ message: 'Referred user added', profile: referrerProfile });
-
+    return res.status(200).json({
+      message: 'Referred user added',
+      profile: referrerProfile,
+    });
   } catch (error) {
     console.error('Error processing referral:', error);
     return res.status(500).json({ message: 'Internal server error' });
@@ -343,26 +358,31 @@ app.post('/api/referrals', async (req, res) => {
 });
 
 
-
-
-
-// server that's fetching and returning the referral data.
 app.get('/api/referrals', async (req, res) => {
   const userId = req.query.userId;
 
-  // Fetch the user's referral data from MongoDB
+  // Validate the presence of userId
+  if (!userId) {
+    return res.status(400).json({ message: 'Missing userId in query' });
+  }
+
   try {
+    // Fetch the user's referral data from MongoDB
     const user = await Referral.findOne({ referral_id: userId });
+
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    res.json({ referred_Users: user.referred_Users });
+    // Return the list of referred users
+    res.status(200).json({ referred_Users: user.referred_Users });
   } catch (error) {
     console.error('Error fetching referral data:', error);
-    res.status(500).json({ message: 'Error fetching referral data' });
+    res.status(500).json({ message: 'Internal server error' });
   }
 });
+
+
 
 
 
