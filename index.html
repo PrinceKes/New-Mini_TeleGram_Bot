@@ -82,6 +82,7 @@
   <script src="task-script.js"></script>
   <script src="script.js"></script>
 
+<!-- 
   <script>
     const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
         manifestUrl: 'https://new-mini-telegram-bot.onrender.com/tonconnect-manifest.json',
@@ -167,94 +168,170 @@
     }
 
 
-  </script>
+  </script> -->
 
 
 
 
 
-
-
-
-
-
-
-
-
-<!--  transaction completion reward systems  -->
-  <script>
-    async function handleTransactionSuccess() {
+<script>
+  const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+      manifestUrl: 'https://new-mini-telegram-bot.onrender.com/tonconnect-manifest.json',
+      buttonRootId: 'ton-connect'
+      });
+  async function connectToWallet() {
       try {
-        // Retrieve the user ID from localStorage
-        const userId = localStorage.getItem("user_id");
-        if (!userId) {
-          console.error("User ID not found in localStorage");
-          alert("User ID not found. Please log in again.");
-          return;
-        }
-
-        // Update balance on the frontend
-        const pointsElement = document.getElementById("points");
-        const currentPoints = parseInt(pointsElement.textContent.split(" ")[0], 10) || 0;
-        const rewardPoints = 5000;
-
-        const updatedPoints = currentPoints + rewardPoints;
-        pointsElement.textContent = `${updatedPoints} Rst`;
-
-        // Send updated balance to the MongoDB API
-        const response = await fetch("https://sunday-mini-telegram-bot.onrender.com/api/user/update-balance", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            user_id: userId,
-            balance: updatedPoints,
-          }),
-        });
-
-        if (!response.ok) {
-          throw new Error(`Failed to update balance: ${response.statusText}`);
-        }
-
-        console.log("User balance successfully updated in the database.");
-        alert("Your transaction is successful, and your balance has been updated!");
+          const connectedWallet = await tonConnectUI.connectWallet();
+          console.log('Wallet connected:', connectedWallet.address);
       } catch (error) {
-        console.error("Error handling transaction success:", error);
-        alert("An error occurred while updating your balance. Please try again.");
+          console.log('Connection failed:', error);
       }
+  }
+
+  // Add connection state listener
+  let showInputField = document.querySelector('.show-TransactionInput');
+  showInputField.style.display = "none";
+  let SendTransction = document.querySelector('.SendTransction');
+  SendTransction.style.display = "none";
+  let Address;
+
+    const showUi=()=>{
+      console.log("heelo from Showui");
+        
+        SendTransction.style.display = "block";
+      
+
     }
 
-    // // // Call this function after a successful transaction
-    // // async function sendTransaction() {
-    // //   try {
-    // //     const walletInfo = tonConnectUI.wallet;
-    // //     if (!walletInfo) {
-    // //       alert("No wallet connected. Please connect your wallet first.");
-    // //       return;
-    // //     }
 
-    // //     const transaction = {
-    // //       messages: [
-    // //         {
-    // //           address: "UQBx2kbigJVm3ywKu6TJhfkyw77v0bcOjKvUEgWTgCrcg5NF",
-    // //           amount: 0.2, // Use amount in TONs directly, or `amountInNanotons` if needed
-    // //         },
-    // //       ],
-    // //     };
+  let WalletConnected = document.getElementsByClassName('isconnected')[0];
+  let message;
 
-    //     await tonConnectUI.sendTransaction(transaction);
-    //     alert("Transaction sent successfully!");
+  tonConnectUI.onStatusChange(walletInfo => {
+    if (walletInfo) {
+      // If wallet is connected, update the message
+      if (!WalletConnected.hasChildNodes()) {
+        message = document.createTextNode("Connected Wallet:");
+        WalletConnected.appendChild(message);
+      } else {
+        WalletConnected.firstChild.nodeValue = "Connected Wallet:";
+      }
 
-    //     // Call the function to handle the balance update
-    //     handleTransactionSuccess();
-    //   } catch (error) {
-    //     console.log(`Transaction failed: ${error.message}`);
-    //     alert("Transaction failed. Please try again.");
-    //   }
-    // }
+      showInputField.style.display = "block";
+      
+    } else {
+      WalletConnected.textContent = "";
+      
+      showInputField.style.display = 'none';
+    }
+  });
 
-  </script>
+
+  const Hide=()=>{
+    SendTransction.style.display = "none";
+  }
+
+
+  //transction
+
+  // Add a hook to `sendTransaction` for successful transactions
+  async function sendTransaction() {
+    try {
+      const walletInfo = tonConnectUI.wallet;
+      if (!walletInfo) {
+        alert("No wallet connected. Please connect your wallet first.");
+        return;
+      }
+
+      const transaction = {
+        messages: [
+          {
+            address: "UQBx2kbigJVm3ywKu6TJhfkyw77v0bcOjKvUEgWTgCrcg5NF",
+            amount: 0.0, // Use amount in TONs directly, or `amountInNanotons` if needed
+          },
+        ],
+      };
+
+      await tonConnectUI.sendTransaction(transaction);
+
+      // Call the handler after a successful transaction
+      await handleTransactionSuccess();
+    } catch (error) {
+      console.log(`Transaction failed: ${error.message}`);
+    }
+  }
+
+</script>
+
+
+
+
+
+
+
+
+<script>
+  async function updateUserPoints(userId, pointsToAdd) {
+    try {
+      // Step 1: Update the front-end
+      const pointsElement = document.getElementById("points");
+
+      // Get the current points from the DOM (assuming the points are in the format '0 Rst')
+      const currentPoints = parseInt(pointsElement.textContent.split(" ")[0], 10) || 0;
+
+      // Add the reward points
+      const newPoints = currentPoints + pointsToAdd;
+
+      // Update the DOM
+      pointsElement.textContent = `${newPoints} Rst`;
+
+      // Step 2: Update the MongoDB database
+      const response = await fetch("https://your-api-endpoint/api/update-points", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: userId,
+          points: pointsToAdd,
+        }),
+      });
+
+      const result = await response.json();
+      if (!response.ok) {
+        throw new Error(result.message || "Failed to update user points in the database.");
+      }
+
+      console.log("Points successfully updated in the database:", result);
+    } catch (error) {
+      console.error("Error updating user points:", error);
+      alert("Failed to update your points. Please try again later.");
+    }
+  }
+
+  // Hook this function to the transaction success handler
+  async function handleTransactionSuccess() {
+    try {
+      // Assuming the user ID is available in the wallet info or another global variable
+      const walletInfo = tonConnectUI.wallet;
+      if (!walletInfo) {
+        console.error("Wallet information is missing. Cannot update user points.");
+        return;
+      }
+
+      const userId = walletInfo.address; // Adjust if user ID is stored differently
+      const rewardPoints = 5000; // Reward points for a successful transaction
+
+      // Call the function to update points
+      await updateUserPoints(userId, rewardPoints);
+
+      alert("Transaction completed successfully! You have been credited with 5,000 Rst points.");
+    } catch (error) {
+      console.error("Error handling transaction success:", error);
+    }
+  }
+
+</script>
 
 
 </body>
