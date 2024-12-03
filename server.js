@@ -367,18 +367,42 @@ app.get('/api/referrals', async (req, res) => {
   }
 
   try {
-    // Fetch the user's referral data from MongoDB
+    const user = await Referral.findOne({ referral_id: userId });
+  
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+  
+    res.json({ referred_Users: user.referred_Users });
+  } catch (error) {
+    console.error('Error fetching referral data:', error);
+    return res.status(500).json({ message: 'Error fetching referral data', error });
+  }
+  
+});
+
+
+// New endpoint to fetch all referred users for a specific userId
+app.get('/api/referrals/users', async (req, res) => {
+  const { userId } = req.query;
+
+  if (!userId) {
+    return res.status(400).json({ message: 'User ID is required' });
+  }
+
+  try {
+    // Find the user by their referral_id
     const user = await Referral.findOne({ referral_id: userId });
 
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    // Return the list of referred users
-    res.status(200).json({ referred_Users: user.referred_Users });
+    // Return the referred users
+    res.json({ referred_Users: user.referred_Users });
   } catch (error) {
     console.error('Error fetching referral data:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    res.status(500).json({ message: 'Error fetching referral data' });
   }
 });
 
