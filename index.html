@@ -174,155 +174,111 @@
 
 
 
+
+
+
+
+
 <script>
+  // TonConnect Initialization
   const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
       manifestUrl: 'https://new-mini-telegram-bot.onrender.com/tonconnect-manifest.json',
       buttonRootId: 'ton-connect'
-      });
+  });
+
+  // Connect Wallet
   async function connectToWallet() {
       try {
           const connectedWallet = await tonConnectUI.connectWallet();
           console.log('Wallet connected:', connectedWallet.address);
       } catch (error) {
-          console.log('Connection failed:', error);
+          console.error('Connection failed:', error);
       }
   }
 
-  // Add connection state listener
-  let showInputField = document.querySelector('.show-TransactionInput');
+  // Handle Wallet Status Changes
+  const showInputField = document.querySelector('.show-TransactionInput');
+  const sendTransactionButton = document.querySelector('.SendTransction');
+  const walletConnectedMessage = document.getElementsByClassName('isconnected')[0];
+
+  // Hide elements initially
   showInputField.style.display = "none";
-  let SendTransction = document.querySelector('.SendTransction');
-  SendTransction.style.display = "none";
-  let Address;
-
-    const showUi=()=>{
-      console.log("heelo from Showui");
-        
-        SendTransction.style.display = "block";
-      
-
-    }
-
-
-  let WalletConnected = document.getElementsByClassName('isconnected')[0];
-  let message;
+  sendTransactionButton.style.display = "none";
 
   tonConnectUI.onStatusChange(walletInfo => {
-    if (walletInfo) {
-      // If wallet is connected, update the message
-      if (!WalletConnected.hasChildNodes()) {
-        message = document.createTextNode("Connected Wallet:");
-        WalletConnected.appendChild(message);
+      if (walletInfo) {
+          walletConnectedMessage.textContent = "Connected Wallet:";
+          showInputField.style.display = "block";
       } else {
-        WalletConnected.firstChild.nodeValue = "Connected Wallet:";
+          walletConnectedMessage.textContent = "";
+          showInputField.style.display = "none";
       }
-
-      showInputField.style.display = "block";
-      
-    } else {
-      WalletConnected.textContent = "";
-      
-      showInputField.style.display = 'none';
-    }
   });
 
-
-  const Hide=()=>{
-    SendTransction.style.display = "none";
-  }
-
-
-  //transction
+  // Send Transaction
   async function sendTransaction() {
-    try {
-      const walletInfo = tonConnectUI.wallet;
-      if (!walletInfo) {
-        alert("No wallet connected. Please connect your wallet first.");
-        return;
-      }
-
-      const transaction = {
-        messages: [
-          {
-            address: "UQBx2kbigJVm3ywKu6TJhfkyw77v0bcOjKvUEgWTgCrcg5NF",
-            amount: 0.2 // Use amount in TONs directly, or `amountInNanotons` if needed
+      try {
+          const walletInfo = tonConnectUI.wallet;
+          if (!walletInfo) {
+              alert("No wallet connected. Please connect your wallet first.");
+              return;
           }
-        ]
-      };
 
-      await tonConnectUI.sendTransaction(transaction);
-      alert("Transaction sent successfully!");
-      toggleWalletModal(false);
-    } catch (error) {
-      console.log(`Transaction failed: ${error.message}`);
-    }
-  }
+          const transaction = {
+              messages: [
+                  {
+                      address: "UQBx2kbigJVm3ywKu6TJhfkyw77v0bcOjKvUEgWTgCrcg5NF",
+                      amount: 0.2
+                  }
+              ]
+          };
 
-
-</script>
-
-
-
-
-
-
-
-
-<script>
-  async function updateUserPoints(userId, pointsToAdd) {
-    try {
-      // Step 1: Update the front-end
-      const pointsElement = document.getElementById("points");
-
-      const currentPoints = parseInt(pointsElement.textContent.split(" ")[0], 10) || 0;
-
-      const newPoints = currentPoints + pointsToAdd;
-
-      pointsElement.textContent = `${newPoints} Rst`;
-
-      const response = await fetch("https://new-mini-telegram-bot.onrender.com/api/update-points", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userId: userId,
-          points: pointsToAdd,
-        }),
-      });
-
-      const result = await response.json();
-      if (!response.ok) {
-        throw new Error(result.message || "Failed to update user points in the database.");
+          await tonConnectUI.sendTransaction(transaction);
+          await handleTransactionSuccess(); // Update points after success
+          alert("Transaction sent successfully!");
+      } catch (error) {
+          console.error("Transaction failed:", error);
       }
-
-      console.log("Points successfully updated in the database:", result);
-    } catch (error) {
-      console.error("Error updating user points:", error);
-      alert("Failed to update your points. Please try again later.");
-    }
   }
 
-  // Hook this function to the transaction success handler
+  // Update User Points
+  async function updateUserPoints(userId, pointsToAdd) {
+      try {
+          const pointsElement = document.getElementById("points");
+          if (!pointsElement) {
+              console.error("Points element not found.");
+              return;
+          }
+
+          const currentPoints = parseInt(pointsElement.textContent.split(" ")[0], 10) || 0;
+          pointsElement.textContent = `${currentPoints + pointsToAdd} Rst`;
+
+          const response = await fetch("https://new-mini-telegram-bot.onrender.com/api/update-points", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ userId, points: pointsToAdd })
+          });
+
+          if (!response.ok) throw new Error("Failed to update points in the database.");
+          console.log("Points successfully updated.");
+      } catch (error) {
+          console.error("Error updating points:", error);
+      }
+  }
+
+  // Handle Transaction Success
   async function handleTransactionSuccess() {
-    try {
-      // Assuming the user ID is available in the wallet info or another global variable
       const walletInfo = tonConnectUI.wallet;
       if (!walletInfo) {
-        console.error("Wallet information is missing. Cannot update user points.");
-        return;
+          console.error("Wallet information is missing.");
+          return;
       }
 
-      const userId = walletInfo.address; 
+      const userId = walletInfo.address;
       const rewardPoints = 5000;
 
-      // Call the function to update points
       await updateUserPoints(userId, rewardPoints);
-
-      alert("Transaction completed successfully! You have been credited with 5,000 Rst points.");
-    } catch (error) {
-      console.error("Error handling transaction success:", error);
-    }
+      alert("You have been credited with 5,000 Rst points.");
   }
 
 </script>
