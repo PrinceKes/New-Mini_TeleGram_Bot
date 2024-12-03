@@ -361,16 +361,15 @@ app.post('/api/referrals', async (req, res) => {
 app.get('/api/referrals', async (req, res) => {
   const userId = req.query.userId;
 
-  // Validate the presence of userId
   if (!userId) {
     return res.status(400).json({ message: 'Missing userId in query' });
   }
 
-  console.log(`Searching for referral_id: ${userId}`); // Debug log
+  console.log(`Querying referral_id: ${userId}`); // Debug log
 
   try {
     const user = await Referral.findOne({ referral_id: userId });
-    console.log('Query Result:', user); // Debug log
+    console.log('Query Result:', user); // Log query result
 
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
@@ -382,6 +381,7 @@ app.get('/api/referrals', async (req, res) => {
     return res.status(500).json({ message: 'Error fetching referral data', error });
   }
 });
+
 
 
 
