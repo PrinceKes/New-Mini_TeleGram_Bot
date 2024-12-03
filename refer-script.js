@@ -1,90 +1,105 @@
-document.addEventListener('DOMContentLoaded', async () => {
-    const referrerId = localStorage.getItem('user_id'); // Assuming user ID is stored in localStorage
-    const referredFriendsSection = document.getElementById('referred-friends');
+// This script will be used in the Telegram Mini App frontend
+
+// Function to extract the referrer ID from the Telegram link
+function getReferrerId() {
+  const urlParams = new URLSearchParams(window.location.search);
+  return urlParams.get('start');  // Extract the referrer ID from the query string
+}
+
+// Function to send the referral data to the backend
+async function sendReferralData(referrerId, userId, username) {
+  const response = await fetch('https://sunday-mini-telegram-bot.onrender.com/api/referrals', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      referrer_id: referrerId,
+      user_id: userId,
+      username: username,
+    }),
+  });
+
+  const data = await response.json();
+  if (response.ok) {
+    console.log('Referral data saved:', data);
+  } else {
+    console.error('Error saving referral data:', data.message);
+  }
+}
+
+// Function to copy the referral link to the clipboard
+function copyReferralLink() {
+  // Get the userId from localStorage (assuming it's already stored there)
+  const userId = localStorage.getItem('userId');
   
-    const API_BASE_URL = 'https://new-mini-telegram-bot.onrender.com/api';
+  if (!userId) {
+    console.error('User ID not found in localStorage');
+    return;
+  }
+
+  // Generate the referral link
+  const referralLink = `https://t.me/SunEarner_bot?start=${userId}`;
   
-    // Function to fetch referred friends
-    async function fetchReferredFriends() {
-      if (!referrerId) {
-        console.error('User ID not found in localStorage.');
-        return;
-      }
+  // Create a temporary input element to copy the referral link
+  const tempInput = document.createElement('input');
+  tempInput.value = referralLink;
+  document.body.appendChild(tempInput);
   
-      try {
-        const response = await fetch(`${API_BASE_URL}/referrals/${referrerId}`);
-        const data = await response.json();
+  // Select and copy the referral link
+  tempInput.select();
+  document.execCommand('copy');
   
-        if (!data.referrals || data.referrals.length === 0) {
-          referredFriendsSection.innerHTML = `
-            <div class="icon">👥</div>
-            <p class="empty-text">There is nothing else. Invite to get more rewards.</p>`;
-          return;
-        }
+  // Remove the temporary input element
+  document.body.removeChild(tempInput);
+
+  // Optional: Show a message to the user
+  alert('Referral link copied to clipboard!');
+}
+
+// Trigger referral data sending when the page loads
+document.addEventListener('DOMContentLoaded', () => {
+  const referrerId = getReferrerId();
+  const userId = localStorage.getItem('userId'); // This should be dynamically fetched based on user session
+  const username = localStorage.getItem('username'); // This should be dynamically fetched based on user session
   
-        // Populate referrals dynamically
-        referredFriendsSection.innerHTML = ''; // Clear existing content
-        data.referrals.forEach((friend) => {
-          const friendBox = document.createElement('div');
-          friendBox.classList.add('friend-box');
-          friendBox.innerHTML = `
-            <div class="friend-info">
-              <span class="friend-username">${friend.referredUsername}</span>
-              <span class="friend-id">ID: ${friend.referredId}</span>
-              <span class="friend-points">${friend.points} points</span>
-            </div>`;
-          referredFriendsSection.appendChild(friendBox);
-        });
-      } catch (error) {
-        console.error('Error fetching referred friends:', error);
-      }
-    }
-  
-    // Fetch referred friends on page load
-    fetchReferredFriends();
-//   });
-  
+  if (referrerId && userId && username) {
+    sendReferralData(referrerId, userId, username);
+  }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // Update invite button's referral link dynamically
-    const inviteButton = document.querySelector('.invite-btn');
-    if (referrerId && inviteButton) {
-        const referralLink = `https://t.me/SunEarner_bot?start=${referrerId}`;
-        inviteButton.setAttribute('data-referral-link', referralLink);
-    }
-
-    // Copy referral link to clipboard
-    inviteButton.addEventListener('click', () => {
-        const referralLink = inviteButton.getAttribute('data-referral-link');
-        if (referralLink) {
-        navigator.clipboard.writeText(referralLink)
-            .then(() => {
-            alert('Referral link copied to clipboard!');
-            })
-            .catch((error) => {
-            console.error('Error copying referral link:', error);
-            alert('Failed to copy referral link.');
-            });
-        } else {
-        alert('Referral link not found.');
-        }
-    });
+  // Add event listener to the referral button to copy the referral link
+  const referralButton = document.getElementById('referralButton'); // Assuming button has the id 'referralButton'
+  if (referralButton) {
+    referralButton.addEventListener('click', copyReferralLink);
+  }
 });
 
 
-  
+
+
+//     // Update invite button's referral link dynamically
+//     const inviteButton = document.querySelector('.invite-btn');
+//     if (referrerId && inviteButton) {
+//         const referralLink = `https://t.me/SunEarner_bot?start=${referrerId}`;
+//         inviteButton.setAttribute('data-referral-link', referralLink);
+//     }
+
+//     // Copy referral link to clipboard
+//     inviteButton.addEventListener('click', () => {
+//         const referralLink = inviteButton.getAttribute('data-referral-link');
+//         if (referralLink) {
+//         navigator.clipboard.writeText(referralLink)
+//             .then(() => {
+//             alert('Referral link copied to clipboard!');
+//             })
+//             .catch((error) => {
+//             console.error('Error copying referral link:', error);
+//             alert('Failed to copy referral link.');
+//             });
+//         } else {
+//         alert('Referral link not found.');
+//         }
+//     });
+// });
+
+

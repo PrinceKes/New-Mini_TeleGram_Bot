@@ -1,10 +1,26 @@
 const mongoose = require('mongoose');
 
+// Define Referral Schema
 const referralSchema = new mongoose.Schema({
-  referrerId: { type: String, required: true },
-  referredId: { type: String, required: true },
-  referredUsername: { type: String, required: true },
-  points: { type: Number, default: 0 },
+  referral_id: Number,
+  referred_Users: [{
+    user_id: Number,
+    username: String,
+    reward: Number,
+  }],
 });
 
-module.exports = mongoose.model('Referral', referralSchema);
+const Referral = mongoose.model('Referral', referralSchema);
+
+
+
+// referral_id: 98754334
+// referred_Users[
+//   user_1: @Username
+//   user_id: 22765438
+//   reward: 250 Rst Point,
+
+//   user_2: @Username
+//   user_id: 76435438
+//   reward: 250 Rst Point
+// ]
