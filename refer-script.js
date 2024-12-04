@@ -74,42 +74,86 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-// function to control the data displaying on the html page
 
-// Function to fetch referral data
-async function fetchReferralData(userId) {
+
+
+
+
+
+
+
+
+// Function to fetch referral data from the API and populate the page
+async function fetchReferrals(userId) {
   try {
+    // Make a GET request to the API
     const response = await fetch(`https://sunday-mini-telegram-bot.onrender.com/api/referrals?userId=${userId}`);
-    const referralsData = await response.json();
-
-    // Check if we have referral data
-    if (referralsData && referralsData.referred_Users && referralsData.referred_Users.length > 0) {
-      const referralsBox = document.querySelector('.referrals-box');
-      
-      // Loop through the referred users and display them
-      referralsData.referred_Users.forEach((referral) => {
-        const referralElement = document.createElement('div');
-        referralElement.classList.add('users-box');
-        referralElement.innerHTML = `
-          <img src="./assets/roaster.png" alt="User Avatar" class="user-avatar" />
-          <div class="user-details">
-            <h4 class="user-name">${referral.username}</h4>
-            <p class="user-reward">+${referral.reward} Rst</p>
-          </div>
-          <button class="claim-button" data-referral-id="${referral.user_id}" data-reward="${referral.reward}">Claim</button>
-        `;
-        referralsBox.appendChild(referralElement);
-      });
-
-      // Attach event listeners to claim buttons
-      document.querySelectorAll('.claim-button').forEach(button => {
-        button.addEventListener('click', claimReward);
-      });
+    
+    // Check if the response is successful
+    if (!response.ok) {
+      throw new Error('Failed to fetch referrals');
     }
+
+    // Parse the JSON response
+    const data = await response.json();
+
+    // Get the referred users array
+    const referredUsers = data.referred_Users;
+
+    // Select the referrals box element
+    const referralsBox = document.querySelector('.referrals-box');
+
+    // Clear any existing content
+    referralsBox.innerHTML = '';
+
+    // Loop through the referred users and add them dynamically
+    referredUsers.forEach((user) => {
+      // Create a new user box element
+      const userBox = document.createElement('div');
+      userBox.classList.add('users-box');
+
+      // Add inner HTML to the user box
+      userBox.innerHTML = `
+        <img src="avatar1.png" alt="User Avatar" class="user-avatar" />
+        <div class="user-details">
+          <h4 class="user-name">${user.referredUsername}</h4>
+          <p class="user-reward">+${user.reward} Rst</p>
+        </div>
+        <button class="claim-button">Claim</button>
+      `;
+
+      // Append the user box to the referrals box
+      referralsBox.appendChild(userBox);
+    });
   } catch (error) {
-    console.error('Error fetching referral data:', error);
+    console.error('Error fetching or displaying referrals:', error);
+
+    // Optionally, display an error message to the user
+    const referralsBox = document.querySelector('.referrals-box');
+    referralsBox.innerHTML = `<p class="error-message">Failed to load referrals. Please try again later.</p>`;
   }
 }
+
+// Call the function with the user's ID (replace '1446675700' with the dynamic userId)
+const userId = '1446675700'; // Replace this with the actual userId from your logic
+fetchReferrals(userId);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // Function to handle claiming the reward
 async function claimReward(event) {
