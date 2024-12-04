@@ -495,6 +495,10 @@ app.post('/api/claim-reward', async (req, res) => {
 
 
 
+
+
+
+
 app.use("/api", router);
 
 router.get('/users', async (req, res) => {
@@ -507,17 +511,6 @@ router.get('/users', async (req, res) => {
     res.status(500).json({ message: 'Internal server error.' });
   }
 });
-
-
-
-
-
-
-
-
-
-
-
 
 
 
