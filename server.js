@@ -297,89 +297,116 @@ app.put('/api/tasks/:task_id', async (req, res) => {
 
 
 
-// referral handles
+// referral handles 
+// here are the script that handle Create a new profile for the first-time user
 
+app.use(async (req, res, next) => {
+  const { userId, username } = req.query; // Extract userId and username from the request
+
+  if (!userId || !username) {
+    return res.status(400).json({ message: 'Missing userId or username' });
+  }
+
+  try {
+    // Check if the user already exists
+    const existingUser = await Referral.findOne({ referral_id: userId });
+
+    if (!existingUser) {
+      // Create a new profile for the first-time user
+      const newUserProfile = new Referral({
+        referral_id: userId,
+        username,
+        referrals: [],
+      });
+
+      await newUserProfile.save();
+      console.log(`Created profile for new user: ${username}`);
+    }
+
+    next(); // Continue to the next middleware or route handler
+  } catch (error) {
+    console.error('Error checking or creating user profile:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+
+
+
+//This script set up referral and referred profiles for all users
 app.post('/api/referrals', async (req, res) => {
   const { referrer_id, user_id, username } = req.body;
 
-  // Validate required fields
   if (!referrer_id || !user_id || !username) {
     return res.status(400).json({ message: 'Missing required fields' });
   }
 
   try {
-    // Check if the referrer already has a profile
+    const existingUser = await Referral.findOne({ referral_id: user_id });
+    if (existingUser) {
+      return res.status(409).json({ message: 'User already exists' });
+    }
+
     const referrerProfile = await Referral.findOne({ referral_id: referrer_id });
-
     if (!referrerProfile) {
-      // Create a new referral profile if it doesn't exist
-      const newReferralProfile = new Referral({
-        referral_id: referrer_id,
-        referred_Users: [
-          {
-            user_id,
-            username,
-            reward: 250,
-          },
-        ],
-      });
-
-      await newReferralProfile.save();
-      return res.status(201).json({
-        message: 'Referrer profile created',
-        profile: newReferralProfile,
-      });
+      return res.status(404).json({ message: 'Referrer not found' });
     }
 
-    // Check if the referred user already exists in the profile
-    const userExists = referrerProfile.referred_Users.some(
-      (user) => user.user_id === user_id
-    );
-    if (userExists) {
-      return res.status(409).json({ message: 'User already referred' });
-    }
-
-    // Add the referred user to the referrer's profile
-    referrerProfile.referred_Users.push({
-      user_id,
+    // Create a new profile for the referred user
+    const newUserProfile = new Referral({
+      referral_id: user_id,
       username,
+      referrals: [],
+    });
+
+    await newUserProfile.save();
+
+    referrerProfile.referrals.push({
+      referredUserId: user_id,
+      referredUsername: username,
       reward: 250,
     });
 
     await referrerProfile.save();
-    return res.status(200).json({
-      message: 'Referred user added',
-      profile: referrerProfile,
+
+    res.status(201).json({
+      message: 'Referred user added and reward assigned to referrer',
+      referredUser: newUserProfile,
+      referrer: referrerProfile,
     });
   } catch (error) {
-    console.error('Error processing referral:', error);
-    return res.status(500).json({ message: 'Internal server error' });
+    console.error('Error handling referral:', error);
+    res.status(500).json({ message: 'Internal server error' });
   }
 });
 
 
+
+
+
+
 app.get('/api/referrals', async (req, res) => {
-  const userId = req.query.userId;
+  const { userId } = req.query;
 
   if (!userId) {
     return res.status(400).json({ message: 'Missing userId in query' });
   }
 
   try {
-    // Querying using `_id`
-    const user = await Referral.findOne({ _id: userId });
+    // Query by referral_id
+    const user = await Referral.findOne({ referral_id: userId });
 
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    // Return the referrals
     res.json({ referred_Users: user.referrals });
   } catch (error) {
     console.error('Error fetching referral data:', error);
-    return res.status(500).json({ message: 'Error fetching referral data', error });
+    res.status(500).json({ message: 'Error fetching referral data', error });
   }
 });
+
 
 
 
