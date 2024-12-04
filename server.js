@@ -416,11 +416,46 @@ app.get('/api/referrals', async (req, res) => {
 
 
 
-app.get('/friends', (req, res) => {
-  const userId = req.user.id; // Assuming `req.user` contains the logged-in user's data
-  res.render('friends', { userId });
-});
 
+
+
+
+
+
+
+
+// Claim reward route
+app.post('/api/claim-reward', async (req, res) => {
+  const { referralId, rewardAmount } = req.body;
+
+  try {
+    const referral = await Referral.findOne({ referralId });
+
+    if (!referral) {
+      return res.status(404).json({ success: false, message: 'Referral user not found' });
+    }
+
+    if (referral.isClaimed) {
+      return res.status(400).json({ success: false, message: 'Reward already claimed' });
+    }
+
+    const user = await User.findOne({ userId: referralId });
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    user.balance += rewardAmount;
+    await user.save();
+
+    referral.isClaimed = true;
+    await referral.save();
+
+    res.status(200).json({ success: true, message: 'Reward claimed successfully' });
+  } catch (error) {
+    console.error('Error claiming reward:', error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+});
 
 
 

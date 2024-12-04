@@ -8,6 +8,7 @@ const referralSchema = new mongoose.Schema({
       referredUserId: { type: String, required: true },
       referredUsername: { type: String, required: true },
       reward: { type: Number, required: true },
+      isClaimed: { type: Boolean, default: false },
     },
   ],
 });
