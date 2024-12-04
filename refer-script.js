@@ -117,7 +117,7 @@ async function fetchReferrals(userId) {
 
       // Add inner HTML to the user box
       userBox.innerHTML = `
-        <img src="avatar.png" alt="User Avatar" class="user-avatar" />
+        <img src="./assets/avatar.png" alt="User Avatar" class="user-avatar" />
         <div class="user-details">
           <h4 class="user-name">${userName}</h4>
           <p class="user-reward">+${user.reward} Rst</p>
