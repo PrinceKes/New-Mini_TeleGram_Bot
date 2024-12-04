@@ -424,38 +424,48 @@ app.get('/api/referrals', async (req, res) => {
 
 
 
-// Claim reward route
-app.post('/api/claim-reward', async (req, res) => {
-  const { referralId, rewardAmount } = req.body;
+
+
+
+//function to handle the referral claiming
+app.put('/api/referrals/:referral_id/claim', async (req, res) => {
+  const { referral_id } = req.params;
+  const { userId } = req.body;
 
   try {
-    const referral = await Referral.findOne({ referralId });
+    // Find the referral record
+    const referral = await Referral.findById(referral_id);
+    if (!referral) return res.status(404).json({ error: 'Referral not found' });
 
-    if (!referral) {
-      return res.status(404).json({ success: false, message: 'Referral user not found' });
-    }
-
+    // Check if the reward has already been claimed
     if (referral.isClaimed) {
-      return res.status(400).json({ success: false, message: 'Reward already claimed' });
+      return res.status(400).json({ error: 'Reward already claimed' });
     }
 
-    const user = await User.findOne({ userId: referralId });
-    if (!user) {
-      return res.status(404).json({ success: false, message: 'User not found' });
-    }
+    // Find the referrer user
+    const user = await User.findOne({ user_id: userId });
+    if (!user) return res.status(404).json({ error: 'User not found' });
 
-    user.balance += rewardAmount;
-    await user.save();
-
+    // Update the user's balance and mark the referral as claimed
+    user.balance += referral.reward;
     referral.isClaimed = true;
+
+    await user.save();
     await referral.save();
 
-    res.status(200).json({ success: true, message: 'Reward claimed successfully' });
+    res.status(200).json({
+      message: 'Reward claimed successfully',
+      newBalance: user.balance,
+    });
   } catch (error) {
-    console.error('Error claiming reward:', error);
-    res.status(500).json({ success: false, message: 'Internal server error' });
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
+
+
+
 
 
 
