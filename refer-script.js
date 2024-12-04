@@ -83,6 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 // Function to fetch referral data from the API and populate the page
+// Function to fetch referral data from the API and populate the page
 async function fetchReferrals(userId) {
   try {
     // Make a GET request to the API
@@ -121,74 +122,24 @@ async function fetchReferrals(userId) {
           <h4 class="user-name">${userName}</h4>
           <p class="user-reward">+${user.reward} Rst</p>
         </div>
-        <button class="claim-button" data-user-id="${user.referredUserId}" data-reward="${user.reward}">Claim</button>
+        <button class="claim-button">Claim</button>
       `;
 
       // Append the user box to the referrals box
       referralsBox.appendChild(userBox);
     });
-
-
-
-
-
-
-
-document.querySelectorAll('.claim-button').forEach(button => {
-  button.addEventListener('click', async function() {
-    const userId = button.getAttribute('data-user-id');  // User who clicked the button (i.e., the new user)
-    const referralId = button.getAttribute('data-referral-id');  // The referrer (i.e., the user who referred the new user)
-    const reward = 250;  // Reward points to give to the referrer
-
-    try {
-      // Send POST request to server to claim the reward
-      const response = await fetch('/api/claimReward', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          userId,
-          referralId,
-          reward,
-        }),
-      });
-
-      const data = await response.json();
-      
-      if (response.ok) {
-        // If the request was successful, update the button text to "Claimed"
-        button.textContent = 'Claimed';
-
-        // Update the balance displayed on the page (this is just an example, adjust as needed)
-        const balanceElement = document.querySelector('#user-balance'); // Assuming you have an element with id `user-balance`
-        balanceElement.textContent = `Balance: ${data.balance}`;
-
-        alert(data.message);  // Optionally, show a success message to the user
-      } else {
-        alert(data.message);  // Show any error message returned from the server
-      }
-    } catch (error) {
-      console.error('Error claiming reward:', error);
-      alert('Something went wrong while claiming the reward.');
-    }
-  });
-});
-
-
   } catch (error) {
     console.error('Error fetching or displaying referrals:', error);
 
     // Optionally, display an error message to the user
     const referralsBox = document.querySelector('.referrals-box');
-    referralsBox.innerHTML = `<p class="error-message">You have not refer any friend, share your link and try again.</p>`;
+    referralsBox.innerHTML = `<p class="error-message">Failed to load referrals. Please try again later.</p>`;
   }
 }
 
 // Call the function with the user's ID (replace '1446675700' with the dynamic userId)
 const userId = '1446675700'; // Replace this with the actual userId from your logic
 fetchReferrals(userId);
-
 
 
 
