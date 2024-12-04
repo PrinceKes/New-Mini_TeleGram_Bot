@@ -85,39 +85,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-
-// Function to fetch all users and find the current user's data
-async function fetchUserId() {
-  try {
-    // Fetch all users from the API
-    const response = await fetch('https://sunday-mini-telegram-bot.onrender.com/api/users');
-    
-    if (!response.ok) {
-      throw new Error('Failed to fetch user data');
-    }
-
-    const users = await response.json();
-
-    // Replace `CURRENT_USER_ID` with the user ID passed from the backend
-    const currentUserId = window.CURRENT_USER_ID; // Dynamically set this in your HTML
-
-    // Find the current user's data
-    const currentUser = users.find(user => user.user_id === currentUserId);
-    if (!currentUser) {
-      throw new Error('No matching user found for the provided ID');
-    }
-
-    return currentUser.user_id;
-  } catch (error) {
-    console.error('Error fetching user ID:', error);
-    return null;
-  }
-}
-
-// Function to fetch referral data and display it
+// Function to fetch referral data from the API and populate the page
 async function fetchReferrals(userId) {
   try {
-    // Fetch referrals for the specific user
     const response = await fetch(`https://sunday-mini-telegram-bot.onrender.com/api/referrals?userId=${userId}`);
     
     if (!response.ok) {
@@ -125,19 +95,16 @@ async function fetchReferrals(userId) {
     }
 
     const data = await response.json();
-
-    // Extract referred users from the response
     const referredUsers = data.referred_Users;
 
     const referralsBox = document.querySelector('.referrals-box');
-
-    referralsBox.innerHTML = ''; // Clear existing content
+    referralsBox.innerHTML = '';
 
     referredUsers.forEach((user) => {
       const userBox = document.createElement('div');
       userBox.classList.add('users-box');
 
-      const userName = user.referredUsername || 'Unknown User'; // Handle missing username
+      const userName = user.referredUsername ? user.referredUsername : 'Unknown User';
 
       userBox.innerHTML = `
         <img src="avatar1.png" alt="User Avatar" class="user-avatar" />
@@ -158,18 +125,36 @@ async function fetchReferrals(userId) {
   }
 }
 
-// Main function to load referrals
+// Function to get the user_id from the URL or localStorage
+function getUserIdFromURLOrStorage() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const userIdFromUrl = urlParams.get('user_id');
+  const storedUserId = localStorage.getItem('user_id');
+
+  let user_id = userIdFromUrl || storedUserId;
+
+  if (user_id) {
+    localStorage.setItem('user_id', user_id);
+  }
+
+  return user_id;
+}
+
+// Function to load referrals for the current user
 async function loadReferrals() {
-  const userId = await fetchUserId();
+  const userId = getUserIdFromURLOrStorage();
+
   if (userId) {
     await fetchReferrals(userId);
   } else {
-    console.error('Unable to load referrals due to missing userId');
+    console.error('No user_id found in URL or localStorage.');
+    const referralsBox = document.querySelector('.referrals-box');
+    referralsBox.innerHTML = `<p class="error-message">User ID is missing. Please log in again.</p>`;
   }
 }
 
-// Call the main function to load the referrals
-loadReferrals();
+// Trigger the referral loading process
+document.addEventListener("DOMContentLoaded", loadReferrals);
 
 
 

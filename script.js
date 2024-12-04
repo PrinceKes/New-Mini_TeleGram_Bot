@@ -36,13 +36,6 @@ function updateHeader(userId, avatarUrl) {
   // }
 }
 
-
-
-
-
-
-
-
 // Function to save the user ID and username to the database via API
 function saveUserIdToDatabase(user_id) {
   const urlParams = new URLSearchParams(window.location.search);
