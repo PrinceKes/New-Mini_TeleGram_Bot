@@ -427,10 +427,17 @@ app.get('/api/referrals', async (req, res) => {
 
 
 
-//function to handle the referral claiming
+
+
+
+
 app.put('/api/referrals/:referral_id/claim', async (req, res) => {
   const { referral_id } = req.params;
-  const { userId } = req.body;
+  const { userId } = req.body; // Retrieve userId from the request body
+
+  if (!userId) {
+    return res.status(400).json({ message: 'Missing userId or username' });
+  }
 
   try {
     // Find the referral record
@@ -462,9 +469,6 @@ app.put('/api/referrals/:referral_id/claim', async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
-
-
-
 
 
 

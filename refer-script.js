@@ -204,20 +204,27 @@ document.addEventListener("DOMContentLoaded", function () {
         if (!user.isClaimed) {
           button.addEventListener('click', async () => {
             try {
+              const userId = localStorage.getItem('user_id');
+          
+              if (!userId) {
+                alert('User ID is missing. Please log in again.');
+                return;
+              }
+          
               const claimResponse = await fetch(`https://sunday-mini-telegram-bot.onrender.com/api/referrals/${user._id}/claim`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ userId }),
               });
-
+          
               if (!claimResponse.ok) {
-                throw new Error('Failed to claim reward');
+                const errorData = await claimResponse.json();
+                throw new Error(errorData.message || 'Failed to claim reward');
               }
-
+          
               const result = await claimResponse.json();
               console.log(result.message);
-
-              // Update the button and reward balance after a successful claim
+          
               button.textContent = 'Claimed';
               button.disabled = true;
               button.classList.add('claimed');
@@ -225,7 +232,7 @@ document.addEventListener("DOMContentLoaded", function () {
               console.error('Error claiming reward:', error);
               alert('Failed to claim reward. Please try again.');
             }
-          });
+          });          
         }
 
         referralsBox.appendChild(userBox);
