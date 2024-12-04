@@ -309,6 +309,90 @@
         ? `User ID: ${storedUserId}`
         : "User ID: Unknown";
     });
+
+
+
+
+
+
+
+    // Function to fetch referral data from the API and populate the page
+async function fetchReferrals(userId) {
+  try {
+    // Make a GET request to the API
+    const response = await fetch(`https://sunday-mini-telegram-bot.onrender.com/api/referrals?userId=${userId}`);
+    
+    // Check if the response is successful
+    if (!response.ok) {
+      throw new Error('Failed to fetch referrals');
+    }
+
+    // Parse the JSON response
+    const data = await response.json();
+
+    // Get the referred users array
+    const referredUsers = data.referred_Users;
+
+    // Select the referrals box element
+    const referralsBox = document.querySelector('.referrals-box');
+
+    // Clear any existing content
+    referralsBox.innerHTML = '';
+
+    // Loop through the referred users and add them dynamically
+    referredUsers.forEach((user) => {
+      // Create a new user box element
+      const userBox = document.createElement('div');
+      userBox.classList.add('users-box');
+
+      // Safely access referredUsername and provide a fallback if it's missing
+      const userName = user.referredUsername ? user.referredUsername : 'Unknown User';
+
+      // Add inner HTML to the user box
+      userBox.innerHTML = `
+        <img src="avatar1.png" alt="User Avatar" class="user-avatar" />
+        <div class="user-details">
+          <h4 class="user-name">${userName}</h4>
+          <p class="user-reward">+${user.reward} Rst</p>
+        </div>
+        <button class="claim-button">Claim</button>
+      `;
+
+      // Append the user box to the referrals box
+      referralsBox.appendChild(userBox);
+    });
+  } catch (error) {
+    console.error('Error fetching or displaying referrals:', error);
+
+    // Optionally, display an error message to the user
+    const referralsBox = document.querySelector('.referrals-box');
+    referralsBox.innerHTML = `<p class="error-message">Failed to load referrals. Please try again later.</p>`;
+  }
+}
+
+// Function to get the userId from localStorage and call fetchReferrals
+function loadReferrals() {
+  // Retrieve the userId from localStorage
+  const userId = localStorage.getItem('userId');
+
+  if (!userId) {
+    console.error('No userId found in localStorage');
+    const referralsBox = document.querySelector('.referrals-box');
+    referralsBox.innerHTML = `<p class="error-message">User ID not found. Please log in to view referrals.</p>`;
+    return;
+  }
+
+  // Fetch referrals for the userId
+  fetchReferrals(userId);
+}
+
+// Call the loadReferrals function to start fetching referrals
+loadReferrals();
+
+
+
+
+
   </script>
   <script src="refer-script.js"></script>
 </body>

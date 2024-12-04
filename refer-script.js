@@ -80,69 +80,69 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-// Function to fetch referral data from the API and populate the page
-async function fetchReferrals(userId) {
-  try {
-    // Make a GET request to the API
-    const response = await fetch(`https://sunday-mini-telegram-bot.onrender.com/api/referrals?userId=${userId}`);
+// // Function to fetch referral data from the API and populate the page
+// async function fetchReferrals(userId) {
+//   try {
+//     // Make a GET request to the API
+//     const response = await fetch(`https://sunday-mini-telegram-bot.onrender.com/api/referrals?userId=${userId}`);
     
-    // Check if the response is successful
-    if (!response.ok) {
-      throw new Error('Failed to fetch referrals');
-    }
+//     // Check if the response is successful
+//     if (!response.ok) {
+//       throw new Error('Failed to fetch referrals');
+//     }
 
-    // Parse the JSON response
-    const data = await response.json();
+//     // Parse the JSON response
+//     const data = await response.json();
 
-    // Get the referred users array
-    const referredUsers = data.referred_Users;
+//     // Get the referred users array
+//     const referredUsers = data.referred_Users;
 
-    // Select the referrals box element
-    const referralsBox = document.querySelector('.referrals-box');
+//     // Select the referrals box element
+//     const referralsBox = document.querySelector('.referrals-box');
 
-    // Clear any existing content
-    referralsBox.innerHTML = '';
+//     // Clear any existing content
+//     referralsBox.innerHTML = '';
 
-    // Loop through the referred users and add them dynamically
-    referredUsers.forEach((user) => {
-      const userBox = document.createElement('div');
-      userBox.classList.add('users-box');
+//     // Loop through the referred users and add them dynamically
+//     referredUsers.forEach((user) => {
+//       const userBox = document.createElement('div');
+//       userBox.classList.add('users-box');
 
-      const userName = user.referredUsername ? user.referredUsername : 'Unknown User';
+//       const userName = user.referredUsername ? user.referredUsername : 'Unknown User';
 
-      userBox.innerHTML = `
-        <img src="avatar1.png" alt="User Avatar" class="user-avatar" />
-        <div class="user-details">
-          <h4 class="user-name">${userName}</h4>
-          <p class="user-reward">+${user.reward} Rst</p>
-        </div>
-        <button class="claim-button">Claim</button>
-      `;
+//       userBox.innerHTML = `
+//         <img src="avatar1.png" alt="User Avatar" class="user-avatar" />
+//         <div class="user-details">
+//           <h4 class="user-name">${userName}</h4>
+//           <p class="user-reward">+${user.reward} Rst</p>
+//         </div>
+//         <button class="claim-button">Claim</button>
+//       `;
 
-      referralsBox.appendChild(userBox);
-    });
-  } catch (error) {
-    console.error('Error fetching or displaying referrals:', error);
+//       referralsBox.appendChild(userBox);
+//     });
+//   } catch (error) {
+//     console.error('Error fetching or displaying referrals:', error);
 
-    const referralsBox = document.querySelector('.referrals-box');
-    referralsBox.innerHTML = `<p class="error-message">Failed to load referrals. Please try again later.</p>`;
-  }
-}
+//     const referralsBox = document.querySelector('.referrals-box');
+//     referralsBox.innerHTML = `<p class="error-message">Failed to load referrals. Please try again later.</p>`;
+//   }
+// }
 
-function loadReferrals() {
-  const userId = localStorage.getItem('userId');
+// function loadReferrals() {
+//   const userId = localStorage.getItem('userId');
 
-  if (!userId) {
-    console.error('No userId found in localStorage');
-    const referralsBox = document.querySelector('.referrals-box');
-    referralsBox.innerHTML = `<p class="error-message">User ID not found. Please log in to view referrals.</p>`;
-    return;
-  }
+//   if (!userId) {
+//     console.error('No userId found in localStorage');
+//     const referralsBox = document.querySelector('.referrals-box');
+//     referralsBox.innerHTML = `<p class="error-message">User ID not found. Please log in to view referrals.</p>`;
+//     return;
+//   }
 
-  fetchReferrals(userId);
-}
+//   fetchReferrals(userId);
+// }
 
-loadReferrals();
+// loadReferrals();
 
 
 
