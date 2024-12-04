@@ -204,37 +204,28 @@ document.addEventListener("DOMContentLoaded", function () {
         if (!user.isClaimed) {
           button.addEventListener('click', async () => {
             try {
-              const userId = localStorage.getItem('user_id');
+              const userId = localStorage.getItem('user_id'); // Ensure the user ID is stored in local storage
           
               if (!userId) {
                 alert('User ID is missing. Please log in again.');
                 return;
               }
           
-              const payload = { userId };
-              console.log('Sending payload:', payload);
-
               const claimResponse = await fetch(`https://sunday-mini-telegram-bot.onrender.com/api/referrals/${user._id}/claim`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload), // Include the payload
+                body: JSON.stringify({ userId }), // Include the userId in the body
               });
-
-              // const claimResponse = await fetch(`https://sunday-mini-telegram-bot.onrender.com/api/referrals/${user._id}/claim`, {
-              //   method: 'PUT',
-              //   headers: { 'Content-Type': 'application/json' },
-              //   body: JSON.stringify({ userId }),
-              // });
           
               if (!claimResponse.ok) {
                 const errorData = await claimResponse.json();
-                console.error('Server error response:', errorData);
                 throw new Error(errorData.message || 'Failed to claim reward');
               }
           
               const result = await claimResponse.json();
               console.log(result.message);
           
+              // Update the button and reward balance after a successful claim
               button.textContent = 'Claimed';
               button.disabled = true;
               button.classList.add('claimed');
@@ -242,7 +233,8 @@ document.addEventListener("DOMContentLoaded", function () {
               console.error('Error claiming reward:', error);
               alert('Failed to claim reward. Please try again.');
             }
-          });          
+          });
+                 
         }
 
         referralsBox.appendChild(userBox);
