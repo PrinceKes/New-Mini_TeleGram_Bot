@@ -111,14 +111,14 @@ async function fetchReferrals(userId) {
       const userBox = document.createElement('div');
       userBox.classList.add('users-box');
 
-      // Safely check if referredUsername exists, otherwise use 'Unknown User'
-      const username = user.referredUsername ? user.referredUsername : 'Unknown User';
-      
+      // Safely access referredUsername and provide a fallback if it's missing
+      const userName = user.referredUsername ? user.referredUsername : 'Unknown User';
+
       // Add inner HTML to the user box
       userBox.innerHTML = `
         <img src="avatar1.png" alt="User Avatar" class="user-avatar" />
         <div class="user-details">
-          <h4 class="user-name">${username}</h4>
+          <h4 class="user-name">${userName}</h4>
           <p class="user-reward">+${user.reward} Rst</p>
         </div>
         <button class="claim-button">Claim</button>
