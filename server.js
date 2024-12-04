@@ -300,8 +300,14 @@ app.put('/api/tasks/:task_id', async (req, res) => {
 // referral handles 
 // here are the script that handle Create a new profile for the first-time user
 
+// Middleware to create a user profile if not exists
 app.use(async (req, res, next) => {
   const { userId, username } = req.query; // Extract userId and username from the request
+
+  // Allow requests to the '/api/referrals' endpoint with only userId
+  if (req.path === '/api/referrals' && userId) {
+    return next();
+  }
 
   if (!userId || !username) {
     return res.status(400).json({ message: 'Missing userId or username' });
@@ -329,6 +335,7 @@ app.use(async (req, res, next) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 });
+
 
 
 
@@ -406,6 +413,7 @@ app.get('/api/referrals', async (req, res) => {
     res.status(500).json({ message: 'Error fetching referral data', error });
   }
 });
+
 
 
 
