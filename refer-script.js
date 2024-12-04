@@ -86,68 +86,59 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-// Function to fetch all users and get the userId of the current user
+// Function to fetch all users and find the current user's data
 async function fetchUserId() {
   try {
-    // Fetch the user data from the API
+    // Fetch all users from the API
     const response = await fetch('https://sunday-mini-telegram-bot.onrender.com/api/users');
     
-    // Check if the response is successful
     if (!response.ok) {
       throw new Error('Failed to fetch user data');
     }
 
-    // Parse the JSON response
     const users = await response.json();
 
-    // Here, determine which userId to use. Replace the logic below as needed
-    // For this example, we'll use the first user in the list or a specific condition
-    const currentUser = users.find(user => user.isCurrentUser); // Adjust this logic to match your user identification
+    // Replace `CURRENT_USER_ID` with the user ID passed from the backend
+    const currentUserId = window.CURRENT_USER_ID; // Dynamically set this in your HTML
+
+    // Find the current user's data
+    const currentUser = users.find(user => user.user_id === currentUserId);
     if (!currentUser) {
-      throw new Error('No current user found');
+      throw new Error('No matching user found for the provided ID');
     }
 
-    // Extract the userId
-    return currentUser.userId;
+    return currentUser.user_id;
   } catch (error) {
     console.error('Error fetching user ID:', error);
-    return null; // Return null if an error occurs
+    return null;
   }
 }
 
-// Function to fetch referral data from the API and populate the page
+// Function to fetch referral data and display it
 async function fetchReferrals(userId) {
   try {
-    // Make a GET request to the referral API with the userId
+    // Fetch referrals for the specific user
     const response = await fetch(`https://sunday-mini-telegram-bot.onrender.com/api/referrals?userId=${userId}`);
     
-    // Check if the response is successful
     if (!response.ok) {
       throw new Error('Failed to fetch referrals');
     }
 
-    // Parse the JSON response
     const data = await response.json();
 
-    // Get the referred users array
+    // Extract referred users from the response
     const referredUsers = data.referred_Users;
 
-    // Select the referrals box element
     const referralsBox = document.querySelector('.referrals-box');
 
-    // Clear any existing content
-    referralsBox.innerHTML = '';
+    referralsBox.innerHTML = ''; // Clear existing content
 
-    // Loop through the referred users and add them dynamically
     referredUsers.forEach((user) => {
-      // Create a new user box element
       const userBox = document.createElement('div');
       userBox.classList.add('users-box');
 
-      // Safely access referredUsername and provide a fallback if it's missing
-      const userName = user.referredUsername ? user.referredUsername : 'Unknown User';
+      const userName = user.referredUsername || 'Unknown User'; // Handle missing username
 
-      // Add inner HTML to the user box
       userBox.innerHTML = `
         <img src="avatar1.png" alt="User Avatar" class="user-avatar" />
         <div class="user-details">
@@ -157,29 +148,27 @@ async function fetchReferrals(userId) {
         <button class="claim-button">Claim</button>
       `;
 
-      // Append the user box to the referrals box
       referralsBox.appendChild(userBox);
     });
   } catch (error) {
     console.error('Error fetching or displaying referrals:', error);
 
-    // Optionally, display an error message to the user
     const referralsBox = document.querySelector('.referrals-box');
     referralsBox.innerHTML = `<p class="error-message">Failed to load referrals. Please try again later.</p>`;
   }
 }
 
-// Main function to load referrals for the current user
+// Main function to load referrals
 async function loadReferrals() {
-  const userId = await fetchUserId(); // Fetch the userId dynamically
+  const userId = await fetchUserId();
   if (userId) {
-    fetchReferrals(userId); // Fetch referrals using the retrieved userId
+    await fetchReferrals(userId);
   } else {
     console.error('Unable to load referrals due to missing userId');
   }
 }
 
-// Call the main function to initiate the process
+// Call the main function to load the referrals
 loadReferrals();
 
 
