@@ -121,12 +121,44 @@ async function fetchReferrals(userId) {
           <h4 class="user-name">${userName}</h4>
           <p class="user-reward">+${user.reward} Rst</p>
         </div>
-        <button class="claim-button">Claim</button>
+        <button class="claim-button" data-user-id="${user.referredUserId}" data-reward="${user.reward}">Claim</button>
       `;
 
       // Append the user box to the referrals box
       referralsBox.appendChild(userBox);
     });
+
+    // Add event listeners to the Claim buttons
+    const claimButtons = document.querySelectorAll('.claim-button');
+    claimButtons.forEach(button => {
+      button.addEventListener('click', async (event) => {
+        const userId = event.target.dataset.userId;
+        const reward = event.target.dataset.reward;
+
+        // Make a POST request to update the referring user's balance
+        try {
+          const updateResponse = await fetch('https://sunday-mini-telegram-bot.onrender.com/api/claimReward', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ userId, reward })
+          });
+
+          // If the reward is successfully added
+          if (updateResponse.ok) {
+            // Change the button text to "Claimed"
+            event.target.textContent = 'Claimed';
+            event.target.disabled = true; // Disable the button after claiming
+          } else {
+            console.error('Failed to claim the reward');
+          }
+        } catch (error) {
+          console.error('Error claiming reward:', error);
+        }
+      });
+    });
+
   } catch (error) {
     console.error('Error fetching or displaying referrals:', error);
 

@@ -418,6 +418,38 @@ app.get('/api/referrals', async (req, res) => {
 
 
 
+// POST endpoint to handle reward claiming
+app.post('/api/claimReward', async (req, res) => {
+  const { userId, reward } = req.body;
+
+  if (!userId || !reward) {
+    return res.status(400).json({ message: 'Invalid request' });
+  }
+
+  try {
+    // Find the referring user by userId
+    const user = await User.findOne({ userId });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Add the reward to the user's balance
+    user.balance += reward;
+
+    // Save the updated user object in MongoDB
+    await user.save();
+
+    // Return a success message
+    res.status(200).json({ message: 'Reward claimed successfully' });
+  } catch (error) {
+    console.error('Error claiming reward:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+
+
 
 
 // // New endpoint to fetch all referred users for a specific userId
