@@ -299,6 +299,7 @@
   <!-- Scripts -->
   <script src="header.js"></script>
   <script src="script.js"></script>
+
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       const storedUserId = localStorage.getItem('user_id');
@@ -309,13 +310,10 @@
         ? `User ID: ${storedUserId}`
         : "User ID: Unknown";
     });
+  </script>
+  <script src="refer-script.js"></script>
 
-
-
-
-
-
-
+  <script>
     // Function to fetch referral data from the API and populate the page
 async function fetchReferrals(userId) {
   try {
@@ -389,12 +387,7 @@ function loadReferrals() {
 // Call the loadReferrals function to start fetching referrals
 loadReferrals();
 
-
-
-
-
   </script>
-  <script src="refer-script.js"></script>
 </body>
 
 </html>
