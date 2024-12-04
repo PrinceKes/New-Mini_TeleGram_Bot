@@ -83,41 +83,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 // Function to fetch referral data from the API and populate the page
-// Function to fetch referral data from the API and populate the page
 async function fetchReferrals(userId) {
   try {
-    // Make a GET request to the API
     const response = await fetch(`https://sunday-mini-telegram-bot.onrender.com/api/referrals?userId=${userId}`);
     
-    // Check if the response is successful
     if (!response.ok) {
       throw new Error('Failed to fetch referrals');
     }
 
-    // Parse the JSON response
     const data = await response.json();
 
-    // Get the referred users array
     const referredUsers = data.referred_Users;
 
-    // Select the referrals box element
     const referralsBox = document.querySelector('.referrals-box');
 
-    // Clear any existing content
     referralsBox.innerHTML = '';
 
-    // Loop through the referred users and add them dynamically
     referredUsers.forEach((user) => {
-      // Create a new user box element
       const userBox = document.createElement('div');
       userBox.classList.add('users-box');
 
-      // Safely access referredUsername and provide a fallback if it's missing
       const userName = user.referredUsername ? user.referredUsername : 'Unknown User';
 
-      // Add inner HTML to the user box
       userBox.innerHTML = `
-        <img src="./assets/avatar.png" alt="User Avatar" class="user-avatar" />
+        <img src="avatar1.png" alt="User Avatar" class="user-avatar" />
         <div class="user-details">
           <h4 class="user-name">${userName}</h4>
           <p class="user-reward">+${user.reward} Rst</p>
@@ -125,21 +114,18 @@ async function fetchReferrals(userId) {
         <button class="claim-button">Claim</button>
       `;
 
-      // Append the user box to the referrals box
       referralsBox.appendChild(userBox);
     });
   } catch (error) {
     console.error('Error fetching or displaying referrals:', error);
 
-    // Optionally, display an error message to the user
     const referralsBox = document.querySelector('.referrals-box');
     referralsBox.innerHTML = `<p class="error-message">Failed to load referrals. Please try again later.</p>`;
   }
 }
 
-// Call the function with the user's ID (replace '1446675700' with the dynamic userId)
-const userId = '1446675700'; // Replace this with the actual userId from your logic
-fetchReferrals(userId);
+// Call the function with the dynamic userId
+fetchReferrals(currentUserId);
 
 
 

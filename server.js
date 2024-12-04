@@ -416,35 +416,15 @@ app.get('/api/referrals', async (req, res) => {
 
 
 
-
-
-// POST endpoint to handle reward claiming
-app.post('/api/claimReward', async (req, res) => {
-  const { userId, referralId, reward } = req.body;  // Get the userId, referralId, and reward (250 points)
-
-  if (!userId || !referralId || !reward) {
-    return res.status(400).json({ message: 'Invalid request. Missing userId, referralId, or reward.' });
-  }
-
-  try {
-    // Find the user who is referring
-    const user = await User.findOne({ user_id: referralId });
-    if (!user) {
-      return res.status(404).json({ message: 'Referral user not found' });
-    }
-
-    // Add reward (250 points) to the referral user's balance
-    user.balance += reward;
-    await user.save();
-
-    // Optionally, update the referrer or the user’s "claimed" status here
-
-    res.status(200).json({ message: 'Reward claimed successfully', balance: user.balance });
-  } catch (error) {
-    console.error('Error claiming reward:', error);
-    res.status(500).json({ message: 'Server error' });
-  }
+app.get('/friends', (req, res) => {
+  const userId = req.user.id; // Assuming `req.user` contains the logged-in user's data
+  res.render('friends', { userId });
 });
+
+
+
+
+
 
 
 
