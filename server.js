@@ -365,22 +365,22 @@ app.get('/api/referrals', async (req, res) => {
     return res.status(400).json({ message: 'Missing userId in query' });
   }
 
-  console.log(`Querying referral_id: ${userId}`); // Debug log
-
   try {
-    const user = await Referral.findOne({ referral_id: userId });
-    console.log('Query Result:', user); // Log query result
+    // Querying using `_id`
+    const user = await Referral.findOne({ _id: userId });
 
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    res.json({ referred_Users: user.referred_Users });
+    // Return the referrals
+    res.json({ referred_Users: user.referrals });
   } catch (error) {
     console.error('Error fetching referral data:', error);
     return res.status(500).json({ message: 'Error fetching referral data', error });
   }
 });
+
 
 
 
