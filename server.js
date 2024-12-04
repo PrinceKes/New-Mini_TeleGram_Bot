@@ -432,10 +432,17 @@ app.get('/api/referrals', async (req, res) => {
 
 
 app.put('/api/referrals/:referral_id/claim', async (req, res) => {
+
+  console.log('PUT request received at /api/referrals/:referral_id/claim');
+  console.log('Params:', req.params);
+  console.log('Body:', req.body);
+
   const { referral_id } = req.params;
-  const { userId } = req.body; // Retrieve userId from the request body
+  const { userId } = req.body;
+  
 
   if (!userId) {
+    console.error('Missing userId');
     return res.status(400).json({ message: 'Missing userId or username' });
   }
 

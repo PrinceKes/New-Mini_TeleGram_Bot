@@ -211,14 +211,24 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
               }
           
+              const payload = { userId };
+              console.log('Sending payload:', payload);
+
               const claimResponse = await fetch(`https://sunday-mini-telegram-bot.onrender.com/api/referrals/${user._id}/claim`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ userId }),
+                body: JSON.stringify(payload), // Include the payload
               });
+
+              // const claimResponse = await fetch(`https://sunday-mini-telegram-bot.onrender.com/api/referrals/${user._id}/claim`, {
+              //   method: 'PUT',
+              //   headers: { 'Content-Type': 'application/json' },
+              //   body: JSON.stringify({ userId }),
+              // });
           
               if (!claimResponse.ok) {
                 const errorData = await claimResponse.json();
+                console.error('Server error response:', errorData);
                 throw new Error(errorData.message || 'Failed to claim reward');
               }
           
@@ -245,13 +255,21 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   async function loadReferrals() {
-    const userId = localStorage.getItem('user_id'); // Retrieve user ID from local storage
-    if (userId) {
-      fetchReferrals(userId);
-    } else {
-      console.error('User ID not found');
+    const userId = localStorage.getItem('user_id');
+    const referralId = user._id;
+
+    if (!userId || !referralId) {
+      alert('Missing user information. Please log in again.');
+      return;
     }
   }
+
+  //   if (userId) {
+  //     fetchReferrals(userId);
+  //   } else {
+  //     console.error('User ID not found');
+  //   }
+  // }
 
   loadReferrals();
 });
