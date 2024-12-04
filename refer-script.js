@@ -82,7 +82,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-
 // Function to fetch referral data from the API and populate the page
 async function fetchReferrals(userId) {
   try {
@@ -112,11 +111,14 @@ async function fetchReferrals(userId) {
       const userBox = document.createElement('div');
       userBox.classList.add('users-box');
 
+      // Safely check if referredUsername exists, otherwise use 'Unknown User'
+      const username = user.referredUsername ? user.referredUsername : 'Unknown User';
+      
       // Add inner HTML to the user box
       userBox.innerHTML = `
         <img src="avatar1.png" alt="User Avatar" class="user-avatar" />
         <div class="user-details">
-          <h4 class="user-name">${user.referredUsername}</h4>
+          <h4 class="user-name">${username}</h4>
           <p class="user-reward">+${user.reward} Rst</p>
         </div>
         <button class="claim-button">Claim</button>
