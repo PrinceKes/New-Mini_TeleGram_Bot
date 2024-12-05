@@ -163,29 +163,78 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
+
+
+
+
+
+
+// Function to fetch referral data from the API and populate the page
+async function fetchReferrals(userId) {
+  try {
+    const response = await fetch(`https://sunday-mini-telegram-bot.onrender.com/api/referrals?userId=${userId}`);
+    
+    if (!response.ok) {
+      throw new Error('Failed to fetch referrals');
+    }
+
+    const data = await response.json();
+    const referredUsers = data.referred_Users;
+
+    const referralsBox = document.querySelector('.referrals-box');
+    referralsBox.innerHTML = '';
+
+    referredUsers.forEach((user) => {
+      const userBox = document.createElement('div');
+      userBox.classList.add('users-box');
+
+      const userName = user.referredUsername ? user.referredUsername : 'Unknown User';
+
+      userBox.innerHTML = `
+        <img src="avatar1.png" alt="User Avatar" class="user-avatar" />
+        <div class="user-details">
+          <h4 class="user-name">${userName}</h4>
+          <p class="user-reward">+${user.reward} Rst</p>
+        </div>
+        <button class="claim-button" onClick="openClaimModal('${user._id}', ${user.reward})">Claim</button>
+      `;
+
+      referralsBox.appendChild(userBox);
+    });
+  } catch (error) {
+    console.error('Error fetching or displaying referrals:', error);
+
+    const referralsBox = document.querySelector('.referrals-box');
+    referralsBox.innerHTML = `<p class="error-message">Failed to load referrals. Please try again later.</p>`;
+  }
+}
+
+// Function to get the user_id from the URL or localStorage
+function getUserIdFromURLOrStorage() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const userIdFromUrl = urlParams.get('user_id');
+  const storedUserId = localStorage.getItem('user_id');
+
+  let user_id = userIdFromUrl || storedUserId;
+
+  if (user_id) {
+    localStorage.setItem('user_id', user_id);
+  }
+
+  return user_id;
+}
+
 // Function to open the claim modal
 function openClaimModal(referralId, reward) {
   const modal = document.getElementById('claim-modal');
   const claimButton = document.getElementById('claim-reward-button');
-  const closeButton = document.getElementById('close-modal-button');
 
-  modal.style.display = 'flex'; // Show the modal
+  modal.style.display = 'block';
 
-  // Attach event listener to the "Claim 250" button
+  // Attach event listener to the claim button
   claimButton.onclick = function () {
     claimReward(referralId, reward);
   };
-
-  // Attach event listener to the "Cancel" button
-  closeButton.onclick = function () {
-    closeModal();
-  };
-}
-
-// Function to close the modal
-function closeModal() {
-  const modal = document.getElementById('claim-modal');
-  modal.style.display = 'none'; // Hide the modal
 }
 
 // Function to claim the reward and update the balance
@@ -213,7 +262,7 @@ async function claimReward(referralId, reward) {
     alert('Reward claimed successfully!');
 
     // Update the balance in the UI
-    const balanceElement = document.getElementById('points');
+    const balanceElement = document.getElementById('user-balance');
     if (balanceElement) {
       balanceElement.innerText = `Balance: ${data.balance} Rst`;
     }
@@ -226,61 +275,10 @@ async function claimReward(referralId, reward) {
   }
 }
 
-// Ensure the modal doesn't show automatically
-document.getElementById('claim-modal').style.display = 'none';
-
-
-
-
-
-
-
-
-
-
 // Function to close the modal
 function closeModal() {
   const modal = document.getElementById('claim-modal');
   modal.style.display = 'none';
-}
-
-// Function to fetch referral data
-async function fetchReferrals(userId) {
-  try {
-    const response = await fetch(`https://sunday-mini-telegram-bot.onrender.com/api/referrals?userId=${userId}`);
-    if (!response.ok) {
-      throw new Error('Failed to fetch referrals');
-    }
-
-    const data = await response.json();
-    const referredUsers = data.referred_Users;
-
-    const referralsBox = document.querySelector('.referrals-box');
-    referralsBox.innerHTML = '';
-
-    referredUsers.forEach((user) => {
-      const userBox = document.createElement('div');
-      userBox.classList.add('users-box');
-
-      const userName = user.referredUsername ? user.referredUsername : 'Unknown User';
-
-      userBox.innerHTML = `
-        <img src="avatar1.png" alt="User Avatar" class="user-avatar" />
-        <div class="user-details">
-          <h4 class="user-name">${userName}</h4>
-          <p class="user-reward">+${user.reward} Rst</p>
-        </div>
-        <button class="claim-button" onClick="openClaimModal('${user._id}', ${user.reward}, this)">Claim</button>
-      `;
-
-      referralsBox.appendChild(userBox);
-    });
-  } catch (error) {
-    console.error('Error fetching or displaying referrals:', error);
-
-    const referralsBox = document.querySelector('.referrals-box');
-    referralsBox.innerHTML = `<p class="error-message">Failed to load referrals. Please try again later.</p>`;
-  }
 }
 
 // Function to load referrals for the current user
