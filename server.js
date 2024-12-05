@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 const Task = require('./models/Task');
 const User = require('./models/User');
 const Referral = require('./models/Referral');
-
+const path = require('path');
 const router = express.Router();
 
 const app = express();
@@ -168,7 +168,8 @@ app.post('/api/users/register', async (req, res) => {
 
 
 
-
+// Serve static files from the "assets" folder
+app.use(express.static(path.join(__dirname, 'assets')));
 
 
 
