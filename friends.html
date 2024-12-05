@@ -246,8 +246,7 @@
 
 
 
-
-/* General modal styling */
+/* 
 .modal {
   display: none;
   position: fixed;
@@ -261,11 +260,11 @@
   align-items: center;
 }
 
-/* Modal content box */
+
 .modal-content {
   background: white;
-  width: 90%; /* Adjust for smaller screens */
-  max-width: 400px; /* Limit width on larger screens */
+  width: 90%;
+  max-width: 400px; 
   border-radius: 10px;
   padding: 20px;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
@@ -273,7 +272,7 @@
   animation: fadeIn 0.3s ease;
 }
 
-/* Modal text */
+
 .modal-text {
   font-size: 16px;
   color: #333;
@@ -281,14 +280,13 @@
   line-height: 1.5;
 }
 
-/* Modal button container */
 .modal-buttons {
   display: flex;
   justify-content: space-between;
   gap: 10px;
 }
 
-/* Modal buttons styling */
+
 .modal-button {
   flex: 1;
   padding: 10px 15px;
@@ -319,7 +317,7 @@
   transform: scale(1.05);
 }
 
-/* Modal animation */
+
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -329,8 +327,34 @@
     opacity: 1;
     transform: translateY(0);
   }
+} */
+
+
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  justify-content: center;
+  align-items: center;
 }
 
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.modal button {
+  margin-top: 15px;
+  padding: 10px 20px;
+  cursor: pointer;
+}
 
 
 
@@ -387,7 +411,7 @@
     </button>
 
     <!-- Modal for Claim Reward -->
-    <div id="claim-modal" class="modal">
+    <!-- <div id="claim-modal" class="modal">
       <div class="modal-content">
         <p class="modal-text">You are about to claim a reward for your invited friend.</p>
         <div class="modal-buttons">
@@ -395,7 +419,16 @@
           <button onclick="closeModal()" class="modal-button cancel">Cancel</button>
         </div>
       </div>
+    </div> -->
+
+    <div id="claim-modal" class="modal">
+      <div class="modal-content">
+        <p>You are about to claim the reward for your invited friend.</p>
+        <button id="claim-reward-button">Claim 250</button>
+        <button onclick="closeModal()">Cancel</button>
+      </div>
     </div>
+    
 
 
 
