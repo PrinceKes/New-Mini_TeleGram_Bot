@@ -252,8 +252,8 @@
       <div class="user-card-info">
         <img src="./assets/Avatar.jpg" alt="User Icon">
         <div class="user-card-details">
-          <h3 id="myusername" class="myusername">Reutercom</h3>
-          <p id="mypoints" class="mypoints">1,529 Rst</p>
+          <h3 id="myusername" class="myusername">Loading</h3>
+          <p id="mypoints" class="mypoints">0 Rst</p>
         </div>
       </div>
       <div class="all-user-rank">#28,517,114</div>
@@ -433,40 +433,51 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
-// // code by CEO
-// // Function to fetch user data and update the leaderboard
-// async function fetchAndDisplayUserDetails() {
-//   try {
-//     const userId = localStorage.getItem("user_id");
-//     if (!userId) {
-//       console.error("User ID not found in localStorage");
-//       return;
-//     }
+// code by CEO
+// Function to fetch user data and update the leaderboard
+async function fetchAndDisplayUserDetails() {
+  try {
+    const userId = localStorage.getItem("user_id");
+    if (!userId) {
+      console.error("User ID not found in localStorage");
+      return;
+    }
 
-//     const response = await fetch("https://sunday-mini-telegram-bot.onrender.com/api/users");
-//     if (!response.ok) {
-//       throw new Error(`Failed to fetch user data: ${response.statusText}`);
-//     }
+    const response = await fetch("https://sunday-mini-telegram-bot.onrender.com/api/users");
+    if (!response.ok) {
+      throw new Error(`Failed to fetch user data: ${response.statusText}`);
+    }
 
-//     const users = await response.json();
+    const users = await response.json();
+    console.log("Fetched users:", users);
 
-//     const user = users.find((user) => user.user_id === userId);
-//     if (!user) {
-//       console.error("User not found in the database");
-//       return;
-//     }
+    const user = users.find((user) => user.user_id === userId);
+    if (!user) {
+      console.error("User not found in the database");
+      return;
+    }
 
-//     const usernameElement = document.getElementById("myusername");
-//     const pointsElement = document.getElementById("mypoints");
+    const usernameElement = document.getElementById("myusername");
+    const pointsElement = document.getElementById("mypoints");
 
-//     usernameElement.textContent = user.username;
-//     pointsElement.textContent = `${user.balance} Rst`;
-//   } catch (error) {
-//     console.error("Error fetching and displaying user details:", error);
-//   }
-// }
+    if (usernameElement && pointsElement) {
+      usernameElement.textContent = user.username;
+      pointsElement.textContent = `${user.balance} Rst`;
+    } else {
+      console.error("Username or points element not found in the DOM");
+    }
+  } catch (error) {
+    console.error("Error fetching and displaying user details:", error);
+  }
+}
 
-// document.addEventListener("DOMContentLoaded", fetchAndDisplayUserDetails);
+// Load user details when DOM is ready
+document.addEventListener("DOMContentLoaded", fetchAndDisplayUserDetails);
+
+
+
+
+
 
 
 
