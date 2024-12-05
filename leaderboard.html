@@ -129,45 +129,34 @@
       const userIdFromStorage = localStorage.getItem("user_id");
       return userIdFromStorage || null; // Return null if not found
     }
-
-    // Function to fetch user data and update the HTML
     async function fetchAndDisplayUserDetails() {
       try {
-        const userId = getUserId(); // Get the user_id
+        const userId = getUserId();
         if (!userId) {
           console.error("User ID not found in URL or localStorage");
           return;
         }
 
-        // Fetch data from the API
         const response = await fetch("https://sunday-mini-telegram-bot.onrender.com/api/users");
         if (!response.ok) {
           throw new Error(`Failed to fetch user data: ${response.statusText}`);
         }
 
         const users = await response.json();
-
-        // Find the user by user_id
         const user = users.find((user) => user.user_id === userId);
         if (!user) {
           console.error(`User with ID ${userId} not found in the database`);
           return;
         }
 
-        // Update HTML elements with user data
-        const usernameElement = document.getElementById("myusername");
-        const pointsElement = document.getElementById("mypoints");
-
-        if (usernameElement && pointsElement) {
-          usernameElement.textContent = user.username || "Unknown User"; // Fallback if username is null
-          pointsElement.textContent = `${user.balance || 0} Rst`; // Fallback if balance is null
-        } else {
-          console.error("Username or points element not found in the DOM");
-        }
+        document.getElementById("myusername").textContent = user.username || "Unknown User";
+        document.getElementById("mypoints").textContent = `${user.balance || 0} Rst`;
       } catch (error) {
         console.error("Error fetching and displaying user details:", error);
+        alert("Unable to fetch user data. Please try again later.");
       }
     }
+
 
     // Trigger the function when the DOM is fully loaded
     document.addEventListener("DOMContentLoaded", fetchAndDisplayUserDetails);
