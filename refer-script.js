@@ -164,21 +164,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 // Function to open the claim modal
-function openClaimModal(referralId, reward, claimButtonElement) {
+function openClaimModal(referralId, reward) {
   const modal = document.getElementById('claim-modal');
   const claimButton = document.getElementById('claim-reward-button');
+  const closeButton = document.getElementById('close-modal-button');
 
-  // Show the modal
-  modal.style.display = 'flex';
+  modal.style.display = 'flex'; // Show the modal
 
   // Attach event listener to the "Claim 250" button
   claimButton.onclick = function () {
-    claimReward(referralId, reward, claimButtonElement);
+    claimReward(referralId, reward);
+  };
+
+  // Attach event listener to the "Cancel" button
+  closeButton.onclick = function () {
+    closeModal();
   };
 }
 
+// Function to close the modal
+function closeModal() {
+  const modal = document.getElementById('claim-modal');
+  modal.style.display = 'none'; // Hide the modal
+}
+
 // Function to claim the reward and update the balance
-async function claimReward(referralId, reward, claimButtonElement) {
+async function claimReward(referralId, reward) {
   const userId = getUserIdFromURLOrStorage();
 
   if (!userId) {
@@ -207,10 +218,6 @@ async function claimReward(referralId, reward, claimButtonElement) {
       balanceElement.innerText = `Balance: ${data.balance} Rst`;
     }
 
-    // Change the "Claim" button to "Claimed"
-    claimButtonElement.innerText = 'Claimed';
-    claimButtonElement.disabled = true;
-
     // Close the modal
     closeModal();
   } catch (error) {
@@ -218,6 +225,18 @@ async function claimReward(referralId, reward, claimButtonElement) {
     alert('Failed to claim reward. Please try again later.');
   }
 }
+
+// Ensure the modal doesn't show automatically
+document.getElementById('claim-modal').style.display = 'none';
+
+
+
+
+
+
+
+
+
 
 // Function to close the modal
 function closeModal() {
