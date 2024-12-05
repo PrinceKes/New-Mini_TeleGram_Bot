@@ -309,11 +309,10 @@ app.put('/api/tasks/:task_id', async (req, res) => {
 // referral handles 
 // here are the script that handle Create a new profile for the first-time user
 
-// Middleware to create a user profile if not exists
 app.use(async (req, res, next) => {
-  const { userId, username } = req.query; // Extract userId and username from the request
+  const { userId, username } = req.query; 
+  
 
-  // Allow requests to the '/api/referrals' endpoint with only userId
   if (req.path === '/api/referrals' && userId) {
     return next();
   }
@@ -323,11 +322,10 @@ app.use(async (req, res, next) => {
   }
 
   try {
-    // Check if the user already exists
+
     const existingUser = await Referral.findOne({ referral_id: userId });
 
     if (!existingUser) {
-      // Create a new profile for the first-time user
       const newUserProfile = new Referral({
         referral_id: userId,
         username,
@@ -338,7 +336,7 @@ app.use(async (req, res, next) => {
       console.log(`Created profile for new user: ${username}`);
     }
 
-    next(); // Continue to the next middleware or route handler
+    next();
   } catch (error) {
     console.error('Error checking or creating user profile:', error);
     res.status(500).json({ message: 'Internal server error' });
@@ -431,14 +429,6 @@ app.get('/api/referrals', async (req, res) => {
 
 
 
-
-
-
-
-
-
-
-
 app.put('/api/referrals/:referral_id/claim', async (req, res) => {
   const { referral_id } = req.params;
   const { userId } = req.body; // Retrieve userId from the request body
@@ -487,40 +477,7 @@ app.put('/api/referrals/:referral_id/claim', async (req, res) => {
 
 
 
-
-
-// // New endpoint to fetch all referred users for a specific userId
-// app.get('/api/referrals/users', async (req, res) => {
-//   const { userId } = req.query;
-
-//   if (!userId) {
-//     return res.status(400).json({ message: 'User ID is required' });
-//   }
-
-//   try {
-//     // Find the user by their referral_id
-//     const user = await Referral.findOne({ referral_id: userId });
-
-//     if (!user) {
-//       return res.status(404).json({ message: 'User not found' });
-//     }
-
-//     // Return the referred users
-//     res.json({ referred_Users: user.referred_Users });
-//   } catch (error) {
-//     console.error('Error fetching referral data:', error);
-//     res.status(500).json({ message: 'Error fetching referral data' });
-//   }
-// });
-
-
-
-
-
-
-
-
-
+// Api rougte that control displaying all users
 
 app.use("/api", router);
 
@@ -553,6 +510,20 @@ app.get('/api/users', async (req, res) => {
     console.error('Error fetching users:', error);
     res.status(500).json({ message: 'Internal server error.' });
   }
+});
+
+
+
+
+app.post('/api/some-action', (req, res) => {
+  const { someData } = req.body;
+
+  if (!someData) {
+      return res.status(400).json({ message: 'Invalid data provided', type: 'error' });
+  }
+
+  // Simulate successful operation
+  res.status(200).json({ message: 'Task completed successfully', type: 'success' });
 });
 
 
