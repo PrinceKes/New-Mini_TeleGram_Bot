@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
       try {
         const walletInfo = tonConnectUI.wallet;
         if (!walletInfo) {
-          alert("No wallet connected. Cannot award points.");
+          showNotification("No wallet connected. Cannot award points.");
           return;
         }
   
@@ -50,13 +50,13 @@ document.addEventListener("DOMContentLoaded", () => {
   
         const result = await response.json();
         if (response.ok) {
-          alert("You have successfully claimed your reward points!");
+          showNotification("You have successfully claimed your reward points!");
         } else {
           throw new Error(result.message || "Failed to award points.");
         }
       } catch (error) {
         console.error("Error claiming reward:", error);
-        alert("Failed to claim your reward. Please try again later.");
+        ashowNotification("Failed to claim your reward. Please try again later.");
       } finally {
         modal.style.display = "none";
       }

@@ -51,7 +51,7 @@ function copyReferralLink() {
   
   document.body.removeChild(tempInput);
 
-  alert('Referral link copied to clipboard!');
+  showNotification('Referral link copied to clipboard!');
 }
 
 
@@ -164,7 +164,7 @@ async function claimReward(referralId, reward) {
   const userId = getUserIdFromURLOrStorage();
 
   if (!userId) {
-    alert('User ID not found. Please log in again.');
+    showNotification('User ID not found. Please log in again.');
     return;
   }
 
@@ -181,7 +181,7 @@ async function claimReward(referralId, reward) {
     }
 
     const data = await response.json();
-    alert('Reward claimed successfully!');
+    showNotification('Reward claimed successfully!');
 
     // Update the balance in the UI
     const balanceElement = document.getElementById('user-balance');
@@ -193,7 +193,7 @@ async function claimReward(referralId, reward) {
     closeModal();
   } catch (error) {
     console.error('Error claiming reward:', error);
-    alert('Failed to claim reward. Please try again later.');
+    showNotification('Failed to claim reward. Please try again later.');
   }
 }
 

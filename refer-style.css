@@ -162,9 +162,9 @@
 
 
 
-/* css styles fro referrals box */
+/* css styles for referrals box */
 .referrals-box {
-  background: #1e1e1e; /* Dark background */
+  background: #1e1e1e; 
   padding: 20px;
   border-radius: 12px;
   max-width: 350px;
@@ -177,7 +177,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: #2c2c2c; /* Box background */
+  background: #2c2c2c;
   padding: 10px 15px;
   border-radius: 8px;
   margin-bottom: 10px;
@@ -293,7 +293,7 @@
 }
 
 .modal-button.cancel {
-  background-color: #ff1707; /* Red for cancel */
+  background-color: #ff1707;
   color: white;
 }
 
@@ -327,3 +327,44 @@
   }
 } */
 
+
+
+
+
+
+
+
+/*Here are the css that controls the notifications and alert on this page*/
+#notification-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.notification {
+    transition: all 0.3s ease;
+    font-size: 16px;
+    animation: fadeIn 0.5s ease, fadeOut 0.5s ease 2.5s;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+}

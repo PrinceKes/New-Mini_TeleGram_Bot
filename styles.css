@@ -466,3 +466,43 @@
     margin-top: 20px;
     font-size: 12px;
   }
+
+
+
+
+
+
+  /* here are the css that coontrol all notifications */
+  #notification-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.notification {
+    transition: all 0.3s ease;
+    font-size: 16px;
+    animation: fadeIn 0.5s ease, fadeOut 0.5s ease 2.5s;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+}
