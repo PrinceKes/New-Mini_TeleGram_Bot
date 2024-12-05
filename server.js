@@ -317,9 +317,9 @@ app.use(async (req, res, next) => {
     return next();
   }
 
-  if (!userId || !username) {
-    // return res.status(400).json({ message: 'Missing userId or username' });
-  }
+  // if (!userId || !username) {
+  //   // return res.status(400).json({ message: 'Missing userId or username' });
+  // }
 
   try {
 
@@ -402,10 +402,7 @@ app.post('/api/referrals', async (req, res) => {
 app.get('/api/referrals', async (req, res) => {
   const { userId } = req.query;
 
-  if (!userId) {
-    return res.status(400).json({ message: 'Missing userId in query' });
-  }
-
+cls
   try {
     // Query by referral_id
     const user = await Referral.findOne({ referral_id: userId });
@@ -433,9 +430,9 @@ app.put('/api/referrals/:referral_id/claim', async (req, res) => {
   const { referral_id } = req.params;
   const { userId } = req.body; // Retrieve userId from the request body
 
-  if (!userId) {
-    // return res.status(400).json({ message: 'Missing userId or username' });
-  }
+  // if (!userId) {
+  //   // return res.status(400).json({ message: 'Missing userId or username' });
+  // }
 
   try {
     // Find the referral record
@@ -479,7 +476,7 @@ app.put('/api/referrals/:referral_id/claim', async (req, res) => {
 
 // Api rougte that control displaying all users
 
-app.use("/api", router);
+// app.use("/api", router);
 
 router.get('/users', async (req, res) => {
   try {

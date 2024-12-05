@@ -245,6 +245,46 @@ document.addEventListener('DOMContentLoaded', fetchUserPoints);
 
 
 
+
+
+// code by ceo
+// Function to fetch and display user details
+function fetchAndDisplayUserDetails(user_id) {
+  const apiUrl = `https://sunday-mini-telegram-bot.onrender.com/api/users`;
+
+  fetch(apiUrl)
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`Failed to fetch data: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then((users) => {
+      // Find the specific user details based on user_id
+      const user = users.find((u) => u.user_id === parseInt(user_id)); // Ensure `user_id` matches type
+
+      if (user) {
+        // Update the HTML with the user's username and balance
+        document.getElementById("myusername").innerText = user.username || "Unknown";
+        document.getElementById("mypoints").innerText = `${user.balance || 0} Rst`;
+      } else {
+        console.error("User not found in the fetched data.");
+      }
+    })
+    .catch((error) => {
+      console.error("Error fetching and displaying user details:", error);
+      alert("Unable to fetch user data. Please try again later.");
+    });
+}
+
+
+
+
+
+
+
+
+
 // CODE BY FARAZ
 
 
