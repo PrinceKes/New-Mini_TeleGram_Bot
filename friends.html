@@ -246,6 +246,95 @@
 
 
 
+
+/* General modal styling */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+  z-index: 1000;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Modal content box */
+.modal-content {
+  background: white;
+  width: 90%; /* Adjust for smaller screens */
+  max-width: 400px; /* Limit width on larger screens */
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  animation: fadeIn 0.3s ease;
+}
+
+/* Modal text */
+.modal-text {
+  font-size: 16px;
+  color: #333;
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+/* Modal button container */
+.modal-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+/* Modal buttons styling */
+.modal-button {
+  flex: 1;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.modal-button.claim {
+  background-color: #4caf50;
+  color: white;
+}
+
+.modal-button.claim:hover {
+  background-color: #45a049;
+  transform: scale(1.05);
+}
+
+.modal-button.cancel {
+  background-color: #f44336;
+  color: white;
+}
+
+.modal-button.cancel:hover {
+  background-color: #d32f2f;
+  transform: scale(1.05);
+}
+
+/* Modal animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+
+
+
 </style>
 
 </head>
@@ -296,6 +385,19 @@
     <button class="invite-btn" id="referralButton">
       Invite
     </button>
+
+    <!-- Modal for Claim Reward -->
+    <div id="claim-modal" class="modal">
+      <div class="modal-content">
+        <p class="modal-text">You are about to claim a reward for your invited friend.</p>
+        <div class="modal-buttons">
+          <button id="claim-reward-button" class="modal-button claim">Claim 250</button>
+          <button onclick="closeModal()" class="modal-button cancel">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+
 
   </main>
 

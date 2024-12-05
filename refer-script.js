@@ -90,6 +90,81 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
+// // Function to fetch referral data from the API and populate the page
+// async function fetchReferrals(userId) {
+//   try {
+//     const response = await fetch(`https://sunday-mini-telegram-bot.onrender.com/api/referrals?userId=${userId}`);
+    
+//     if (!response.ok) {
+//       throw new Error('Failed to fetch referrals');
+//     }
+
+//     const data = await response.json();
+//     const referredUsers = data.referred_Users;
+
+//     const referralsBox = document.querySelector('.referrals-box');
+//     referralsBox.innerHTML = '';
+
+//     referredUsers.forEach((user) => {
+//       const userBox = document.createElement('div');
+//       userBox.classList.add('users-box');
+
+//       const userName = user.referredUsername ? user.referredUsername : 'Unknown User';
+
+//       userBox.innerHTML = `
+//         <img src="avatar1.png" alt="User Avatar" class="user-avatar" />
+//         <div class="user-details">
+//           <h4 class="user-name">${userName}</h4>
+//           <p class="user-reward">+${user.reward} Rst</p>
+//         </div>
+//         <button class="claim-button">Claim</button>
+//       `;
+
+//       referralsBox.appendChild(userBox);
+//     });
+//   } catch (error) {
+//     console.error('Error fetching or displaying referrals:', error);
+
+//     const referralsBox = document.querySelector('.referrals-box');
+//     referralsBox.innerHTML = `<p class="error-message">Failed to load referrals. Please try again later.</p>`;
+//   }
+// }
+
+// // Function to get the user_id from the URL or localStorage
+// function getUserIdFromURLOrStorage() {
+//   const urlParams = new URLSearchParams(window.location.search);
+//   const userIdFromUrl = urlParams.get('user_id');
+//   const storedUserId = localStorage.getItem('user_id');
+
+//   let user_id = userIdFromUrl || storedUserId;
+
+//   if (user_id) {
+//     localStorage.setItem('user_id', user_id);
+//   }
+
+//   return user_id;
+// }
+
+// // Function to load referrals for the current user
+// async function loadReferrals() {
+//   const userId = getUserIdFromURLOrStorage();
+
+//   if (userId) {
+//     await fetchReferrals(userId);
+//   } else {
+//     console.error('No user_id found in URL or localStorage.');
+//     const referralsBox = document.querySelector('.referrals-box');
+//     referralsBox.innerHTML = `<p class="error-message">User ID is missing. Please log in again.</p>`;
+//   }
+// }
+
+// // Trigger the referral loading process
+// document.addEventListener("DOMContentLoaded", loadReferrals);
+
+
+
+
+
 // Function to fetch referral data from the API and populate the page
 async function fetchReferrals(userId) {
   try {
@@ -117,7 +192,7 @@ async function fetchReferrals(userId) {
           <h4 class="user-name">${userName}</h4>
           <p class="user-reward">+${user.reward} Rst</p>
         </div>
-        <button class="claim-button">Claim</button>
+        <button class="claim-button" onClick="openClaimModal('${user._id}', ${user.reward})">Claim</button>
       `;
 
       referralsBox.appendChild(userBox);
@@ -145,6 +220,63 @@ function getUserIdFromURLOrStorage() {
   return user_id;
 }
 
+// Function to open the claim modal
+function openClaimModal(referralId, reward) {
+  const modal = document.getElementById('claim-modal');
+  const claimButton = document.getElementById('claim-reward-button');
+
+  modal.style.display = 'block';
+
+  // Attach event listener to the claim button
+  claimButton.onclick = function () {
+    claimReward(referralId, reward);
+  };
+}
+
+// Function to claim the reward and update the balance
+async function claimReward(referralId, reward) {
+  const userId = getUserIdFromURLOrStorage();
+
+  if (!userId) {
+    alert('User ID not found. Please log in again.');
+    return;
+  }
+
+  try {
+    // Update the user's balance in the database
+    const response = await fetch(`https://sunday-mini-telegram-bot.onrender.com/api/users/${userId}/balance`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ amount: reward }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to update balance');
+    }
+
+    const data = await response.json();
+    alert('Reward claimed successfully!');
+
+    // Update the balance in the UI
+    const balanceElement = document.getElementById('points');
+    if (balanceElement) {
+      balanceElement.innerText = `Balance: ${data.balance} Rst`;
+    }
+
+    // Close the modal
+    closeModal();
+  } catch (error) {
+    console.error('Error claiming reward:', error);
+    alert('Failed to claim reward. Please try again later.');
+  }
+}
+
+// Function to close the modal
+function closeModal() {
+  const modal = document.getElementById('claim-modal');
+  modal.style.display = 'none';
+}
+
 // Function to load referrals for the current user
 async function loadReferrals() {
   const userId = getUserIdFromURLOrStorage();
@@ -160,108 +292,3 @@ async function loadReferrals() {
 
 // Trigger the referral loading process
 document.addEventListener("DOMContentLoaded", loadReferrals);
-
-
-
-
-
-
-
-// document.addEventListener("DOMContentLoaded", function () {
-//   async function fetchReferrals(userId) {
-//     try {
-//       const response = await fetch(`https://sunday-mini-telegram-bot.onrender.com/api/referrals?userId=${userId}`);
-//       if (!response.ok) {
-//         throw new Error('Failed to fetch referrals');
-//       }
-
-//       const data = await response.json();
-//       const referredUsers = data.referred_Users;
-
-//       const referralsBox = document.querySelector('.referrals-box');
-//       referralsBox.innerHTML = '';
-
-//       referredUsers.forEach((user) => {
-//         const userBox = document.createElement('div');
-//         userBox.classList.add('users-box');
-
-//         const userName = user.referredUsername ? user.referredUsername : 'Unknown User';
-
-//         const claimButton = user.isClaimed
-//           ? '<button class="claim-button claimed" disabled>Claimed</button>'
-//           : '<button class="claim-button">Claim</button>';
-
-//         userBox.innerHTML = `
-//           <img src="avatar1.png" alt="User Avatar" class="user-avatar" />
-//           <div class="user-details">
-//             <h4 class="user-name">${userName}</h4>
-//             <p class="user-reward">+${user.reward} Rst</p>
-//           </div>
-//           ${claimButton}
-//         `;
-
-//         const button = userBox.querySelector('.claim-button');
-//         if (!user.isClaimed) {
-//           button.addEventListener('click', async () => {
-//             try {
-//               const userId = localStorage.getItem('user_id'); // Ensure the user ID is stored in local storage
-          
-//               if (!userId) {
-//                 alert('User ID is missing. Please log in again.');
-//                 return;
-//               }
-          
-//               const claimResponse = await fetch(`https://sunday-mini-telegram-bot.onrender.com/api/referrals/${user._id}/claim`, {
-//                 method: 'PUT',
-//                 headers: { 'Content-Type': 'application/json' },
-//                 body: JSON.stringify({ userId }), // Include the userId in the body
-//               });
-          
-//               if (!claimResponse.ok) {
-//                 const errorData = await claimResponse.json();
-//                 throw new Error(errorData.message || 'Failed to claim reward');
-//               }
-          
-//               const result = await claimResponse.json();
-//               console.log(result.message);
-          
-//               // Update the button and reward balance after a successful claim
-//               button.textContent = 'Claimed';
-//               button.disabled = true;
-//               button.classList.add('claimed');
-//             } catch (error) {
-//               console.error('Error claiming reward:', error);
-//               alert('Failed to claim reward. Please try again.');
-//             }
-//           });
-                 
-//         }
-
-//         referralsBox.appendChild(userBox);
-//       });
-//     } catch (error) {
-//       console.error('Error fetching or displaying referrals:', error);
-//       const referralsBox = document.querySelector('.referrals-box');
-//       referralsBox.innerHTML = `<p class="error-message">Failed to load referrals. Please try again later.</p>`;
-//     }
-//   }
-
-//   async function loadReferrals() {
-//     const userId = localStorage.getItem('user_id');
-//     const referralId = user._id;
-
-//     if (!userId || !referralId) {
-//       alert('Missing user information. Please log in again.');
-//       return;
-//     }
-//   }
-
-//   //   if (userId) {
-//   //     fetchReferrals(userId);
-//   //   } else {
-//   //     console.error('User ID not found');
-//   //   }
-//   // }
-
-//   loadReferrals();
-// });
