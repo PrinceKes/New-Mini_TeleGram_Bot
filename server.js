@@ -117,7 +117,7 @@ app.put('/api/tasks/:id', async (req, res) => {
     const task = await Task.findById(id);
     if (!task) return res.status(404).json({ error: 'Task not found' });
 
-    const user = await User.findOne({ user_id }); // Changed from userId
+    const user = await User.findOne({ user_id });
     if (!user) return res.status(404).json({ error: 'User not found' });
 
     if (user.completedTasks.includes(id)) {

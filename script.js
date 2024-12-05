@@ -129,7 +129,7 @@ if (points === null) {
             console.log("Balance updated:", data);
       
             if (response.ok) {
-              displayStoredBalance(); // Fetch and display the updated balance
+              displayStoredBalance();
             }
           } catch (error) {
             console.error("Error updating balance:", error);
