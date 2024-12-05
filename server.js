@@ -318,7 +318,7 @@ app.use(async (req, res, next) => {
   }
 
   if (!userId || !username) {
-    return res.status(400).json({ message: 'Missing userId or username' });
+    // return res.status(400).json({ message: 'Missing userId or username' });
   }
 
   try {
@@ -434,7 +434,7 @@ app.put('/api/referrals/:referral_id/claim', async (req, res) => {
   const { userId } = req.body; // Retrieve userId from the request body
 
   if (!userId) {
-    return res.status(400).json({ message: 'Missing userId or username' });
+    // return res.status(400).json({ message: 'Missing userId or username' });
   }
 
   try {
