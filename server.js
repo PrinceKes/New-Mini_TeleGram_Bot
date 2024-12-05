@@ -494,6 +494,7 @@ router.get('/users', async (req, res) => {
 
 
 
+
 // CODE BY FARAZ
 
 // Fetch all users

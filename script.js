@@ -242,6 +242,9 @@ async function fetchUserPoints() {
 document.addEventListener('DOMContentLoaded', fetchUserPoints);
 
 
+
+
+
 // CODE BY FARAZ
 
 
