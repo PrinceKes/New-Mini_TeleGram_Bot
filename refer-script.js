@@ -164,7 +164,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-
 // Function to fetch referral data from the API and populate the page
 async function fetchReferrals(userId) {
   try {
@@ -192,7 +191,7 @@ async function fetchReferrals(userId) {
           <h4 class="user-name">${userName}</h4>
           <p class="user-reward">+${user.reward} Rst</p>
         </div>
-        <button class="claim-button" onClick="openClaimModal('${user._id}', ${user.reward})">Claim</button>
+        <button class="claim-button" id="claim-button-${user._id}" onClick="openClaimModal('${user._id}', ${user.reward})">Claim</button>
       `;
 
       referralsBox.appendChild(userBox);
@@ -203,21 +202,6 @@ async function fetchReferrals(userId) {
     const referralsBox = document.querySelector('.referrals-box');
     referralsBox.innerHTML = `<p class="error-message">Failed to load referrals. Please try again later.</p>`;
   }
-}
-
-// Function to get the user_id from the URL or localStorage
-function getUserIdFromURLOrStorage() {
-  const urlParams = new URLSearchParams(window.location.search);
-  const userIdFromUrl = urlParams.get('user_id');
-  const storedUserId = localStorage.getItem('user_id');
-
-  let user_id = userIdFromUrl || storedUserId;
-
-  if (user_id) {
-    localStorage.setItem('user_id', user_id);
-  }
-
-  return user_id;
 }
 
 // Function to open the claim modal
@@ -261,6 +245,13 @@ async function claimReward(referralId, reward) {
     const balanceElement = document.getElementById('points');
     if (balanceElement) {
       balanceElement.innerText = `Balance: ${data.balance} Rst`;
+    }
+
+    // Update the "Claim" button text to "Claimed"
+    const claimButton = document.getElementById(`claim-button-${referralId}`);
+    if (claimButton) {
+      claimButton.innerText = 'Claimed';
+      claimButton.disabled = true; // Disable the button
     }
 
     // Close the modal

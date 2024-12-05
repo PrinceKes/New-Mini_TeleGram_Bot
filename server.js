@@ -170,7 +170,8 @@ app.post('/api/users/register', async (req, res) => {
 
 // Serve static files from the "assets" folder
 // app.use(express.static(path.join(__dirname, 'assets')));
-app.use(express.static('assets'));
+// app.use(express.static('assets'));
+app.use('/assets', express.static('assets'));
 
 
 
