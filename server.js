@@ -5,7 +5,17 @@ const bodyParser = require('body-parser');
 const Task = require('./models/Task');
 const User = require('./models/User');
 const Referral = require('./models/Referral');
+
+
+
+const fs = require('fs');
 const path = require('path');
+
+const iconPath = path.join(__dirname, 'assets', 'icon.png');
+const iconData = fs.readFileSync(iconPath);
+const iconBase64 = iconData.toString('base64');
+
+
 const router = express.Router();
 
 const app = express();
