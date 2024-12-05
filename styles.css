@@ -37,9 +37,15 @@
       display: flex;
       align-items: center;
       width: 100%;
-      color: #b3b3b3;
+      color: #b7b7b7;
       font-size: 14px;
       padding-bottom: 20px;
+      background-color: #091420;
+      padding: 10px;
+      border-radius: 10px;
+      width: 350px;
+      font-weight: 600;
+      align-items: left;
     }
     .header img {
       width: 30px;

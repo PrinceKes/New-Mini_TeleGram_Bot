@@ -37,14 +37,19 @@ z-index: 1000;
 
 
 
-  .header {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    color: #b3b3b3;
-    font-size: 14px;
-    padding-bottom: 20px;
-  }
+.header {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  color: #b3b3b3;
+  font-size: 14px;
+  padding-bottom: 20px;
+  background-color: #091420;
+  padding: 10px;
+  border-radius: 10px;
+  width: 350px;
+  font-weight: 600;
+}
   .header img {
     width: 30px;
     height: 30px;

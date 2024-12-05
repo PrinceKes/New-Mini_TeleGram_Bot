@@ -40,7 +40,7 @@ function copyReferralLink() {
     return;
   }
 
-  const referralLink = `https://t.me/SunEarner_bot?start=${userId}`;
+  const referralLink = `https://t.me/Roasterboldbot?start=${userId}`;
   
   const tempInput = document.createElement('input');
   tempInput.value = referralLink;
