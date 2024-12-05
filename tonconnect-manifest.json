@@ -1,7 +1,7 @@
 {
     "name": "RoasterBot",
     "url": "https://new-mini-telegram-bot.onrender.com",
-    "iconUrl": "https://new-mini-telegram-bot.onrender.com/icon.png",
+    "iconUrl": "https://new-mini-telegram-bot.onrender.com/assets/icon.png",
     "bridge": "https://bridge.tonapi.io/bridge"
   }
   
