@@ -251,7 +251,7 @@ document.addEventListener('DOMContentLoaded', fetchUserPoints);
 // Fetch and display users in the leaderboard
 // Fetch and display users in the leaderboard
 function fetchAndDisplayUsers() {
-  fetch('https://sunday-mini-telegram-bot.onrender.com/api/users')
+  fetch('http://127.0.0.1:5000/api/users')
     .then(response => response.json())
     .then(users => {
       const leaderboardContainer = document.querySelector('.rank-users');
