@@ -27,16 +27,10 @@ app.use(express.json());
 app.use("/api", router);
 app.use(bodyParser.json());
 app.use(cors({
-  origin: ['https://new-mini-telegram-bot.onrender.com', 'http://localhost:3000'],
+  origin: 'https://new-mini-telegram-bot.onrender.com',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true,
 }));
-
-// app.use(cors({
-//   origin: 'https://new-mini-telegram-bot.onrender.com',
-//   methods: ['GET', 'POST', 'PUT', 'DELETE'],
-//   credentials: true,
-// }));
 
 // MongoDB connection
 const mongoURI = process.env.MONGO_URI;

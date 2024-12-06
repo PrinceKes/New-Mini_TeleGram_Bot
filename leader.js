@@ -1,77 +1,52 @@
-// Function to fetch user-specific data and display it on the leaderboard
+// Function to fetch user data and update the leaderboard
 async function fetchAndDisplayUserDetails() {
   try {
+    // Retrieve user_id from localStorage
     const userId = localStorage.getItem("user_id");
     if (!userId) {
       console.error("User ID not found in localStorage");
       return;
     }
 
-    const response = await fetch("https://sunday-mini-telegram-bot.onrender.com/api/users");
+    // Fetch user data from the API
+    const response = await fetch("https://sunday-mini-telegram-bot.onrender.com/api/user");
     if (!response.ok) {
       throw new Error(`Failed to fetch user data: ${response.statusText}`);
     }
 
+    // Parse the JSON response
     const users = await response.json();
 
-    // Find the specific user from the users array
-    const user = users.find((u) => u.user_id === userId);
+    // Find the logged-in user's details
+    const user = users.find((user) => user.user_id === userId);
     if (!user) {
       console.error("User not found in the database");
       return;
     }
 
-    // Display user-specific data
-    document.getElementById("myusername").textContent = user.username;
-    document.getElementById("mypoints").textContent = `${user.balance} Rst`;
+    // Update the DOM with the user's details
+    const usernameElement = document.getElementById("myusername");
+    const pointsElement = document.getElementById("mypoints");
+
+    usernameElement.textContent = user.username; // Assuming `username` exists in the API response
+    pointsElement.textContent = `${user.points} Roast`; // Assuming `points` exists in the API response
   } catch (error) {
-    console.error("Error fetching user-specific data:", error);
+    console.error("Error fetching and displaying user details:", error);
   }
 }
 
-// Function to fetch and display the leaderboard
-async function fetchAndDisplayLeaderboard() {
-  try {
-    const response = await fetch("https://sunday-mini-telegram-bot.onrender.com/api/users");
-    if (!response.ok) {
-      throw new Error(`Failed to fetch leaderboard: ${response.statusText}`);
-    }
+// Run the function after the DOM content has loaded
+document.addEventListener("DOMContentLoaded", fetchAndDisplayUserDetails);
 
-    const users = await response.json();
-    const leaderboardContainer = document.querySelector(".rank-users");
-    leaderboardContainer.innerHTML = ""; // Clear existing items
 
-    // Populate leaderboard
-    users.forEach((user, index) => {
-      const rank = index + 1; // Determine rank
-      const medal = rank === 1 ? "🥇" : rank === 2 ? "🥈" : rank === 3 ? "🥉" : "";
 
-      const userCard = document.createElement("div");
-      userCard.classList.add("leaderboard-card");
 
-      userCard.innerHTML = `
-        <div class="user-info">
-          <img src="./assets/roaster.png" alt="User Icon">
-          <div class="user-details">
-            <span class="username">${user.username}</span>
-            <span class="points">${user.balance} Rst</span>
-          </div>
-        </div>
-        <div class="user-rank">${medal || `#${rank}`}</div>
-      `;
 
-      leaderboardContainer.appendChild(userCard);
-    });
-  } catch (error) {
-    console.error("Error fetching leaderboard data:", error);
-  }
-}
 
-// Initialize both functions when the DOM is ready
-document.addEventListener("DOMContentLoaded", () => {
-  fetchAndDisplayUserDetails();
-  fetchAndDisplayLeaderboard();
-});
+
+
+
+
 
 
 
