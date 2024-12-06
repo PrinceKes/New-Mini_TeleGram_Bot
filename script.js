@@ -91,8 +91,6 @@ fetch('/navbar.html')
 
 
   
-
-  
 // Welcome bonus logic
 const pointsElement = document.getElementById("points");
 const modal = document.getElementById("welcome-modal");
@@ -104,49 +102,62 @@ if (points === null) {
   const hasClaimedBonus = localStorage.getItem("hasClaimedBonus");
 
   if (!hasClaimedBonus) {
-      // Show modal after a delay
-      setTimeout(() => {
-          modal.classList.remove("hidden");
-      }, 1000);
+    // Show modal after a delay
+    setTimeout(() => {
+      modal.classList.remove("hidden");
+    }, 1000);
 
-      claimBonusBtn.addEventListener("click", async () => {
-        points = 2000;
-        pointsElement.innerText = `${points} Rst`;
-      
-        localStorage.setItem("hasClaimedBonus", "true");
-        localStorage.setItem("userBalance", points);
-      
-        const userId = localStorage.getItem("user_id");
-        if (userId) {
-          try {
-            const response = await fetch(`https://sunday-mini-telegram-bot.onrender.com/api/users/${userId}`, {
-              method: "POST",
+    claimBonusBtn.addEventListener("click", async () => {
+      points = 2000;
+      pointsElement.innerText = `${points} Rst`;
+
+      // Store bonus claim status in localStorage
+      localStorage.setItem("hasClaimedBonus", "true");
+
+      const userId = localStorage.getItem("user_id");
+      if (userId) {
+        try {
+          // Send PUT request to update balance in the database
+          const response = await fetch(
+            `https://sunday-mini-telegram-bot.onrender.com/api/users/${userId}/balance`,
+            {
+              method: "PUT",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ user_id: userId, balance: points }),
-            });
-      
+              body: JSON.stringify({ amount: points }), // Send the bonus points
+            }
+          );
+
+          if (response.ok) {
             const data = await response.json();
             console.log("Balance updated:", data);
-      
-            if (response.ok) {
-              displayStoredBalance();
-            }
-          } catch (error) {
-            console.error("Error updating balance:", error);
+
+            // Optionally, update the displayed balance
+            pointsElement.innerText = `${data.balance} Rst`;
+          } else {
+            console.error("Failed to update balance:", response.statusText);
           }
+        } catch (error) {
+          console.error("Error updating balance:", error);
         }
-      
-        modal.classList.add("hidden");
-      });
-      
+      }
+
+      // Hide the modal
+      modal.classList.add("hidden");
+    });
   } else {
-      points = 0;
-      pointsElement.innerText = `${points} Rst`;
-      localStorage.setItem("userPoints", points);
+    points = 0;
+    pointsElement.innerText = `${points} Rst`;
+    localStorage.setItem("userPoints", points);
   }
 } else {
   pointsElement.innerText = `${points} Rst`;
 }
+
+
+
+
+
+
 
 // Function to update user balance based on the tasks they do
 document.addEventListener('DOMContentLoaded', () => {
@@ -154,6 +165,41 @@ document.addEventListener('DOMContentLoaded', () => {
   const savedBalance = localStorage.getItem('userBalance') || '0';
   balanceElement.textContent = `${savedBalance} Rst`;
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -215,69 +261,76 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-// Function to fetch and display the user's rewards points
-async function fetchUserPoints() {
-  try {
-    const userId = localStorage.getItem('user_id');
+// // Function to fetch and display the user's rewards points
+// async function fetchUserPoints() {
+//   try {
+//     const userId = localStorage.getItem('user_id');
     
-    if (!userId) {
-      throw new Error('User ID is not available');
-    }
+//     if (!userId) {
+//       throw new Error('User ID is not available');
+//     }
 
-    const response = await fetch(`https://sunday-mini-telegram-bot.onrender.com/api/user-points?user_id=${userId}`);
-    if (!response.ok) {
-      throw new Error('Failed to fetch user points');
-    }
+//     const response = await fetch(`https://sunday-mini-telegram-bot.onrender.com/api/user-points?user_id=${userId}`);
+//     if (!response.ok) {
+//       throw new Error('Failed to fetch user points');
+//     }
 
-    const data = await response.json();
-    const pointsDiv = document.getElementById('points');
+//     const data = await response.json();
+//     const pointsDiv = document.getElementById('points');
 
-    pointsDiv.textContent = `${data.points} Rst`;
-  } catch (error) {
-    console.error('Error fetching user points:', error);
-    // alert('An error occurred while fetching points');
-  }
-}
+//     pointsDiv.textContent = `${data.points} Rst`;
+//   } catch (error) {
+//     console.error('Error fetching user points:', error);
+//     // alert('An error occurred while fetching points');
+//   }
+// }
 
-document.addEventListener('DOMContentLoaded', fetchUserPoints);
-
-
+// document.addEventListener('DOMContentLoaded', fetchUserPoints);
 
 
 
 
 
+
+
+
+
+
+
+
+
+
+
+// THE CODES FROM HERE ARE TO WORK ON THE LEADERBOARD.HTML PAGE TO DISPLAY USERS ACCORDINGLY
 // code by ceo
-// Function to fetch and display user details
-function fetchAndDisplayUserDetails(user_id) {
-  const apiUrl = `https://sunday-mini-telegram-bot.onrender.com/api/users`;
+// // Function to fetch and display user details
+// function fetchAndDisplayUserDetails(user_id) {
+//   const apiUrl = `https://sunday-mini-telegram-bot.onrender.com/api/users`;
 
-  fetch(apiUrl)
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error(`Failed to fetch data: ${response.status}`);
-      }
-      return response.json();
-    })
-    .then((users) => {
-      // Find the specific user details based on user_id
-      const user = users.find((u) => u.user_id === parseInt(user_id)); // Ensure `user_id` matches type
+//   fetch(apiUrl)
+//     .then((response) => {
+//       if (!response.ok) {
+//         throw new Error(`Failed to fetch data: ${response.status}`);
+//       }
+//       return response.json();
+//     })
+//     .then((users) => {
+//       // Find the specific user details based on user_id
+//       const user = users.find((u) => u.user_id === parseInt(user_id)); // Ensure `user_id` matches type
 
-      if (user) {
-        // Update the HTML with the user's username and balance
-        document.getElementById("myusername").innerText = user.username || "Unknown";
-        document.getElementById("mypoints").innerText = `${user.balance || 0} Rst`;
-      } else {
-        console.error("User not found in the fetched data.");
-      }
-    })
-    .catch((error) => {
-      console.error("Error fetching and displaying user details:", error);
-      alert("Unable to fetch user data. Please try again later.");
-    });
-}
-
-
+//       if (user) {
+//         // Update the HTML with the user's username and balance
+//         document.getElementById("myusername").innerText = user.username || "Unknown";
+//         document.getElementById("mypoints").innerText = `${user.balance || 0} Rst`;
+//       } else {
+//         console.error("User not found in the fetched data.");
+//       }
+//     })
+//     .catch((error) => {
+//       console.error("Error fetching and displaying user details:", error);
+//       alert("Unable to fetch user data. Please try again later.");
+//     });
+// }
 
 
 
@@ -285,48 +338,86 @@ function fetchAndDisplayUserDetails(user_id) {
 
 
 
-// CODE BY FARAZ
+
+// // 
+// // CODE BY FARAZ
 
 
-// Fetch and display users in the leaderboard
-// Fetch and display users in the leaderboard
-function fetchAndDisplayUsers() {
-  fetch('http://127.0.0.1:5000/api/users')
-    .then(response => response.json())
-    .then(users => {
-      const leaderboardContainer = document.querySelector('.rank-users');
-      leaderboardContainer.innerHTML = ''; // Clear existing leaderboard items
+// // Fetch and display users in the leaderboard
+// // Fetch and display users in the leaderboard
+// function fetchAndDisplayUsers() {
+//   fetch('http://127.0.0.1:5000/api/users')
+//     .then(response => response.json())
+//     .then(users => {
+//       const leaderboardContainer = document.querySelector('.rank-users');
+//       leaderboardContainer.innerHTML = ''; // Clear existing leaderboard items
 
-      // Iterate over the users and create leaderboard entries
-      users.forEach((user, index) => {
-        const rank = index + 1;
-        const userCard = document.createElement('div');
-        userCard.classList.add('leaderboard-card');
+//       // Iterate over the users and create leaderboard entries
+//       users.forEach((user, index) => {
+//         const rank = index + 1;
+//         const userCard = document.createElement('div');
+//         userCard.classList.add('leaderboard-card');
         
-        const medal = (rank === 1) ? '🥇' : (rank === 2) ? '🥈' : (rank === 3) ? '🥉' : '';
+//         const medal = (rank === 1) ? '🥇' : (rank === 2) ? '🥈' : (rank === 3) ? '🥉' : '';
 
-        userCard.innerHTML = `
-          <div class="user-info">
-            <img src="./assets/roaster.png" alt="User Icon">
-            <div class="user-details">
-              <span class="username">${user.username}</span>
-              <span class="points">${user.balance} Roast</span>
-            </div>
-          </div>
-          <div class="user-rank">${medal || `#${rank}`}</div>
-        `;
+//         userCard.innerHTML = `
+//           <div class="user-info">
+//             <img src="./assets/roaster.png" alt="User Icon">
+//             <div class="user-details">
+//               <span class="username">${user.username}</span>
+//               <span class="points">${user.balance} Roast</span>
+//             </div>
+//           </div>
+//           <div class="user-rank">${medal || `#${rank}`}</div>
+//         `;
 
-        leaderboardContainer.appendChild(userCard);
-      });
-    })
-    .catch(error => console.error('Error fetching users:', error));
-}
+//         leaderboardContainer.appendChild(userCard);
+//       });
+//     })
+//     .catch(error => console.error('Error fetching users:', error));
+// }
 
-// Call the function to populate the leaderboard when the page loads
-window.onload = fetchAndDisplayUsers;
+// // Call the function to populate the leaderboard when the page loads
+// window.onload = fetchAndDisplayUsers;
 
 
-document.addEventListener('DOMContentLoaded', fetchUserPoints);
+// document.addEventListener('DOMContentLoaded', fetchUserPoints);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

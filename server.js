@@ -64,7 +64,7 @@ app.get('/api/user-points', async (req, res) => {
     res.json({ points: user.balance || 0 });
   } catch (error) {
     console.error('Error fetching user points:', error);
-    res.status(500).json({ message: 'Internal server error.' });
+    // res.status(500).json({ message: 'Internal server error.' });
   }
 });
 
@@ -265,7 +265,7 @@ app.put('/api/users/:user_id/complete-task', async (req, res) => {
     res.status(200).json({ message: 'Task completed successfully', balance: user.balance });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    // res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 
@@ -291,7 +291,7 @@ app.put('/api/tasks/:task_id', async (req, res) => {
     res.status(200).json({ message: 'Task completed successfully', newBalance: user.balance });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    // res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 
@@ -461,7 +461,7 @@ app.put('/api/referrals/:referral_id/claim', async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    // res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 
@@ -485,7 +485,7 @@ router.get('/users', async (req, res) => {
     res.status(200).json(sortedUsers);
   } catch (error) {
     console.error('Error fetching users:', error);
-    res.status(500).json({ message: 'Internal server error.' });
+    // res.status(500).json({ message: 'Internal server error.' });
   }
 });
 
@@ -506,7 +506,7 @@ app.get('/api/users', async (req, res) => {
     res.status(200).json(sortedUsers);
   } catch (error) {
     console.error('Error fetching users:', error);
-    res.status(500).json({ message: 'Internal server error.' });
+    // res.status(500).json({ message: 'Internal server error.' });
   }
 });
 

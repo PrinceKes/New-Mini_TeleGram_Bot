@@ -102,7 +102,14 @@ async function completeTask(taskId) {
     console.error('Error completing task:', error);
     alert('An error occurred while completing the task.');
   }
+
 }
+
+
+
+// Import the showNotification function if using a module system
+// If not using modules, make sure notifications.js is included in your HTML before this script.
+import showNotification from './notifications.js'; // Remove this line if not using modules
 
 // Claim reward for a task
 async function claimReward(taskId) {
@@ -111,7 +118,7 @@ async function claimReward(taskId) {
   console.log('Task ID being sent:', taskId);
 
   if (!user_id) {
-    alert('You must be logged in to claim rewards.');
+    showNotification('You must be logged in to claim rewards.', 'error');
     return;
   }
 
@@ -125,21 +132,61 @@ async function claimReward(taskId) {
     if (!response.ok) {
       const errorData = await response.json();
       console.error('Error response:', errorData);
-      alert(errorData.error || 'Failed to claim reward.');
+      showNotification(errorData.error || 'Failed to claim reward.', 'error');
       return;
     }
 
     const data = await response.json();
     console.log('Response data:', data);
-    alert('Reward claimed successfully!');
+    showNotification('Reward claimed successfully!', 'success');
     localStorage.setItem('userBalance', data.balance);
     displayStoredBalance();
     fetchTasks();
   } catch (error) {
     console.error('Network error:', error);
-    alert('You can not claim reward multiple times.');
+    showNotification('You cannot claim the reward multiple times.', 'error');
   }
 }
+
+
+// // Claim reward for a task
+// async function claimReward(taskId) {
+//   const user_id = localStorage.getItem('user_id'); // Use user_id instead of userId
+//   console.log('User ID from localStorage:', user_id);
+//   console.log('Task ID being sent:', taskId);
+
+//   if (!user_id) {
+//     alert('You must be logged in to claim rewards.');
+//     return;
+//   }
+
+//   try {
+//     const response = await fetch(`https://sunday-mini-telegram-bot.onrender.com/api/users/${user_id}/complete-task`, {
+//       method: 'PUT',
+//       headers: { 'Content-Type': 'application/json' },
+//       body: JSON.stringify({ taskId }),
+//     });
+
+//     if (!response.ok) {
+//       const errorData = await response.json();
+//       console.error('Error response:', errorData);
+//       alert(errorData.error || 'Failed to claim reward.');
+//       return;
+//     }
+
+//     const data = await response.json();
+//     console.log('Response data:', data);
+//     alert('Reward claimed successfully!');
+//     localStorage.setItem('userBalance', data.balance);
+//     displayStoredBalance();
+//     fetchTasks();
+//   } catch (error) {
+//     console.error('Network error:', error);
+//     alert('You can not claim reward multiple times.');
+//   }
+// }
+
+
 
 
 

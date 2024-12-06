@@ -164,7 +164,6 @@ async function claimReward(referralId, reward, currentClaimButton) {
     }
 
     const data = await response.json();
-    alert('Reward claimed successfully!');
 
     // Update the balance in the UI
     const balanceElement = document.getElementById('points');
@@ -363,7 +362,6 @@ document.addEventListener("DOMContentLoaded", loadReferrals);
 //     }
 
 //     const data = await response.json();
-//     alert('Reward claimed successfully!');
 
 //     // Update the balance in the UI
 //     const balanceElement = document.getElementById('points');
