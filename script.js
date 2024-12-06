@@ -261,31 +261,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-// // Function to fetch and display the user's rewards points
-// async function fetchUserPoints() {
-//   try {
-//     const userId = localStorage.getItem('user_id');
+// Function to fetch and display the user's rewards points and balance
+async function fetchUserPoints() {
+  try {
+    const userId = localStorage.getItem('user_id');
     
-//     if (!userId) {
-//       throw new Error('User ID is not available');
-//     }
+    if (!userId) {
+      throw new Error('User ID is not available');
+    }
 
-//     const response = await fetch(`https://sunday-mini-telegram-bot.onrender.com/api/user-points?user_id=${userId}`);
-//     if (!response.ok) {
-//       throw new Error('Failed to fetch user points');
-//     }
+    const response = await fetch(`https://sunday-mini-telegram-bot.onrender.com/api/user-points?user_id=${userId}`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch user points');
+    }
 
-//     const data = await response.json();
-//     const pointsDiv = document.getElementById('points');
+    const data = await response.json();
+    const pointsDiv = document.getElementById('points');
 
-//     pointsDiv.textContent = `${data.points} Rst`;
-//   } catch (error) {
-//     console.error('Error fetching user points:', error);
-//     // alert('An error occurred while fetching points');
-//   }
-// }
+    pointsDiv.textContent = `${data.points} Rst`;
+  } catch (error) {
+    console.error('Error fetching user points:', error);
+    // alert('An error occurred while fetching points');
+  }
+}
 
-// document.addEventListener('DOMContentLoaded', fetchUserPoints);
+document.addEventListener('DOMContentLoaded', fetchUserPoints);
 
 
 

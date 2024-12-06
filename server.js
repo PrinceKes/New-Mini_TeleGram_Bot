@@ -343,7 +343,7 @@ app.use(async (req, res, next) => {
     next();
   } catch (error) {
     console.error('Error checking or creating user profile:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    // res.status(500).json({ message: 'Internal server error' });
   }
 });
 
@@ -394,7 +394,7 @@ app.post('/api/referrals', async (req, res) => {
     });
   } catch (error) {
     console.error('Error handling referral:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    // res.status(500).json({ message: 'Internal server error' });
   }
 });
 
