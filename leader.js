@@ -28,8 +28,8 @@ async function fetchAndDisplayUserDetails() {
     const usernameElement = document.getElementById("myusername");
     const pointsElement = document.getElementById("mypoints");
 
-    usernameElement.textContent = user.username; // Assuming `username` exists in the API response
-    pointsElement.textContent = `${user.points} Roast`; // Assuming `points` exists in the API response
+    usernameElement.textContent = user.username; // Display the username
+    pointsElement.textContent = `${user.balance} Roast`; // Use 'balance' for points
   } catch (error) {
     console.error("Error fetching and displaying user details:", error);
   }
@@ -37,7 +37,6 @@ async function fetchAndDisplayUserDetails() {
 
 // Run the function after the DOM content has loaded
 document.addEventListener("DOMContentLoaded", fetchAndDisplayUserDetails);
-
 
 
 
