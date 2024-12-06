@@ -113,7 +113,7 @@ async function fetchReferrals(userId) {
       const userName = user.referredUsername ? user.referredUsername : 'Unknown User';
 
       userBox.innerHTML = `
-        <img src="avatar1.png" alt="User Avatar" class="user-avatar" />
+        <img src="./assets/avatar.png" alt="User Avatar" class="user-avatar" />
         <div class="user-details">
           <h4 class="user-name">${userName}</h4>
           <p class="user-reward">+${user.reward} Rst</p>
