@@ -1,7 +1,19 @@
 document.addEventListener("DOMContentLoaded", function () {
+    const urlParams = new URLSearchParams(window.location.search);
+    const userIdFromURL = urlParams.get("user_id"); // Get user_id from URL
+  
+    const userIdElement = document.getElementById("userId");
+  
+    // Ensure the user ID is displayed in the page
+    if (userIdFromURL && userIdElement) {
+      userIdElement.innerText = `My ID: ${userIdFromURL}`;
+    } else {
+      console.warn("User ID not found in the URL or userIdElement is missing.");
+    }
+  
     const apiEndpoint = "https://sunday-mini-telegram-bot.onrender.com/api/users";
   
-    // Function to fetch all users from the API
+    // Fetch all users from the API
     function fetchUsers() {
       return fetch(apiEndpoint)
         .then((response) => {
@@ -16,35 +28,31 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
   
-    // Function to update user info in the leaderboard
+    // Update user info on the leaderboard
     function updateUserInfo(users) {
-      const userIdElement = document.getElementById("userId");
       const myUsernameElement = document.getElementById("myusername");
       const myBalanceElement = document.getElementById("mybalance");
       const allBalanceElement = document.querySelector(".all-user-rank");
   
-      // Get the currently displayed user ID from the header
-      const displayedUserId = userIdElement?.innerText.replace("My ID: ", "").trim();
-  
-      if (!displayedUserId) {
-        console.error("User ID not found in the page.");
+      // Ensure we have the user_id from the URL
+      if (!userIdFromURL) {
+        console.error("User ID not found in the URL.");
         return;
       }
   
-      // Find the exact user from the fetched data
-      const currentUser = users.find((user) => user.user_id === displayedUserId);
+      // Find the user from the API response
+      const currentUser = users.find((user) => user.user_id === userIdFromURL);
   
       if (currentUser) {
-        // Update the username and balance fields
         myUsernameElement.innerText = currentUser.username || "Unknown";
         myBalanceElement.innerText = `${currentUser.balance || 0} Rst`;
       } else {
-        console.warn("User not found in the fetched data.");
+        console.warn("User not found in the API data.");
         myUsernameElement.innerText = "Unknown";
         myBalanceElement.innerText = "0 Rst";
       }
   
-      // Calculate the total balance of all users and update the rank element
+      // Calculate and display the total balance of all users
       const totalBalance = users.reduce((sum, user) => sum + (user.balance || 0), 0);
       allBalanceElement.innerText = `#${totalBalance.toLocaleString()}`;
     }
@@ -56,55 +64,55 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
   });
+  
 
 
 
-
-  document.addEventListener("DOMContentLoaded", async () => {
-    const apiUrl = "https://sunday-mini-telegram-bot.onrender.com/api/users";
+//   document.addEventListener("DOMContentLoaded", async () => {
+//     const apiUrl = "https://sunday-mini-telegram-bot.onrender.com/api/users";
   
-    try {
-      // Fetch the data from the API
-      const response = await fetch(apiUrl);
-      const users = await response.json();
+//     try {
+//       // Fetch the data from the API
+//       const response = await fetch(apiUrl);
+//       const users = await response.json();
   
-      // Sort users by balance in descending order
-      const sortedUsers = users.sort((a, b) => b.balance - a.balance);
+//       // Sort users by balance in descending order
+//       const sortedUsers = users.sort((a, b) => b.balance - a.balance);
   
-      // Populate the rank-users section with top earners
-      const rankUsersContainer = document.querySelector(".rank-users");
+//       // Populate the rank-users section with top earners
+//       const rankUsersContainer = document.querySelector(".rank-users");
   
-      rankUsersContainer.innerHTML = ""; // Clear existing content
+//       rankUsersContainer.innerHTML = ""; // Clear existing content
   
-      // Map medals for the top 3 ranks
-      const medals = ["🥇", "🥈", "🥉"];
+//       // Map medals for the top 3 ranks
+//       const medals = ["🥇", "🥈", "🥉"];
   
-      sortedUsers.forEach((user, index) => {
-        const username = user.username || `User ${user.user_id}`;
-        const balance = user.balance.toLocaleString(); // Format balance with commas
-        const rank = index + 1;
+//       sortedUsers.forEach((user, index) => {
+//         const username = user.username || `User ${user.user_id}`;
+//         const balance = user.balance.toLocaleString(); // Format balance with commas
+//         const rank = index + 1;
   
-        // Create a new leaderboard card
-        const leaderboardCard = document.createElement("div");
-        leaderboardCard.className = `leaderboard-card rank-${rank}`;
-        leaderboardCard.innerHTML = `
-          <div class="user-info">
-            <img src="./assets/roaster.png" alt="User Icon">
-            <div class="user-details">
-              <span class="username">${username}</span>
-              <span class="balance">${balance} Rst</span>
-            </div>
-          </div>
-          <div class="user-rank ${
-            medals[index] ? "medal" : ""
-          }">${medals[index] || `#${rank}`}</div>
-        `;
+//         // Create a new leaderboard card
+//         const leaderboardCard = document.createElement("div");
+//         leaderboardCard.className = `leaderboard-card rank-${rank}`;
+//         leaderboardCard.innerHTML = `
+//           <div class="user-info">
+//             <img src="./assets/roaster.png" alt="User Icon">
+//             <div class="user-details">
+//               <span class="username">${username}</span>
+//               <span class="balance">${balance} Rst</span>
+//             </div>
+//           </div>
+//           <div class="user-rank ${
+//             medals[index] ? "medal" : ""
+//           }">${medals[index] || `#${rank}`}</div>
+//         `;
   
-        // Append the card to the rank-users container
-        rankUsersContainer.appendChild(leaderboardCard);
-      });
-    } catch (error) {
-      console.error("Error fetching or processing user data:", error);
-    }
-  });
+//         // Append the card to the rank-users container
+//         rankUsersContainer.appendChild(leaderboardCard);
+//       });
+//     } catch (error) {
+//       console.error("Error fetching or processing user data:", error);
+//     }
+//   });
  
