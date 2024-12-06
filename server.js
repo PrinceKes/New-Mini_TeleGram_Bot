@@ -27,22 +27,26 @@ app.use(express.json());
 app.use("/api", router);
 app.use(bodyParser.json());
 app.use(cors({
-  origin: 'https://new-mini-telegram-bot.onrender.com',
+  origin: ['https://new-mini-telegram-bot.onrender.com', 'http://localhost:3000'],
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true,
 }));
 
+// app.use(cors({
+//   origin: 'https://new-mini-telegram-bot.onrender.com',
+//   methods: ['GET', 'POST', 'PUT', 'DELETE'],
+//   credentials: true,
+// }));
+
 // MongoDB connection
 const mongoURI = process.env.MONGO_URI;
 if (!mongoURI) {
-  console.error('Error: MONGO_URI is not set in environment variables.');
   process.exit(1);
 }
 
 mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('Successfully connected to MongoDB'))
   .catch((error) => {
-    console.error('Failed to connect to MongoDB:', error);
     process.exit(1);
   });
 
