@@ -146,25 +146,56 @@ function getUserIdFromURLOrStorage() {
   return user_id;
 }
 
+
+
+
+
+
+
 // Function to open the claim modal
 function openClaimModal(referralId, reward) {
   const modal = document.getElementById('claim-modal');
   const claimButton = document.getElementById('claim-reward-button');
+  const closeButton = document.getElementById('close-modal-button');
 
-  modal.style.display = 'block';
+  // Show the modal
+  modal.style.display = 'flex';
 
-  // Attach event listener to the claim button
-  claimButton.onclick = function () {
-    claimReward(referralId, reward);
+  // Store the current "Claim" button that was clicked
+  const currentClaimButton = document.querySelector(`button[data-referral-id="${referralId}"]`);
+
+  // Attach event listener to the "Claim Reward" button in the modal
+  claimButton.onclick = async function () {
+    // Disable the button in the modal to prevent multiple clicks
+    claimButton.disabled = true;
+
+    // Call the claimReward function and pass the referralId, reward, and the button
+    await claimReward(referralId, reward, currentClaimButton);
+
+    // Re-enable the "Claim Reward" button in the modal for the next usage
+    claimButton.disabled = false;
+  };
+
+  // Attach event listener to the "Cancel" button to close the modal
+  closeButton.onclick = function () {
+    closeModal();
   };
 }
 
+
+
+
+
+
+
+
+
 // Function to claim the reward and update the balance
-async function claimReward(referralId, reward) {
+async function claimReward(referralId, reward, currentClaimButton) {
   const userId = getUserIdFromURLOrStorage();
 
   if (!userId) {
-    showNotification('User ID not found. Please log in again.');
+    alert('User ID not found. Please log in again.');
     return;
   }
 
@@ -181,21 +212,30 @@ async function claimReward(referralId, reward) {
     }
 
     const data = await response.json();
-    showNotification('Reward claimed successfully!');
+    alert('Reward claimed successfully!');
 
     // Update the balance in the UI
-    const balanceElement = document.getElementById('user-balance');
+    const balanceElement = document.getElementById('points');
     if (balanceElement) {
       balanceElement.innerText = `Balance: ${data.balance} Rst`;
     }
+
+    // Disable the "Claim" button after successful claim
+    currentClaimButton.disabled = true;
+    currentClaimButton.innerText = 'Claimed';
 
     // Close the modal
     closeModal();
   } catch (error) {
     console.error('Error claiming reward:', error);
-    showNotification('Failed to claim reward. Please try again later.');
+    alert('Failed to claim reward. Please try again later.');
   }
 }
+
+
+
+
+
 
 // Function to close the modal
 function closeModal() {
@@ -212,7 +252,7 @@ async function loadReferrals() {
   } else {
     console.error('No user_id found in URL or localStorage.');
     const referralsBox = document.querySelector('.referrals-box');
-    referralsBox.innerHTML = `<p class="error-message">User ID is missing. Please log in again.</p>`;
+    // referralsBox.innerHTML = `<p class="error-message">User ID is missing. Please log in again.</p>`;
   }
 }
 
