@@ -433,20 +433,35 @@ app.get('/api/referrals/:referral_id', async (req, res) => {
   const { referral_id } = req.params;
 
   try {
-    // Find the user with the given referral_id
+    // Fetch the referrer by referral_id from the database
     const referrer = await Referral.findOne({ referral_id });
 
+    // Check if the referrer exists
     if (!referrer) {
-      return res.status(404).json({ message: 'Referrer not found' });
+      console.error(`Referrer not found with referral_id: ${referral_id}`);
+      return res.status(404).json({ message: "Referrer not found" });
     }
 
-    // Return the referred users
-    res.status(200).json(referrer.referrals);
+    // Check if the referrer has referrals
+    if (!referrer.referrals || referrer.referrals.length === 0) {
+      console.log(`No referrals found for referral_id: ${referral_id}`);
+      return res.status(200).json([]);
+    }
+
+    // Return the referrer's referrals
+    const referrals = referrer.referrals.map(({ referredUserId, referredUsername, reward }) => ({
+      referredUserId,
+      referredUsername,
+      reward,
+    }));
+
+    res.status(200).json(referrals);
   } catch (error) {
-    console.error('Error fetching referred users:', error);
-    res.status(500).json({ message: 'Error fetching referred users', error });
+    console.error('Error fetching referrer or referrals:', error);
+    res.status(500).json({ message: 'Error fetching referrals', error });
   }
 });
+
 
 
 
