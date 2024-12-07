@@ -131,45 +131,37 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   // Load referred users and display them
-  async function loadReferredUsers() {
-    try {
-      const endpoint = `https://sunday-mini-telegram-bot.onrender.com/api/referrals/${referralId}`;
-      const response = await fetch(endpoint);
+  function renderReferredUsers(referredUsers) {
+    const referralsBox = document.querySelector('.referrals-box');
+    referralsBox.innerHTML = ''; // Clear existing content
 
-      if (!response.ok) {
-        throw new Error('Failed to fetch referred users.');
-      }
-
-      const referredUsers = await response.json();
-      const referralsBox = document.querySelector('.referrals-box');
-      referralsBox.innerHTML = ''; // Clear existing content
-
-      referredUsers.forEach((user) => {
+    referredUsers.forEach((user) => {
         const userBox = document.createElement('div');
         userBox.classList.add('users-box');
 
         userBox.innerHTML = `
-          <img src="./assets/avatar.png" alt="User Avatar" class="user-avatar" />
-          <div class="user-details">
-            <h4 class="user-name">${user.referredUsername}</h4>
-            <p class="user-reward">+${user.reward} RsT</p>
-          </div>
-          <button 
-            class="claim-button" 
-            data-referred-id="${user.referredUserId}" 
-            ${user.isClaimed ? 'disabled' : ''}>
-            ${user.isClaimed ? 'Completed' : 'Claim'}
-          </button>
+            <img src="./assets/avatar.png" alt="User Avatar" class="user-avatar" />
+            <div class="user-details">
+                <h4 class="user-name">${user.referredUsername}</h4>
+                <p class="user-reward">+${user.reward} RsT</p>
+            </div>
+            <button 
+                class="claim-button" 
+                data-referred-id="${user.referredUserId}" 
+                ${user.isClaimed ? 'disabled' : ''}>
+                ${user.isClaimed ? 'Completed' : 'Claim'}
+            </button>
         `;
 
         referralsBox.appendChild(userBox);
-      });
+    });
+}
 
-      attachClaimButtonListeners(); // Attach listeners after rendering
-    } catch (error) {
-      console.error('Error loading referred users:', error);
-    }
-  }
+  //     attachClaimButtonListeners(); // Attach listeners after rendering
+  //   } catch (error) {
+  //     console.error('Error loading referred users:', error);
+  //   }
+  // }
 
   // Function to handle "Claim" button click
   async function handleClaimButtonClick(event) {
@@ -223,3 +215,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Load referred users on page load
   await loadReferredUsers();
 });
+
+
+// New updated codes
+const userId = localStorage.getItem('user_id');
+const username = new URLSearchParams(window.location.search).get('tg.username');
+
+if (userId && username) {
+  const apiUrl = `https://sunday-mini-telegram-bot.onrender.com/api/some-endpoint?userId=${userId}&username=${username}`;
+  fetch(apiUrl);
+}

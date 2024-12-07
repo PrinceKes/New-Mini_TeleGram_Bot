@@ -318,34 +318,44 @@ app.put('/api/tasks/:task_id', async (req, res) => {
 app.use(async (req, res, next) => {
   const { userId, username } = req.query;
 
-  // Allow bypass for certain routes
+  // Allow bypass for specific routes
   if (req.path.startsWith('/api/referrals/') && req.method === 'GET') {
     return next();
   }
 
+  // Skip processing if userId or username is missing
   if (!userId || !username) {
-    console.error("Missing 'userId' or 'username' in request.");
-    // return res.status(400).json({ message: "Missing 'userId' or 'username' parameters." });
+    console.warn("Skipping user profile creation due to missing 'userId' or 'username'.");
+    return next(); // Do not block the request; just log and move forward
   }
 
   try {
+    // Check if the user already exists
     const existingUser = await Referral.findOne({ referral_id: userId });
 
     if (!existingUser) {
+      // Create a new user profile if not found
       const newUserProfile = new Referral({
         referral_id: userId,
         username,
-        referrals: [],
+        referrals: [], // Initialize referrals as an empty array
       });
       await newUserProfile.save();
-      console.log(`Created profile for new user: ${username}`);
+      console.log(`Created new user profile for: ${username}`);
+    } else {
+      console.log(`User already exists: ${username}`);
     }
-    next();
+
+    next(); // Proceed to the next middleware or route
   } catch (error) {
-    console.error('Error creating user profile:', error);
-    res.status(500).json({ message: 'Error checking or creating user profile', error });
+    console.error('Error checking or creating user profile:', error.message);
+    res.status(500).json({ message: 'Error checking or creating user profile', error: error.message });
   }
 });
+
+
+
+
 
 // POST: Handle new referrals
 app.post('/api/referrals', async (req, res) => {
