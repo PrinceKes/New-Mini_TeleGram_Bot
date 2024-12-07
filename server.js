@@ -310,8 +310,9 @@ app.put('/api/tasks/:task_id', async (req, res) => {
 app.use(async (req, res, next) => {
   const { userId, username } = req.query;
 
-  if (req.path === '/api/referrals' && userId) {
-    return next();
+  // Allow specific routes to bypass userId/username validation
+  if (req.path.startsWith('/api/referrals/') && req.method === 'GET') {
+    return next(); // Skip validation for referral lookups
   }
 
   if (!userId || !username) {
@@ -320,8 +321,10 @@ app.use(async (req, res, next) => {
   }
 
   try {
+    // Check if user exists in the database
     const existingUser = await Referral.findOne({ referral_id: userId });
 
+    // If user doesn't exist, create a new profile
     if (!existingUser) {
       const newUserProfile = new Referral({
         referral_id: userId,
@@ -339,6 +342,7 @@ app.use(async (req, res, next) => {
     res.status(500).json({ message: 'Error checking or creating user profile', error });
   }
 });
+
 
 
 
