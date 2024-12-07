@@ -315,10 +315,6 @@ app.use(async (req, res, next) => {
     return next();
   }
 
-  // if (!userId || !username) {
-  //   // return res.status(400).json({ message: 'Missing userId or username' });
-  // }
-
   try {
 
     const existingUser = await Referral.findOne({ referral_id: userId });
@@ -337,13 +333,8 @@ app.use(async (req, res, next) => {
     next();
   } catch (error) {
     console.error('Error checking or creating user profile:', error);
-    // res.status(500).json({ message: 'Internal server error' });
   }
 });
-
-
-
-
 
 //This script set up referral and referred profiles for all users
 app.post('/api/referrals', async (req, res) => {
@@ -392,26 +383,7 @@ app.post('/api/referrals', async (req, res) => {
   }
 });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // Ensure the endpoint correctly fetches referred users for the given userId.
-
-
 app.get('/api/referrals', async (req, res) => {
   const { userId } = req.query;
 
@@ -432,7 +404,7 @@ app.get('/api/referrals', async (req, res) => {
         referredUserId: referral.referredUserId,
         referredUsername: referral.referredUsername,
         reward: referral.reward,
-        isClaimed: referral.isClaimed || false, // Ensure 'isClaimed' field is included
+        isClaimed: referral.isClaimed || false,
       })),
     });
   } catch (error) {
@@ -440,13 +412,6 @@ app.get('/api/referrals', async (req, res) => {
     res.status(500).json({ message: 'Error fetching referral data', error });
   }
 });
-
-
-
-
-
-
-
 
 app.put('/api/referrals/:referral_id/claim', async (req, res) => {
   const { referral_id } = req.params;
