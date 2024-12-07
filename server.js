@@ -308,15 +308,18 @@ app.put('/api/tasks/:task_id', async (req, res) => {
 // here are the script that handle Create a new profile for the first-time user
 
 app.use(async (req, res, next) => {
-  const { userId, username } = req.query; 
-  
+  const { userId, username } = req.query;
 
   if (req.path === '/api/referrals' && userId) {
     return next();
   }
 
-  try {
+  if (!userId || !username) {
+    console.error("Missing required 'userId' or 'username' in the request.");
+    return res.status(400).json({ message: "Missing required 'userId' or 'username' parameters." });
+  }
 
+  try {
     const existingUser = await Referral.findOne({ referral_id: userId });
 
     if (!existingUser) {
@@ -333,8 +336,14 @@ app.use(async (req, res, next) => {
     next();
   } catch (error) {
     console.error('Error checking or creating user profile:', error);
+    res.status(500).json({ message: 'Error checking or creating user profile', error });
   }
 });
+
+
+
+
+
 
 //This script set up referral and referred profiles for all users
 app.post('/api/referrals', async (req, res) => {
@@ -413,23 +422,23 @@ app.get('/api/referrals', async (req, res) => {
   }
 });
 
+
+
 app.put('/api/referrals/:referral_id/claim', async (req, res) => {
   const { referral_id } = req.params;
-  const { userId } = req.body;
 
-  if (!userId) {
-    return res.status(400).json({ message: 'Missing userId' });
+  if (!referral_id) {
+    return res.status(400).json({ message: 'Missing referral_id' });
   }
 
   try {
-    // Find the referrer's referral entry
-    const referrer = await Referral.findOne({ "referrals.referredUserId": userId });
+    const referrer = await Referral.findOne({ "referrals.referredUserId": referral_id });
 
     if (!referrer) {
       return res.status(404).json({ message: 'Referrer not found' });
     }
 
-    const referral = referrer.referrals.find((ref) => ref.referredUserId === userId);
+    const referral = referrer.referrals.find((ref) => ref.referredUserId === referral_id);
 
     if (!referral) {
       return res.status(404).json({ message: 'Referral not found' });
@@ -439,7 +448,6 @@ app.put('/api/referrals/:referral_id/claim', async (req, res) => {
       return res.status(400).json({ message: 'Reward already claimed' });
     }
 
-    // Update referral record to mark reward as claimed
     referral.isClaimed = true;
 
     await referrer.save();
