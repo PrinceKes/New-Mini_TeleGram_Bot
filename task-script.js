@@ -4,6 +4,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   displayStoredBalance();
 });
 
+
+
+
+
+
+
 // Fetch tasks from the server
 async function fetchTasks() {
   try {
