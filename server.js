@@ -304,52 +304,50 @@ app.put('/api/tasks/:task_id', async (req, res) => {
 
 
 
-// referral handles 
-// here are the script that handle Create a new profile for the first-time user
 
+
+
+
+
+
+
+
+//all update server code for referringconst express = require('express');
+
+// Middleware to handle first-time user profile creation
 app.use(async (req, res, next) => {
   const { userId, username } = req.query;
 
-  // Allow specific routes to bypass userId/username validation
+  // Allow bypass for certain routes
   if (req.path.startsWith('/api/referrals/') && req.method === 'GET') {
-    return next(); // Skip validation for referral lookups
+    return next();
   }
 
   if (!userId || !username) {
-    console.error("Missing required 'userId' or 'username' in the request.");
-    return res.status(400).json({ message: "Missing required 'userId' or 'username' parameters." });
+    console.error("Missing 'userId' or 'username' in request.");
+    return res.status(400).json({ message: "Missing 'userId' or 'username' parameters." });
   }
 
   try {
-    // Check if user exists in the database
     const existingUser = await Referral.findOne({ referral_id: userId });
 
-    // If user doesn't exist, create a new profile
     if (!existingUser) {
       const newUserProfile = new Referral({
         referral_id: userId,
         username,
         referrals: [],
       });
-
       await newUserProfile.save();
       console.log(`Created profile for new user: ${username}`);
     }
-
     next();
   } catch (error) {
-    console.error('Error checking or creating user profile:', error);
+    console.error('Error creating user profile:', error);
     res.status(500).json({ message: 'Error checking or creating user profile', error });
   }
 });
 
-
-
-
-
-
-
-//This script set up referral and referred profiles for all users
+// POST: Handle new referrals
 app.post('/api/referrals', async (req, res) => {
   const { referrer_id, user_id, username } = req.body;
 
@@ -358,23 +356,21 @@ app.post('/api/referrals', async (req, res) => {
   }
 
   try {
-    const existingUser = await Referral.findOne({ referral_id: user_id });
-    if (existingUser) {
-      return res.status(409).json({ message: 'User already exists' });
-    }
-
     const referrerProfile = await Referral.findOne({ referral_id: referrer_id });
     if (!referrerProfile) {
       return res.status(404).json({ message: 'Referrer not found' });
     }
 
-    // Create a new profile for the referred user
+    const existingUser = await Referral.findOne({ referral_id: user_id });
+    if (existingUser) {
+      return res.status(409).json({ message: 'User already exists' });
+    }
+
     const newUserProfile = new Referral({
       referral_id: user_id,
       username,
       referrals: [],
     });
-
     await newUserProfile.save();
 
     referrerProfile.referrals.push({
@@ -382,21 +378,20 @@ app.post('/api/referrals', async (req, res) => {
       referredUsername: username,
       reward: 250,
     });
-
     await referrerProfile.save();
 
     res.status(201).json({
-      message: 'Referred user added and reward assigned to referrer',
+      message: 'Referred user added and reward assigned',
       referredUser: newUserProfile,
       referrer: referrerProfile,
     });
   } catch (error) {
     console.error('Error handling referral:', error);
-    // res.status(500).json({ message: 'Internal server error' });
+    res.status(500).json({ message: 'Internal server error', error });
   }
 });
 
-// Ensure the endpoint correctly fetches referred users for the given userId.
+// GET: Fetch referrals for a specific user
 app.get('/api/referrals', async (req, res) => {
   const { userId } = req.query;
 
@@ -405,72 +400,50 @@ app.get('/api/referrals', async (req, res) => {
   }
 
   try {
-    // Query by referral_id
     const user = await Referral.findOne({ referral_id: userId });
-
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
 
     res.status(200).json({
-      referrals: user.referrals.map((referral) => ({
-        referredUserId: referral.referredUserId,
-        referredUsername: referral.referredUsername,
-        reward: referral.reward,
-        isClaimed: referral.isClaimed || false,
+      referrals: user.referrals.map(({ referredUserId, referredUsername, reward, isClaimed }) => ({
+        referredUserId,
+        referredUsername,
+        reward,
+        isClaimed: isClaimed || false,
       })),
     });
   } catch (error) {
-    console.error('Error fetching referral data:', error);
-    res.status(500).json({ message: 'Error fetching referral data', error });
-  }
-});
-
-
-
-//New code from the latest updating 
-app.get('/api/referrals/:referral_id', async (req, res) => {
-  const { referral_id } = req.params;
-
-  try {
-    // Fetch the referrer by referral_id from the database
-    const referrer = await Referral.findOne({ referral_id });
-
-    // Check if the referrer exists
-    if (!referrer) {
-      console.error(`Referrer not found with referral_id: ${referral_id}`);
-      return res.status(404).json({ message: "Referrer not found" });
-    }
-
-    // Check if the referrer has referrals
-    if (!referrer.referrals || referrer.referrals.length === 0) {
-      console.log(`No referrals found for referral_id: ${referral_id}`);
-      return res.status(200).json([]);
-    }
-
-    // Return the referrer's referrals
-    const referrals = referrer.referrals.map(({ referredUserId, referredUsername, reward }) => ({
-      referredUserId,
-      referredUsername,
-      reward,
-    }));
-
-    res.status(200).json(referrals);
-  } catch (error) {
-    console.error('Error fetching referrer or referrals:', error);
+    console.error('Error fetching referrals:', error);
     res.status(500).json({ message: 'Error fetching referrals', error });
   }
 });
 
-
-
-
-app.put('/api/referrals/:referral_id/claim', async (req, res) => {
+// GET: Fetch referrals by referral_id
+app.get('/api/referrals/:referral_id', async (req, res) => {
   const { referral_id } = req.params;
 
-  if (!referral_id) {
-    return res.status(400).json({ message: 'Missing referral_id' });
+  try {
+    const referrer = await Referral.findOne({ referral_id });
+
+    if (!referrer) {
+      return res.status(404).json({ message: 'Referrer not found' });
+    }
+
+    res.status(200).json(referrer.referrals.map(({ referredUserId, referredUsername, reward }) => ({
+      referredUserId,
+      referredUsername,
+      reward,
+    })));
+  } catch (error) {
+    console.error('Error fetching referrals:', error);
+    res.status(500).json({ message: 'Error fetching referrals', error });
   }
+});
+
+// PUT: Claim referral reward
+app.put('/api/referrals/:referral_id/claim', async (req, res) => {
+  const { referral_id } = req.params;
 
   try {
     const referrer = await Referral.findOne({ "referrals.referredUserId": referral_id });
@@ -490,23 +463,26 @@ app.put('/api/referrals/:referral_id/claim', async (req, res) => {
     }
 
     referral.isClaimed = true;
-
     await referrer.save();
 
-    res.status(200).json({
-      message: 'Reward claimed successfully',
-      referral: {
-        referredUserId: referral.referredUserId,
-        referredUsername: referral.referredUsername,
-        reward: referral.reward,
-        isClaimed: true,
-      },
-    });
+    res.status(200).json({ message: 'Reward claimed successfully', referral });
   } catch (error) {
     console.error('Error claiming reward:', error);
     res.status(500).json({ message: 'Error claiming reward', error });
   }
 });
+
+//module.exports = app;
+
+
+
+
+
+
+
+
+
+
 
 
 
