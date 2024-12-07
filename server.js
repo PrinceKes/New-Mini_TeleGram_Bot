@@ -441,36 +441,86 @@ app.get('/api/referrals/:referral_id', async (req, res) => {
   }
 });
 
+
+
+
+
 // PUT: Claim referral reward
+// Mark referral as claimed
 app.put('/api/referrals/:referral_id/claim', async (req, res) => {
   const { referral_id } = req.params;
+  const { referredUserId } = req.body;
 
   try {
-    const referrer = await Referral.findOne({ "referrals.referredUserId": referral_id });
+    const referral = await Referral.findOne({ referral_id });
+    if (!referral) return res.status(404).json({ error: 'Referral not found' });
 
-    if (!referrer) {
-      return res.status(404).json({ message: 'Referrer not found' });
+    const referredUser = referral.referrals.find(
+      (user) => user.referredUserId === referredUserId
+    );
+
+    if (!referredUser) {
+      return res.status(404).json({ error: 'Referred user not found' });
     }
 
-    const referral = referrer.referrals.find((ref) => ref.referredUserId === referral_id);
-
-    if (!referral) {
-      return res.status(404).json({ message: 'Referral not found' });
+    if (referredUser.isClaimed) {
+      return res.status(400).json({ error: 'Reward already claimed' });
     }
 
-    if (referral.isClaimed) {
-      return res.status(400).json({ message: 'Reward already claimed' });
-    }
+    referredUser.isClaimed = true; // Mark as claimed
+    await referral.save();
 
-    referral.isClaimed = true;
-    await referrer.save();
-
-    res.status(200).json({ message: 'Reward claimed successfully', referral });
+    res.status(200).json({ message: 'Reward claimed successfully' });
   } catch (error) {
     console.error('Error claiming reward:', error);
-    res.status(500).json({ message: 'Error claiming reward', error });
+    res.status(500).json({ error: 'Failed to claim reward' });
   }
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+// function that control claiming of Rst point start here
+app.post('/api/referrals/:userId/claim/:referredUserId', (req, res) => {
+  const { userId, referredUserId } = req.params;
+
+  // Fetch the referral data for the user
+  const referral = referrals.find(ref => ref.userId === userId);
+
+  if (!referral) {
+      return res.status(404).json({ error: 'No referrals found for this user.' });
+  }
+
+  // Find the referred user in the referral data
+  const referredUser = referral.referredUsers.find(user => user.referredUserId === referredUserId);
+
+  if (!referredUser) {
+      return res.status(404).json({ error: 'No such referred user found.' });
+  }
+
+  // Check if the reward has already been claimed
+  if (referredUser.claimed) {
+      return res.status(400).json({ error: 'Reward already claimed for this user.' });
+  }
+
+  // Mark the reward as claimed
+  referredUser.claimed = true;
+
+  // Save the updated referral data (pseudo code, replace with your DB logic)
+  // For example: await updateDatabase(referrals);
+
+  res.json({ message: 'Reward claimed successfully!', referredUser });
+});
+
 
 //module.exports = app;
 

@@ -1,0 +1,11 @@
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const storedUserId = localStorage.getItem('user_id');
+      window.userId = storedUserId || null;
+
+      const userIdElement = document.getElementById('userId');
+      userIdElement.innerText = storedUserId
+        ? `User ID: ${storedUserId}`
+        : "User ID: Unknown";
+    });
+  </script>

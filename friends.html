@@ -4,9 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
-<script>
-  const currentUserId = '<%= userId %>';
-</script>
+
 <link rel="stylesheet" href="friend-style.css">
 <title>Invite Friends</title>
 </head>
@@ -40,14 +38,20 @@
     <!-- html for the box -->
     <div class="referrals-box">
       <!-- Referred users will be added here dynamically -->
-      <!-- <div class="users-box">
+      <div class="users-box">
         <img src="./assets/avatar.png" alt="User Avatar" class="user-avatar" />
         <div class="user-details">
-          <h4 class="user-name">Benjamin-Cash</h4>
-          <p class="user-reward">+250 Rst</p>
+            <h4 class="user-name">${user.referredUsername}</h4>
+            <p class="user-reward">+${user.reward} RsT</p>
         </div>
-        <button class="claim-button">Claim</button>
-      </div> -->
+        <button 
+            class="claim-button" 
+            data-referred-id="${user.referredUserId}" 
+            ${user.isClaimed ? 'disabled' : ''}>
+            ${user.isClaimed ? 'Completed' : 'Claim'}
+        </button>
+    </div>
+    
     </div>
     
 
@@ -64,7 +68,6 @@
         <p class="modal-text">You are about to claim a reward for your invited friend.</p>
         <div class="modal-buttons">
           <button id="claim-reward-button" class="modal-button claim">Claim 250</button>
-          <button onclick="closeModal()" class="modal-button cancel">Cancel</button>
         </div>
       </div>
     </div>
@@ -86,18 +89,18 @@
   <script src="header.js"></script>
   <script src="script.js"></script>
   <script src="notifications.js"></script> 
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      const storedUserId = localStorage.getItem('user_id');
-      window.userId = storedUserId || null;
-
-      const userIdElement = document.getElementById('userId');
-      userIdElement.innerText = storedUserId
-        ? `User ID: ${storedUserId}`
-        : "User ID: Unknown";
-    });
-  </script>
   <script src="refer-script.js"></script>
 </body>
-
 </html>
+
+
+
+
+
+
+
+
+
+
+
+// <button onclick="closeModal()" class="modal-button cancel">Cancel</button>
