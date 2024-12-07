@@ -1,5 +1,3 @@
-// This script will be used in the Telegram Mini App frontend
-
 // Function to extract the referrer ID from the Telegram link
 function getReferrerId() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -96,13 +94,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-
-
 // Function to fetch referral data from the API and populate the page
-async function fetchReferrals(userId) {
+async function fetchReferrals() {
   try {
+    const userId = getUserIdFromURLOrStorage(); // Get user_id from URL or localStorage
+    if (!userId) {
+      throw new Error('User ID is missing. Please log in or register.');
+    }
+
     const response = await fetch(`https://sunday-mini-telegram-bot.onrender.com/api/referrals?userId=${userId}`);
-    
     if (!response.ok) {
       throw new Error('Failed to fetch referrals');
     }
@@ -114,18 +114,24 @@ async function fetchReferrals(userId) {
     referralsBox.innerHTML = '';
 
     referredUsers.forEach((user) => {
+      const userName = user.referredUsername || 'Unknown User';
+      const isClaimed = user.isClaimed ? 'Claimed' : 'Unclaimed';
+
       const userBox = document.createElement('div');
       userBox.classList.add('users-box');
-
-      const userName = user.referredUsername ? user.referredUsername : 'Unknown User';
 
       userBox.innerHTML = `
         <img src="./assets/avatar.png" alt="User Avatar" class="user-avatar" />
         <div class="user-details">
           <h4 class="user-name">${userName}</h4>
           <p class="user-reward">+${user.reward} Rst</p>
+          <p class="user-status">Status: ${isClaimed}</p>
         </div>
-        <button class="claim-button" onClick="openClaimModal('${user._id}', ${user.reward})">Claim</button>
+        ${
+          !user.isClaimed
+            ? `<button class="claim-button" onClick="claimReward('${user._id}', ${user.reward})">Claim</button>`
+            : ''
+        }
       `;
 
       referralsBox.appendChild(userBox);
@@ -138,6 +144,37 @@ async function fetchReferrals(userId) {
   }
 }
 
+
+
+
+// Function to claim reward for a specific referral
+async function claimReward(referralId, rewardAmount) {
+  try {
+    const userId = getUserIdFromURLOrStorage(); // Get user_id dynamically
+    if (!userId) {
+      throw new Error('User ID is missing. Please log in or register.');
+    }
+
+    const response = await fetch(`https://sunday-mini-telegram-bot.onrender.com/api/referrals/${referralId}/claim`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId }),
+    });
+
+    const result = await response.json();
+
+    if (response.ok) {
+      alert(`Reward claimed successfully! New Balance: ${result.newBalance}`);
+      fetchReferrals(); // Refresh referrals after claiming
+    } else {
+      alert(result.error || 'Failed to claim reward');
+    }
+  } catch (error) {
+    console.error('Error claiming reward:', error);
+    alert('An error occurred while claiming the reward. Please try again.');
+  }
+}
+
 // Function to get the user_id from the URL or localStorage
 function getUserIdFromURLOrStorage() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -147,11 +184,72 @@ function getUserIdFromURLOrStorage() {
   let user_id = userIdFromUrl || storedUserId;
 
   if (user_id) {
-    localStorage.setItem('user_id', user_id);
+    localStorage.setItem('user_id', user_id); // Update localStorage with the latest user ID
   }
 
   return user_id;
 }
+
+// Initialize referrals page
+document.addEventListener('DOMContentLoaded', fetchReferrals);
+
+
+
+
+// // Function to fetch referral data from the API and populate the page
+// async function fetchReferrals(userId) {
+//   try {
+//     const response = await fetch(`https://sunday-mini-telegram-bot.onrender.com/api/referrals?userId=${userId}`);
+    
+//     if (!response.ok) {
+//       throw new Error('Failed to fetch referrals');
+//     }
+
+//     const data = await response.json();
+//     const referredUsers = data.referred_Users;
+
+//     const referralsBox = document.querySelector('.referrals-box');
+//     referralsBox.innerHTML = '';
+
+//     referredUsers.forEach((user) => {
+//       const userBox = document.createElement('div');
+//       userBox.classList.add('users-box');
+
+//       const userName = user.referredUsername ? user.referredUsername : 'Unknown User';
+
+//       userBox.innerHTML = `
+//         <img src="./assets/avatar.png" alt="User Avatar" class="user-avatar" />
+//         <div class="user-details">
+//           <h4 class="user-name">${userName}</h4>
+//           <p class="user-reward">+${user.reward} Rst</p>
+//         </div>
+//         <button class="claim-button" onClick="openClaimModal('${user._id}', ${user.reward})">Claim</button>
+//       `;
+
+//       referralsBox.appendChild(userBox);
+//     });
+//   } catch (error) {
+//     console.error('Error fetching or displaying referrals:', error);
+
+//     const referralsBox = document.querySelector('.referrals-box');
+//     referralsBox.innerHTML = `<p class="error-message">Copy and share your link then try again.</p>`;
+//   }
+// }
+
+// // Function to get the user_id from the URL or localStorage
+// function getUserIdFromURLOrStorage() {
+//   const urlParams = new URLSearchParams(window.location.search);
+//   const userIdFromUrl = urlParams.get('user_id');
+//   const storedUserId = localStorage.getItem('user_id');
+
+//   let user_id = userIdFromUrl || storedUserId;
+
+//   if (user_id) {
+//     localStorage.setItem('user_id', user_id);
+//   }
+
+//   return user_id;
+// }
 
 
 

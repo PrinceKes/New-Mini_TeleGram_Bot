@@ -397,10 +397,28 @@ app.post('/api/referrals', async (req, res) => {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+// Ensure the endpoint correctly fetches referred users for the given userId.
+
+
 app.get('/api/referrals', async (req, res) => {
   const { userId } = req.query;
 
-cls
+  if (!userId) {
+    return res.status(400).json({ message: 'Missing userId' });
+  }
+
   try {
     // Query by referral_id
     const user = await Referral.findOne({ referral_id: userId });
@@ -409,7 +427,14 @@ cls
       return res.status(404).json({ message: 'User not found' });
     }
 
-    res.json({ referred_Users: user.referrals });
+    res.status(200).json({
+      referrals: user.referrals.map((referral) => ({
+        referredUserId: referral.referredUserId,
+        referredUsername: referral.referredUsername,
+        reward: referral.reward,
+        isClaimed: referral.isClaimed || false, // Ensure 'isClaimed' field is included
+      })),
+    });
   } catch (error) {
     console.error('Error fetching referral data:', error);
     res.status(500).json({ message: 'Error fetching referral data', error });
@@ -423,46 +448,51 @@ cls
 
 
 
-
 app.put('/api/referrals/:referral_id/claim', async (req, res) => {
   const { referral_id } = req.params;
-  const { userId } = req.body; // Retrieve userId from the request body
+  const { userId } = req.body;
 
-  // if (!userId) {
-  //   // return res.status(400).json({ message: 'Missing userId or username' });
-  // }
+  if (!userId) {
+    return res.status(400).json({ message: 'Missing userId' });
+  }
 
   try {
-    // Find the referral record
-    const referral = await Referral.findById(referral_id);
-    if (!referral) return res.status(404).json({ error: 'Referral not found' });
+    // Find the referrer's referral entry
+    const referrer = await Referral.findOne({ "referrals.referredUserId": userId });
 
-    // Check if the reward has already been claimed
-    if (referral.isClaimed) {
-      return res.status(400).json({ error: 'Reward already claimed' });
+    if (!referrer) {
+      return res.status(404).json({ message: 'Referrer not found' });
     }
 
-    // Find the referrer user
-    const user = await User.findOne({ user_id: userId });
-    if (!user) return res.status(404).json({ error: 'User not found' });
+    const referral = referrer.referrals.find((ref) => ref.referredUserId === userId);
 
-    // Update the user's balance and mark the referral as claimed
-    user.balance += referral.reward;
+    if (!referral) {
+      return res.status(404).json({ message: 'Referral not found' });
+    }
+
+    if (referral.isClaimed) {
+      return res.status(400).json({ message: 'Reward already claimed' });
+    }
+
+    // Update referral record to mark reward as claimed
     referral.isClaimed = true;
 
-    await user.save();
-    await referral.save();
+    await referrer.save();
 
     res.status(200).json({
       message: 'Reward claimed successfully',
-      newBalance: user.balance,
+      referral: {
+        referredUserId: referral.referredUserId,
+        referredUsername: referral.referredUsername,
+        reward: referral.reward,
+        isClaimed: true,
+      },
     });
   } catch (error) {
-    console.error(error);
-    // res.status(500).json({ error: 'Internal Server Error' });
+    console.error('Error claiming reward:', error);
+    res.status(500).json({ message: 'Error claiming reward', error });
   }
 });
-
 
 
 
