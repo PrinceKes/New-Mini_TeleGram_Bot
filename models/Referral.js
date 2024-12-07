@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const referralSchema = new mongoose.Schema({
-  referral_id: { type: String, required: true, unique: true }, // Custom referral ID
+  referral_id: { type: String, required: true, unique: true },
   username: { type: String, required: true },
   referrals: [
     {
@@ -13,5 +13,7 @@ const referralSchema = new mongoose.Schema({
   ],
 });
 
-const Referral = mongoose.model('Referral', referralSchema);
+// Force the collection name to "Referrals"
+const Referral = mongoose.model('Referral', referralSchema, 'Referrals'); 
+
 module.exports = Referral;
