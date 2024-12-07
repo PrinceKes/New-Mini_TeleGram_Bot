@@ -325,11 +325,7 @@ app.use(async (req, res, next) => {
 
   if (!userId || !username) {
     console.error("Missing 'userId' or 'username' in request.");
-<<<<<<< HEAD
     // return res.status(400).json({ message: "Missing 'userId' or 'username' parameters." });
-=======
-    return res.status(400).json({ message: "Missing 'userId' or 'username' parameters." });
->>>>>>> aa078723631db5b1f2efd1672b625b3bf3bb1408
   }
 
   try {

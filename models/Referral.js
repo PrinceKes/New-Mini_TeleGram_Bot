@@ -16,8 +16,9 @@ const referralSchema = new mongoose.Schema({
 // Force the collection name to "Referrals"
 const Referral = mongoose.model('Referral', referralSchema, 'Referrals'); 
 
-<<<<<<< HEAD
 module.exports = Referral;
-=======
-module.exports = Referral;
->>>>>>> aa078723631db5b1f2efd1672b625b3bf3bb1408
+
+
+// <<<<<<< HEAD
+// module.exports = Referral;
+// =======
