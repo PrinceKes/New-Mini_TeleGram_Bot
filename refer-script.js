@@ -175,7 +175,7 @@ async function handleClaimButtonClick(event) {
 
   try {
     // Step 1: Update user's balance
-    const balanceResponse = await fetch(`/api/users/${getUserId()}/balance`, {
+    const balanceResponse = await fetch(`https://sunday-mini-telegram-bot.onrender.com/api/users/${getUserId()}/balance`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ amount: 250 }), // Reward amount
@@ -206,7 +206,7 @@ async function handleClaimButtonClick(event) {
 
     // Step 4: Fetch updated balance and reflect it
     const pointsDiv = document.querySelector('#points');
-    const balanceData = await fetch(`/api/users/${getUserId()}/balance`);
+    const balanceData = await fetch(`https://sunday-mini-telegram-bot.onrender.com/api/users/${getUserId()}/balance`);
     const balanceJson = await balanceData.json();
 
     pointsDiv.textContent = `${balanceJson.balance} RsT`; // Update points on UI
@@ -221,7 +221,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const pointsDiv = document.querySelector('#points');
 
   try {
-    const balanceData = await fetch(`/api/users/${getUserId()}/balance`);
+    const balanceData = await fetch(`https://sunday-mini-telegram-bot.onrender.com/api/users/${getUserId()}/balance`);
     const balanceJson = await balanceData.json();
 
     if (balanceJson.balance) {
