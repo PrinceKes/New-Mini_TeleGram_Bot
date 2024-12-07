@@ -11,41 +11,32 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 
 // Fetch tasks from the server
-// Fetch tasks from the server
 async function fetchTasks() {
   try {
     console.log('Fetching tasks...');
     const response = await fetch('https://sunday-mini-telegram-bot.onrender.com/api/tasks');
-
-    // Check if the response is OK
+    
     if (!response.ok) {
       console.error('Failed to fetch tasks:', await response.text());
       return;
     }
-
-    // Parse JSON response
+    
     const data = await response.json();
     console.log('Tasks fetched:', data);
 
-    // Validate data format
-    if (Array.isArray(data) && data.length > 0) {
+    if (Array.isArray(data)) {
       displayTasks(data);
     } else {
-      console.error('Unexpected or empty tasks response:', data);
-      displayTasks([]); // Show "No tasks available" message
+      console.error('Unexpected tasks response:', data);
     }
 
-    // Update task counter after tasks are displayed
     updateTaskCounter();
   } catch (error) {
     console.error('Error fetching tasks:', error);
   }
 }
 
-
-
-
-// Display tasks in the DOM
+//Display tasks in the DOM
 function displayTasks(tasks) {
   const taskList = document.getElementById('taskList');
   if (!taskList) {
@@ -53,7 +44,6 @@ function displayTasks(tasks) {
     return;
   }
 
-  // Clear existing tasks
   taskList.innerHTML = '';
 
   if (tasks.length === 0) {
@@ -61,9 +51,7 @@ function displayTasks(tasks) {
     return;
   }
 
-  // Iterate through tasks
   tasks.forEach(task => {
-    console.log('Displaying task:', task);
     const taskElement = document.createElement('div');
     taskElement.classList.add('task-item');
     taskElement.innerHTML = `
@@ -76,66 +64,12 @@ function displayTasks(tasks) {
   });
 }
 
-
-// async function fetchTasks() {
-//   try {
-//     console.log('Fetching tasks...');
-//     const response = await fetch('https://sunday-mini-telegram-bot.onrender.com/api/tasks');
-    
-//     if (!response.ok) {
-//       console.error('Failed to fetch tasks:', await response.text());
-//       return;
-//     }
-    
-//     const data = await response.json();
-//     console.log('Tasks fetched:', data);
-
-//     if (Array.isArray(data)) {
-//       displayTasks(data);
-//     } else {
-//       console.error('Unexpected tasks response:', data);
-//     }
-
-//     updateTaskCounter();
-//   } catch (error) {
-//     console.error('Error fetching tasks:', error);
-//   }
-// }
-
-// Display tasks in the DOM
-// function displayTasks(tasks) {
-//   const taskList = document.getElementById('taskList');
-//   if (!taskList) {
-//     console.error('Task list container not found in the DOM.');
-//     return;
-//   }
-
-//   taskList.innerHTML = '';
-
-//   if (tasks.length === 0) {
-//     taskList.innerHTML = '<p>No tasks available. Please check back later!</p>';
-//     return;
-//   }
-
-//   tasks.forEach(task => {
-//     const taskElement = document.createElement('div');
-//     taskElement.classList.add('task-item');
-//     taskElement.innerHTML = `
-//       <h3>${task.title}</h3>
-//       <p>${task.description}</p>
-//       <p>Reward: ${task.reward} points</p>
-//       <button id="startButton-${task._id}" onclick="startTask('${task._id}', '${task.link}', ${task.reward})">Start</button>
-//     `;
-//     taskList.appendChild(taskElement);
-//   });
-// }
-
-// function startTask(taskId, link, reward) {
-//   window.open(link, '_blank');
-//   const startButton = document.getElementById(`startButton-${taskId}`);
-//   startButton.textContent = 'Claim Reward';
-//   startButton.onclick = () => claimReward(taskId, reward);
-// }
+function startTask(taskId, link, reward) {
+  window.open(link, '_blank');
+  const startButton = document.getElementById(`startButton-${taskId}`);
+  startButton.textContent = 'Claim Reward';
+  startButton.onclick = () => claimReward(taskId, reward);
+}
 
 
 
@@ -340,29 +274,29 @@ function updateTaskCounter() {
 
 
 
-function apiCall(url, options = {}) {
-  return fetch(url, options)
-      .then((response) => {
-          if (!response.ok) {
-              return response.json().then((errorData) => {
-                  showNotification(errorData.message || 'Something went wrong', 'error');
-                  throw new Error(errorData.message);
-              });
-          }
-          return response.json();
-      })
-      .then((data) => {
-          showNotification(data.message || 'Action completed successfully', data.type || 'success');
-          return data;
-      })
-      .catch((error) => {
-          console.error('Error:', error.message);
-      });
-}
+// function apiCall(url, options = {}) {
+//   return fetch(url, options)
+//       .then((response) => {
+//           if (!response.ok) {
+//               return response.json().then((errorData) => {
+//                   showNotification(errorData.message || 'Something went wrong', 'error');
+//                   throw new Error(errorData.message);
+//               });
+//           }
+//           return response.json();
+//       })
+//       .then((data) => {
+//           showNotification(data.message || 'Action completed successfully', data.type || 'success');
+//           return data;
+//       })
+//       .catch((error) => {
+//           console.error('Error:', error.message);
+//       });
+// }
 
-// Usage
-apiCall('https://sunday-mini-telegram-bot.onrender.com/api/some-action', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ someData: 'value' }),
-});
+// // Usage
+// apiCall('https://sunday-mini-telegram-bot.onrender.com/api/some-action', {
+//   method: 'POST',
+//   headers: { 'Content-Type': 'application/json' },
+//   body: JSON.stringify({ someData: 'value' }),
+// });
