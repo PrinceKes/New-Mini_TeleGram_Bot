@@ -1,6 +1,9 @@
 from telegram import WebAppInfo, KeyboardButton, ReplyKeyboardMarkup
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
 import pymongo  # MongoDB for storing referral data
+import requests  # To make HTTP requests
+import json      # For handling JSON
+
 
 # MongoDB connection setup
 client = pymongo.MongoClient("mongodb+srv://dbUser:dbUserpass@telegrambot.yngj8.mongodb.net/ReferralBotDB?retryWrites=true&w=majority")  # Replace with your connection string
@@ -12,6 +15,10 @@ async def start(update, context):
     username = update.message.from_user.username or "there"
     user_id = update.message.from_user.id
     context.user_data["user_id"] = user_id
+
+    # Register user in the external database
+    register_message = await register_user(user_id, username)
+    print(register_message)  # Log the registration response
 
     # Check for referral ID in the command
     args = context.args if context.args else []
@@ -41,7 +48,7 @@ async def start(update, context):
         else:
             await update.message.reply_text(f"Invalid referral ID: {referral_id}. Proceeding without referral.")
 
-    # Add the new user to the database if they don't already exist
+    # Add the new user to the local MongoDB if they don't already exist
     if not referrals_collection.find_one({"referral_id": str(user_id)}):
         referrals_collection.insert_one({
             "referral_id": str(user_id),
@@ -57,6 +64,31 @@ async def start(update, context):
         f"Hey @{username}, welcome to Roaster Bot where you can perform multiple tasks to earn!",
         reply_markup=reply_markup
     )
+    
+
+# Helper function to register a user
+async def register_user(user_id, username):
+    url = "https://sunday-mini-telegram-bot.onrender.com/api/users/register"
+    headers = {"Content-Type": "application/json"}
+    payload = {
+        "user_id": user_id,
+        "username": username
+    }
+    
+    try:
+        # Send POST request to register user
+        response = requests.post(url, headers=headers, json=payload)
+        response_data = response.json()  # Parse the JSON response
+
+        if response.status_code == 200:
+            return response_data.get("message", "User registered successfully")
+        else:
+            return response_data.get("error", "Failed to register user")
+    except requests.exceptions.RequestException as e:
+        print(f"Error registering user: {e}")
+        return "An error occurred while registering the user"
+
+
 
 async def button_handler(update, context):
     user_message = update.message.text
@@ -89,4 +121,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
