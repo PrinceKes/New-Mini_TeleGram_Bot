@@ -155,10 +155,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         referralsBox.appendChild(userBox);
     });
+  }
 
-    attachClaimButtonListeners();
-
-   }
 });
 
 
@@ -166,80 +164,80 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 
 
-// Function to handle "Claim" button click
+// // Function to handle "Claim" button click
 
-// Function to handle "Claim" button click
-async function handleClaimButtonClick(event) {
-  const claimButton = event.target;
-  const referredUserId = claimButton.dataset.referredId;
+// // Function to handle "Claim" button click
+// async function handleClaimButtonClick(event) {
+//   const claimButton = event.target;
+//   const referredUserId = claimButton.dataset.referredId;
 
-  try {
-    // Step 1: Update user's balance
-    const balanceResponse = await fetch(`https://sunday-mini-telegram-bot.onrender.com/api/users/${getUserId()}/balance`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ amount: 250 }), // Reward amount
-    });
+//   try {
+//     // Step 1: Update user's balance
+//     const balanceResponse = await fetch(`https://sunday-mini-telegram-bot.onrender.com/api/users/${getUserId()}/balance`, {
+//       method: 'PUT',
+//       headers: { 'Content-Type': 'application/json' },
+//       body: JSON.stringify({ amount: 250 }), // Reward amount
+//     });
 
-    if (!balanceResponse.ok) {
-      const error = await balanceResponse.json();
-      alert(error.error || 'Failed to update balance');
-      return;
-    }
+//     if (!balanceResponse.ok) {
+//       const error = await balanceResponse.json();
+//       alert(error.error || 'Failed to update balance');
+//       return;
+//     }
 
-    // Step 2: Mark referral as claimed
-    const claimResponse = await fetch(`/api/referrals/${getUserId()}/claim`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ referredUserId }),
-    });
+//     // Step 2: Mark referral as claimed
+//     const claimResponse = await fetch(`/api/referrals/${getUserId()}/claim`, {
+//       method: 'PUT',
+//       headers: { 'Content-Type': 'application/json' },
+//       body: JSON.stringify({ referredUserId }),
+//     });
 
-    if (!claimResponse.ok) {
-      const error = await claimResponse.json();
-      alert(error.error || 'Failed to update referral status');
-      return;
-    }
+//     if (!claimResponse.ok) {
+//       const error = await claimResponse.json();
+//       alert(error.error || 'Failed to update referral status');
+//       return;
+//     }
 
-    // Step 3: Update UI
-    claimButton.textContent = 'Completed';
-    claimButton.disabled = true;
+//     // Step 3: Update UI
+//     claimButton.textContent = 'Completed';
+//     claimButton.disabled = true;
 
-    // Step 4: Fetch updated balance and reflect it
-    const pointsDiv = document.querySelector('#points');
-    const balanceData = await fetch(`https://sunday-mini-telegram-bot.onrender.com/api/users/${getUserId()}/balance`);
-    const balanceJson = await balanceData.json();
+//     // Step 4: Fetch updated balance and reflect it
+//     const pointsDiv = document.querySelector('#points');
+//     const balanceData = await fetch(`https://sunday-mini-telegram-bot.onrender.com/api/users/${getUserId()}/balance`);
+//     const balanceJson = await balanceData.json();
 
-    pointsDiv.textContent = `${balanceJson.balance} RsT`; // Update points on UI
-  } catch (error) {
-    console.error('Error claiming reward:', error);
-    alert('An error occurred. Please try again.');
-  }
-}
+//     pointsDiv.textContent = `${balanceJson.balance} RsT`; // Update points on UI
+//   } catch (error) {
+//     console.error('Error claiming reward:', error);
+//     alert('An error occurred. Please try again.');
+//   }
+// }
 
-// Ensure DOM is ready before fetching initial balance
-document.addEventListener('DOMContentLoaded', async () => {
-  const pointsDiv = document.querySelector('#points');
+// // Ensure DOM is ready before fetching initial balance
+// document.addEventListener('DOMContentLoaded', async () => {
+//   const pointsDiv = document.querySelector('#points');
 
-  try {
-    const balanceData = await fetch(`https://sunday-mini-telegram-bot.onrender.com/api/users/${getUserId()}/balance`);
-    const balanceJson = await balanceData.json();
+//   try {
+//     const balanceData = await fetch(`https://sunday-mini-telegram-bot.onrender.com/api/users/${getUserId()}/balance`);
+//     const balanceJson = await balanceData.json();
 
-    if (balanceJson.balance) {
-      pointsDiv.textContent = `${balanceJson.balance} RsT`;
-    }
-  } catch (error) {
-    console.error('Error loading balance:', error);
-    pointsDiv.textContent = '0 RsT'; // Default value
-  }
-});
+//     if (balanceJson.balance) {
+//       pointsDiv.textContent = `${balanceJson.balance} RsT`;
+//     }
+//   } catch (error) {
+//     console.error('Error loading balance:', error);
+//     pointsDiv.textContent = '0 RsT'; // Default value
+//   }
+// });
 
-// New updated code
-const userId = localStorage.getItem('user_id');
-const username = new URLSearchParams(window.location.search).get('tg.username');
+// // New updated code
+// const userId = localStorage.getItem('user_id');
+// const username = new URLSearchParams(window.location.search).get('tg.username');
 
-if (userId && username) {
-  const apiUrl = `https://sunday-mini-telegram-bot.onrender.com/api/some-endpoint?userId=${userId}&username=${username}`;
-  fetch(apiUrl);
-}
+// if (userId && username) {
+//   const apiUrl = `https://sunday-mini-telegram-bot.onrender.com/api/some-endpoint?userId=${userId}&username=${username}`;
+//   fetch(apiUrl);
+// }
 
 
