@@ -114,3 +114,8 @@ function updateTaskCounter() {
       counterElement.textContent = `(${taskCount})`;
     }
   }
+
+
+//   git add .
+//   git commit -m "update all"
+//   git push origin main
