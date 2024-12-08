@@ -182,6 +182,75 @@ z-index: 1000;
 
 
 
+/*Th|
+
+/* General styles for the task-boxes container */
+.task-boxes {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin: 20px;
+  max-width: 400px;
+  background: url('your-background-image.jpg') no-repeat center center;
+  background-size: cover;
+}
+
+/* Styling each individual task box */
+.task-box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  background-color: #000;
+  color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* Task content (heading and description) */
+.task-content h4 {
+  font-size: 18px;
+  margin: 0 0 5px;
+}
+
+.task-content p {
+  font-size: 14px;
+  margin: 0;
+  color: #ccc;
+}
+
+/* Styling for the buttons */
+.task-btn {
+  background: linear-gradient(45deg, #8e2de2, #4a00e0);
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.task-btn:hover {
+  opacity: 0.8;
+}
+
+/* Styling for completed boxes */
+.completed {
+  background-color: #333;
+}
+
+.completed-btn {
+  background: #6c63ff;
+  cursor: default;
+}
+
+
+
+
+
+
+
 
 
   /*Here are the css that controls the notifications and alert on this page*/
