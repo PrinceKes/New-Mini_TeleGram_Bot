@@ -228,7 +228,44 @@ app.put('/api/users/:user_id/balance', async (req, res) => {
 });
 
 
+// Endpoint to complete a task
+app.post('/api/tasks/:id/complete', async (req, res) => {
+  try {
+    const taskId = req.params.id;
+    const { user_id } = req.body;
 
+    // Fetch user and task
+    const user = await User.findOne({ user_id });
+    const task = await Task.findById(taskId);
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    if (!task) {
+      return res.status(404).json({ error: 'Task not found' });
+    }
+
+    // Check if the task is already completed
+    if (user.completedTasks.includes(taskId)) {
+      return res.status(400).json({ error: 'Task already completed' });
+    }
+
+    // Mark task as completed
+    task.isCompleted = true;
+    await task.save();
+
+    // Update user's balance and completed tasks
+    user.balance += task.reward;
+    user.completedTasks.push(taskId);
+    await user.save();
+
+    res.json({ message: 'Task completed successfully', balance: user.balance });
+  } catch (error) {
+    console.error('Error completing task:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
 
 
 
