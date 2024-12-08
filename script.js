@@ -159,6 +159,83 @@ if (points === null) {
 
 
 
+
+// Function to get Telegram user_id from localStorage or URL
+function getTelegramUserId() {
+  // Check if user_id is in the URL parameters
+  const urlParams = new URLSearchParams(window.location.search);
+  const userIdFromUrl = urlParams.get("user_id");
+
+  // If user_id is in the URL, save it in localStorage for future use
+  if (userIdFromUrl) {
+    localStorage.setItem("telegram_user_id", userIdFromUrl);
+    return userIdFromUrl;
+  }
+
+  // If not in the URL, check localStorage
+  return localStorage.getItem("telegram_user_id");
+}
+
+// Function to fetch user balance from the server
+async function fetchUserBalance(userId) {
+  const endpoint = "https://sunday-mini-telegram-bot.onrender.com/api/users/balance";
+
+  try {
+    // Make the POST request to fetch user balance
+    const response = await fetch(endpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ user_id: userId })
+    });
+
+    // Parse the response
+    if (response.ok) {
+      const data = await response.json();
+      return data.balance; // Return the balance from the response
+    } else {
+      console.error("Error fetching balance:", await response.text());
+      return null;
+    }
+  } catch (error) {
+    console.error("Failed to fetch balance:", error);
+    return null;
+  }
+}
+
+// Function to display balance in the HTML page
+async function updateUserBalance() {
+  const userId = getTelegramUserId();
+
+  if (!userId) {
+    console.error("User ID not found in URL or localStorage.");
+    return;
+  }
+
+  // Fetch the balance
+  const balance = await fetchUserBalance(userId);
+
+  if (balance !== null) {
+    // Update the balance in the HTML element
+    const pointsDiv = document.getElementById("points");
+    if (pointsDiv) {
+      pointsDiv.textContent = `${balance} Rst`;
+    } else {
+      console.error("Points div not found in the HTML.");
+    }
+  } else {
+    console.error("Could not fetch or display balance.");
+  }
+}
+
+// Call the function to update the user's balance on page load
+document.addEventListener("DOMContentLoaded", updateUserBalance);
+
+
+
+
+
 // Function to update user balance based on the tasks they do
 document.addEventListener('DOMContentLoaded', () => {
   const balanceElement = document.getElementById('points');
