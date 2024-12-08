@@ -130,6 +130,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
+
+  
   // Load referred users and display them
   function renderReferredUsers(referredUsers) {
     const referralsBox = document.querySelector('.referrals-box');
@@ -155,15 +157,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         referralsBox.appendChild(userBox);
     });
-  }
-
-});
+}
 
 
 
 
 
 
+  
 // // Function to handle "Claim" button click
 
 // // Function to handle "Claim" button click
