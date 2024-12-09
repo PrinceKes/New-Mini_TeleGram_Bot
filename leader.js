@@ -21,27 +21,29 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   try {
+    console.log("Fetching data from:", apiUrl);
+
     // Fetch data from the API
     const response = await fetch(apiUrl);
 
-    // Check if the API call was successful
+    console.log("API response status:", response.status);
     if (!response.ok) {
-      throw new Error(`Failed to fetch leaderboard data: ${response.statusText}`);
+      throw new Error(`API request failed with status: ${response.status}`);
     }
 
     const users = await response.json();
+    console.log("Fetched users:", users);
 
-    // Verify the API response structure
     if (!Array.isArray(users)) {
-      throw new Error("API response is not in the expected format.");
+      throw new Error("Invalid API response format. Expected an array of users.");
     }
 
-    // Sort users by balance (if not already sorted by the API)
+    // Sort users by balance
     const sortedUsers = users.sort((a, b) => b.balance - a.balance);
 
     // Update leaderboard UI
     const leaderboardContainer = document.querySelector(".rank-users");
-    leaderboardContainer.innerHTML = ""; // Clear existing leaderboard cards
+    leaderboardContainer.innerHTML = ""; // Clear existing cards
 
     sortedUsers.forEach((user, index) => {
       const rank = index + 1;
@@ -67,9 +69,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     totalUsersElement.textContent = `${users.length.toLocaleString()} users`;
 
   } catch (error) {
-    console.error("Error loading leaderboard:", error);
+    console.error("Error loading leaderboard data:", error);
 
-    // Display error message to the user
+    // Display error message
     const leaderboardContainer = document.querySelector(".rank-users");
     leaderboardContainer.innerHTML = `<p class="error-message">Failed to load leaderboard data. Please try again later.</p>`;
   }
