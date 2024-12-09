@@ -576,60 +576,27 @@ app.put('/api/referrals/:user_id/claim', async (req, res) => {
 
 
 
-// Api rougte that control displaying all users
-router.get('/users', async (req, res) => {
-  console.log("GET /api/users called");
-  try {
-    const users = await User.find({}, { user_id: 1, username: 1, balance: 1, _id: 0 });
-    console.log("Fetched users from database:", users);
-    const sortedUsers = users.sort((a, b) => b.balance - a.balance);
-    res.status(200).json(sortedUsers);
-  } catch (error) {
-    console.error("Error fetching users:", error);
-    res.status(500).json({ message: "Internal server error." });
-  }
-});
+
+
+ // CODE BY FARAZ
+ // Fetch all users
+ app.get('/api/users', async (req, res) => {
+   try {
+     // Fetch all users and include their balance (roast value)
+     const users = await User.find({}, { user_id: 1, username: 1, balance: 1, _id: 0 });
+
+     // Sort users by balance in descending order for leaderboard
+     const sortedUsers = users.sort((a, b) => b.balance - a.balance);
+
+     res.status(200).json(sortedUsers);
+   } catch (error) {
+     console.error('Error fetching users:', error);
+     // res.status(500).json({ message: 'Internal server error.' });
+   }
+ });
 
 
 
-// // CODE BY FARAZ
-
-// // Fetch all users
-// app.get('/api/users', async (req, res) => {
-//   try {
-//     // Fetch all users and include their balance (roast value)
-//     const users = await User.find({}, { user_id: 1, username: 1, balance: 1, _id: 0 });
-
-//     // Sort users by balance in descending order for leaderboard
-//     const sortedUsers = users.sort((a, b) => b.balance - a.balance);
-
-//     res.status(200).json(sortedUsers);
-//   } catch (error) {
-//     console.error('Error fetching users:', error);
-//     // res.status(500).json({ message: 'Internal server error.' });
-//   }
-// });
-
-
-
-
-// CODE BY FARAZ
-// Fetch and return all users sorted by balance
-app.get('/api/users', async (req, res) => {
-  try {
-    // Fetch all users with user_id, username, and balance fields
-    const users = await User.find({}, { user_id: 1, username: 1, balance: 1, _id: 0 });
-
-    // Sort users by balance in descending order
-    const sortedUsers = users.sort((a, b) => b.balance - a.balance);
-
-    // Send sorted users as response
-    res.status(200).json(sortedUsers);
-  } catch (error) {
-    console.error('Error fetching users:', error);
-    res.status(500).json({ message: 'Internal server error.' });
-  }
-});
 
 
 
