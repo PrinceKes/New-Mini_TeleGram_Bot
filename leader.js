@@ -1,51 +1,47 @@
 document.addEventListener("DOMContentLoaded", function () {
-  const userId = localStorage.getItem('user_id'); // Fetch the user_id from localStorage
+  const apiUrl = `https://sunday-mini-telegram-bot.onrender.com/api/users`;
 
-  if (userId) {
-    // Define the API endpoint
-    const apiUrl = `https://sunday-mini-telegram-bot.onrender.com/api/users`;
+  // Fetch all users from the API
+  fetch(apiUrl)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then(users => {
+      // Sort users by balance in descending order
+      const sortedUsers = users.sort((a, b) => b.balance - a.balance);
 
-    // Fetch all users from the endpoint
-    fetch(apiUrl)
-      .then(response => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        return response.json(); // Parse the JSON response
-      })
-      .then(users => {
-        // Find the user data corresponding to the user_id
-        const currentUser = users.find(user => user.user_id === userId);
+      // Select the container for the leaderboard cards
+      const leaderboardContainer = document.querySelector(".rank-users");
 
-        if (currentUser) {
-          // Update the page with the current user's information
-          const usernameElement = document.getElementById("myusername");
-          const balanceElement = document.getElementById("mypoints");
+      // Clear any existing content
+      leaderboardContainer.innerHTML = "";
 
-          if (usernameElement) {
-            usernameElement.innerText = currentUser.username || "Unknown User";
-          }
-          if (balanceElement) {
-            balanceElement.innerText = `${currentUser.balance || 0} Rst`;
-          }
-        } else {
-          console.warn("User not found in the API response.");
-        }
-      })
-      .catch(error => {
-        console.error("Error fetching user data:", error);
+      // Generate and append the leaderboard cards dynamically
+      sortedUsers.forEach((user, index) => {
+        // Create a card for each user
+        const rank = index + 1; // Calculate the rank
+        const medal = rank === 1 ? "🥇" : rank === 2 ? "🥈" : rank === 3 ? "🥉" : `#${rank}`;
+        const cardHtml = `
+          <div class="leaderboard-card ${rank <= 3 ? `rank-${rank}` : ""}">
+            <div class="user-info">
+              <img src="./assets/roaster.png" alt="User Icon">
+              <div class="user-details">
+                <span class="username">${user.username || "Unknown User"}</span>
+                <span class="points">${user.balance.toLocaleString()} Rst</span>
+              </div>
+            </div>
+            <div class="user-rank ${rank <= 3 ? "medal" : ""}">${medal}</div>
+          </div>
+        `;
+
+        // Append the card to the container
+        leaderboardContainer.innerHTML += cardHtml;
       });
-  } else {
-    console.warn("User ID not found in localStorage.");
-  }
-
-  // Optionally, send the user ID and username to a separate endpoint
-  const username = new URLSearchParams(window.location.search).get('tg.username');
-  if (userId && username) {
-    const loggingApiUrl = `https://sunday-mini-telegram-bot.onrender.com/api/some-endpoint?userId=${userId}&username=${username}`;
-    fetch(loggingApiUrl)
-      .catch(error => {
-        console.error("Error sending user data to the logging endpoint:", error);
-      });
-  }
+    })
+    .catch(error => {
+      console.error("Error fetching leaderboard data:", error);
+    });
 });
