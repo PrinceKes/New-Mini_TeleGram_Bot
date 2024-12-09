@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", async () => {
+document.addEventListener("DOMContentLoaded", () => {
   const apiUrl = "https://sunday-mini-telegram-bot.onrender.com/api/users"; // API Endpoint
   const leaderboardContainer = document.querySelector(".rank-users");
   const totalUsersElement = document.querySelector(".total-users span:last-child");
@@ -24,53 +24,71 @@ document.addEventListener("DOMContentLoaded", async () => {
     `;
   };
 
-  try {
-    // Fetch data from the API
-    console.log(`Fetching data from: ${apiUrl}`);
-    const response = await fetch(apiUrl);
+  // Fetch data using XMLHttpRequest
+  const loadLeaderboard = () => {
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", apiUrl, true); // True indicates async request
+    xhr.onreadystatechange = () => {
+      if (xhr.readyState === 4) {
+        if (xhr.status === 200) {
+          try {
+            const users = JSON.parse(xhr.responseText); // Parse JSON response
+            console.log("Fetched users data:", users);
 
-    if (!response.ok) {
-      throw new Error(`API request failed with status: ${response.status}`);
-    }
+            if (Array.isArray(users)) {
+              // Clear existing leaderboard
+              leaderboardContainer.innerHTML = "";
 
-    const users = await response.json(); // Parse JSON response
-    console.log("Fetched users data:", users);
+              // Sort users by balance
+              const sortedUsers = users.sort((a, b) => b.balance - a.balance);
 
-    if (!Array.isArray(users)) {
-      throw new Error("Invalid API response format. Expected an array.");
-    }
+              // Update total users count
+              totalUsersElement.textContent = `${users.length.toLocaleString()} users`;
 
-    // Clear existing leaderboard
-    leaderboardContainer.innerHTML = "";
+              // Populate the leaderboard
+              sortedUsers.forEach((user, index) => {
+                const rank = index + 1;
+                const cardHTML = createLeaderboardCard(user.username, user.balance, rank);
+                leaderboardContainer.innerHTML += cardHTML;
+              });
 
-    // Sort users by balance
-    const sortedUsers = users.sort((a, b) => b.balance - a.balance);
+              // Update "My Username" and "My Points"
+              const loggedInUser = sortedUsers[0]; // Replace this logic with the actual logged-in user's data
+              if (loggedInUser) {
+                myUsernameElement.textContent = loggedInUser.username || "Unknown User";
+                myPointsElement.textContent = `${loggedInUser.balance.toLocaleString()} Rst`;
+              } else {
+                myUsernameElement.textContent = "Unknown User";
+                myPointsElement.textContent = "0 Rst";
+              }
+            } else {
+              throw new Error("Invalid API response format. Expected an array.");
+            }
+          } catch (error) {
+            console.error("Error processing leaderboard data:", error);
+            displayErrorMessage();
+          }
+        } else {
+          console.error(`API request failed with status: ${xhr.status}`);
+          displayErrorMessage();
+        }
+      }
+    };
+    xhr.onerror = () => {
+      console.error("Error during API request.");
+      displayErrorMessage();
+    };
+    xhr.send();
+  };
 
-    // Update total users count
-    totalUsersElement.textContent = `${users.length.toLocaleString()} users`;
-
-    // Populate the leaderboard
-    sortedUsers.forEach((user, index) => {
-      const rank = index + 1;
-      const cardHTML = createLeaderboardCard(user.username, user.balance, rank);
-      leaderboardContainer.innerHTML += cardHTML;
-    });
-
-    // Update "My Username" and "My Points"
-    const loggedInUser = sortedUsers[0]; // Replace this logic with the actual logged-in user's data
-    if (loggedInUser) {
-      myUsernameElement.textContent = loggedInUser.username || "Unknown User";
-      myPointsElement.textContent = `${loggedInUser.balance.toLocaleString()} Rst`;
-    } else {
-      myUsernameElement.textContent = "Unknown User";
-      myPointsElement.textContent = "0 Rst";
-    }
-  } catch (error) {
-    console.error("Error loading leaderboard data:", error);
-
-    // Show an error message on the page
+  // Display error message
+  const displayErrorMessage = () => {
     leaderboardContainer.innerHTML = `
       <p class="error-message">Failed to load leaderboard data. Please try again later.</p>
     `;
-  }
+  };
+
+  // Load leaderboard on page load
+  loadLeaderboard();
 });
+                          
