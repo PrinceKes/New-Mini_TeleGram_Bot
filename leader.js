@@ -62,3 +62,43 @@ document.addEventListener("DOMContentLoaded", async () => {
     leaderboardContainer.innerHTML = `<p class="error-message">Failed to load leaderboard data. Please try again later.</p>`;
   }
 });
+
+
+
+
+
+
+
+
+
+// This function was intended to calculate and display general users balance 
+
+//<script>
+  async function updateTotalBalance() {
+    try {
+      // Fetch data from the API
+      const response = await fetch('https://sunday-mini-telegram-bot.onrender.com/api/users');
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const users = await response.json();
+
+      // Calculate the total balance
+      const totalBalance = users.reduce((sum, user) => sum + user.balance, 0);
+
+      // Update the leaderboard element with the total balance
+      const balanceElement = document.getElementById('all-balance');
+      balanceElement.innerHTML = `#${totalBalance.toLocaleString()}`; // Format with commas
+    } catch (error) {
+      console.error('Error fetching or processing user data:', error);
+    }
+  }
+
+  // Call the function initially
+  updateTotalBalance();
+
+  // Refresh the balance every 10 seconds (10000 milliseconds)
+  setInterval(updateTotalBalance, 10000);
+//</script>
