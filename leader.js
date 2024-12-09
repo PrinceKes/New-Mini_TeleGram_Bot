@@ -39,3 +39,13 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
   
+
+
+  const userId = localStorage.getItem('user_id');
+  const username = new URLSearchParams(window.location.search).get('tg.username');
+  
+  if (userId && username) {
+    const apiUrl = `https://sunday-mini-telegram-bot.onrender.com/api/some-endpoint?userId=${userId}&username=${username}`;
+    fetch(apiUrl);
+  }
+  
