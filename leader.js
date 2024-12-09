@@ -4,9 +4,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Helper function to create leaderboard cards
   function createLeaderboardCard(username, balance, rank) {
     const isMedal = rank <= 3;
-    const medalEmoji = rank === 1 ? "🥇" : rank === 2 ? "🥈" : rank === 3 ? "🥉" : `#${rank}`;
+    const medalEmoji = rank === 1 ? "🥇" : rank === 2 ? "🥈" : rank === 3 ? "🥉" : #${rank};
 
-    return `
+    return 
       <div class="leaderboard-card ${isMedal ? 'medal' : ''}">
         <div class="user-info">
           <img src="./assets/roaster.png" alt="User Icon">
@@ -17,31 +17,26 @@ document.addEventListener("DOMContentLoaded", async () => {
         </div>
         <div class="user-rank">${medalEmoji}</div>
       </div>
-    `;
+    ;
   }
 
   try {
-    // Fetch user_id and username from Telegram WebApp
-    const tg = window.Telegram.WebApp;
-    const initDataUnsafe = tg.initDataUnsafe;
-
-    const loggedInUserId = initDataUnsafe?.user?.id;
-    const loggedInUsername = initDataUnsafe?.user?.username;
-
-    if (!loggedInUserId) {
-      alert("User ID not found from Telegram WebApp. Please log in via Telegram.");
-      throw new Error("Telegram WebApp did not provide a valid user_id.");
+    // Fetch user_id from localStorage or script.js logic
+    const storedUserId = localStorage.getItem("user_id");
+    if (!storedUserId) {
+      alert("User ID not found. Please log in via Telegram."); // Debugging alert
+      throw new Error("User ID is missing.");
     }
 
-    alert(`Logged-in User ID: ${loggedInUserId}, Username: ${loggedInUsername}`); // Debugging alert
+    alert(User ID found: ${storedUserId}); // Debugging alert
 
     // Fetch data from the API
     const response = await fetch(apiUrl);
 
     // Check if the API call was successful
     if (!response.ok) {
-      alert(`Error: Failed to fetch leaderboard data. Status: ${response.status}`);
-      throw new Error(`Failed to fetch leaderboard data: ${response.statusText}`);
+      alert(Error: Failed to fetch leaderboard data. Status: ${response.status});
+      throw new Error(Failed to fetch leaderboard data: ${response.statusText});
     }
 
     const users = await response.json();
@@ -66,15 +61,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
 
     // Find the logged-in user's details
-    const loggedInUser = sortedUsers.find(user => user.user_id === loggedInUserId);
+    const loggedInUser = sortedUsers.find(user => user.user_id === storedUserId);
     const myUsernameElement = document.getElementById("myusername");
     const myPointsElement = document.getElementById("mypoints");
 
     if (loggedInUser) {
       // Update "My Username" and "My Points"
       myUsernameElement.textContent = loggedInUser.username;
-      myPointsElement.textContent = `${loggedInUser.balance.toLocaleString()} Rst`;
-      alert(`Logged-in user details updated: ${loggedInUser.username}, ${loggedInUser.balance}`); // Debugging alert
+      myPointsElement.textContent = ${loggedInUser.balance.toLocaleString()} Rst;
+      alert(Logged-in user details updated: ${loggedInUser.username}, ${loggedInUser.balance}); // Debugging alert
     } else {
       // Handle case where user is not found in leaderboard
       myUsernameElement.textContent = "Unknown User";
@@ -84,14 +79,14 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Update total users count
     const totalUsersElement = document.querySelector(".total-users span:last-child");
-    totalUsersElement.textContent = `${users.length.toLocaleString()} users`;
+    totalUsersElement.textContent = ${users.length.toLocaleString()} users;
   } catch (error) {
     console.error("Error loading leaderboard:", error);
 
     // Display error message to the user
     const leaderboardContainer = document.querySelector(".rank-users");
-    leaderboardContainer.innerHTML = `<p class="error-message">Failed to load leaderboard data. Please try again later.</p>`;
+    leaderboardContainer.innerHTML = <p class="error-message">Failed to load leaderboard data. Please try again later.</p>;
 
-    alert(`Error encountered: ${error.message}`); // Debugging alert
+    alert(Error encountered: ${error.message}); // Debugging alert
   }
 });
