@@ -577,8 +577,7 @@ app.put('/api/referrals/:user_id/claim', async (req, res) => {
 
 
 // Api rougte that control displaying all users
-
-// app.use("/api", router);
+ app.use("/api", router);
 
 router.get('/users', async (req, res) => {
   try {
