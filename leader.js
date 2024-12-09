@@ -21,14 +21,19 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   try {
-    // Fetch user_id from localStorage or script.js logic
-    const storedUserId = localStorage.getItem("user_id");
-    if (!storedUserId) {
-      alert("User ID not found. Please log in via Telegram."); // Debugging alert
-      throw new Error("User ID is missing.");
+    // Fetch user_id and username from Telegram WebApp
+    const tg = window.Telegram.WebApp;
+    const initDataUnsafe = tg.initDataUnsafe;
+
+    const loggedInUserId = initDataUnsafe?.user?.id;
+    const loggedInUsername = initDataUnsafe?.user?.username;
+
+    if (!loggedInUserId) {
+      alert("User ID not found from Telegram WebApp. Please log in via Telegram.");
+      throw new Error("Telegram WebApp did not provide a valid user_id.");
     }
 
-    alert(`User ID found: ${storedUserId}`); // Debugging alert
+    alert(`Logged-in User ID: ${loggedInUserId}, Username: ${loggedInUsername}`); // Debugging alert
 
     // Fetch data from the API
     const response = await fetch(apiUrl);
@@ -61,7 +66,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
 
     // Find the logged-in user's details
-    const loggedInUser = sortedUsers.find(user => user.user_id === storedUserId);
+    const loggedInUser = sortedUsers.find(user => user.user_id === loggedInUserId);
     const myUsernameElement = document.getElementById("myusername");
     const myPointsElement = document.getElementById("mypoints");
 
@@ -90,4 +95,3 @@ document.addEventListener("DOMContentLoaded", async () => {
     alert(`Error encountered: ${error.message}`); // Debugging alert
   }
 });
-                                
