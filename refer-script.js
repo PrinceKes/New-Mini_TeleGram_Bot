@@ -121,6 +121,34 @@ function getUserId() {
   return user_id;
 }
 
+// Function to render referred users
+function renderReferredUsers(referredUsers) {
+  const referralsBox = document.querySelector('.referrals-box');
+  referralsBox.innerHTML = ''; // Clear existing content
+
+  referredUsers.forEach((user) => {
+    const userBox = document.createElement('div');
+    userBox.classList.add('users-box');
+
+    userBox.innerHTML = `
+      <img src="./assets/avatar.png" alt="User Avatar" class="user-avatar" />
+      <div class="user-details">
+          <h4 class="user-name">${user.referredUsername}</h4>
+          <p class="user-reward">+${user.reward} RsT</p>
+      </div>
+      <button 
+          class="claim-button" 
+          data-referred-id="${user.referredUserId}" 
+          ${user.isClaimed ? 'disabled' : ''}>
+          ${user.isClaimed ? 'Completed' : 'Claim'}
+      </button>
+    `;
+
+    referralsBox.appendChild(userBox);
+  });
+}
+
+// Main script
 document.addEventListener('DOMContentLoaded', async () => {
   // Fetch user_id (referral_id)
   const referralId = getUserId();
@@ -130,7 +158,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
-  // Load referred users and display them
+  // Function to load referred users and display them
   async function loadReferredUsers() {
     try {
       const endpoint = `https://sunday-mini-telegram-bot.onrender.com/api/referrals/${referralId}`;
@@ -141,30 +169,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
 
       const referredUsers = await response.json();
-      const referralsBox = document.querySelector('.referrals-box');
-      referralsBox.innerHTML = ''; // Clear existing content
-
-      referredUsers.forEach((user) => {
-        const userBox = document.createElement('div');
-        userBox.classList.add('users-box');
-
-        userBox.innerHTML = `
-          <img src="./assets/avatar.png" alt="User Avatar" class="user-avatar" />
-          <div class="user-details">
-            <h4 class="user-name">${user.referredUsername}</h4>
-            <p class="user-reward">+${user.reward} RsT</p>
-          </div>
-          <button 
-            class="claim-button" 
-            data-referred-id="${user.referredUserId}" 
-            ${user.isClaimed ? 'disabled' : ''}>
-            ${user.isClaimed ? 'Completed' : 'Claim'}
-          </button>
-        `;
-
-        referralsBox.appendChild(userBox);
-      });
-
+      renderReferredUsers(referredUsers); // Use the reusable function to render users
       attachClaimButtonListeners(); // Attach listeners after rendering
     } catch (error) {
       console.error('Error loading referred users:', error);
@@ -223,3 +228,14 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Load referred users on page load
   await loadReferredUsers();
 });
+
+
+
+
+const userId = localStorage.getItem('user_id');
+const username = new URLSearchParams(window.location.search).get('tg.username');
+
+if (userId && username) {
+  const apiUrl = `https://sunday-mini-telegram-bot.onrender.com/api/some-endpoint?userId=${userId}&username=${username}`;
+  fetch(apiUrl);
+}
