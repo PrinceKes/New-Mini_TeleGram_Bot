@@ -236,6 +236,11 @@ document.addEventListener("DOMContentLoaded", updateUserBalance);
 
 
 
+
+
+
+
+
 // Function to update user balance based on the tasks they do
 document.addEventListener('DOMContentLoaded', () => {
   const balanceElement = document.getElementById('points');
