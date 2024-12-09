@@ -90,7 +90,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       // Update the leaderboard element with the total balance
       const balanceElement = document.getElementById('all-balance');
-      balanceElement.innerHTML = `#${totalBalance.toLocaleString()}`; // Format with commas
+      balanceElement.innerHTML = `Rst${totalBalance.toLocaleString()}`; // Format with commas
     } catch (error) {
       console.error('Error fetching or processing user data:', error);
     }
