@@ -30,16 +30,28 @@ async function sendReferralData(referrerId, userId, username) {
 
 
 // Function to copy the referral link to the clipboard
+// Function to copy the referral link to the clipboard
 function copyReferralLink() {
-  const userId = localStorage.getItem('userId');
+  // Attempt to get user_id from Telegram WebApp's initDataUnsafe if available
+  const tg = window.Telegram.WebApp;
+  const initDataUnsafe = tg.initDataUnsafe;
+  
+  let userId = initDataUnsafe?.user?.id; // Try fetching from Telegram's WebApp
   
   if (!userId) {
-    console.error('User ID not found in localStorage');
+    // Fallback: Get user_id from localStorage if Telegram WebApp user_id is not available
+    userId = localStorage.getItem('userId');
+  }
+
+  if (!userId) {
+    console.error('User ID not found.');
     return;
   }
 
+  // Generate the referral link using the user_id
   const referralLink = `https://t.me/Roasterboldbot?start=${userId}`;
   
+  // Create a temporary input element to copy the link to the clipboard
   const tempInput = document.createElement('input');
   tempInput.value = referralLink;
   document.body.appendChild(tempInput);
@@ -49,24 +61,53 @@ function copyReferralLink() {
   
   document.body.removeChild(tempInput);
 
+  // Show a notification that the referral link was copied
   showNotification('Referral link copied to clipboard!');
 }
 
+// Function to show a notification (you can modify it to fit your UI)
+function showNotification(message) {
+  const notification = document.createElement('div');
+  notification.className = 'notification';
+  notification.textContent = message;
+  document.body.appendChild(notification);
+
+  setTimeout(() => {
+    notification.remove();
+  }, 3000); // Notification disappears after 3 seconds
+}
 
 document.addEventListener('DOMContentLoaded', () => {
-  const referrerId = getReferrerId();
-  const userId = localStorage.getItem('userId'); 
-  const username = localStorage.getItem('username');
+  // Fetch user_id from URL or localStorage if needed
+  const userIdFromUrl = new URLSearchParams(window.location.search).get('user_id');
+  const userIdFromLocalStorage = localStorage.getItem('userId');
   
+  // Choose the correct user_id (URL > localStorage)
+  const userId = userIdFromUrl || userIdFromLocalStorage;
+
+  if (userId) {
+    // Store user_id to localStorage if it was found from URL
+    localStorage.setItem('userId', userId);
+  } else {
+    console.error('No user_id found in URL or localStorage.');
+  }
+
+  // Send referral data (optional, you can remove or adjust this if needed)
+  const referrerId = getReferrerId();
+  const username = localStorage.getItem('username');
+
   if (referrerId && userId && username) {
     sendReferralData(referrerId, userId, username);
   }
 
-  const referralButton = document.getElementById('referralButton'); 
+  // Bind the copy referral link function to the referral button
+  const referralButton = document.getElementById('referralButton');
   if (referralButton) {
     referralButton.addEventListener('click', copyReferralLink);
   }
 });
+
+
 
 
 //function that controls alerts
