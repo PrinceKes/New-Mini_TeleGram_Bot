@@ -1,70 +1,68 @@
-// Function to extract the referrer ID from the Telegram link
-function getReferrerId() {
+// Function to fetch the user ID from URL or localStorage
+function fetchUserId() {
   const urlParams = new URLSearchParams(window.location.search);
-  return urlParams.get('start');  // Extract the referrer ID from the query string
-}
-
-// Function to send the referral data to the backend
-async function sendReferralData(referrerId, userId, username) {
-  const response = await fetch('https://sunday-mini-telegram-bot.onrender.com/api/referrals', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      referrer_id: referrerId,
-      user_id: userId,
-      username: username,
-    }),
-  });
-
-  const data = await response.json();
-  if (response.ok) {
-    console.log('Referral data saved:', data);
-  } else {
-    console.error('Error saving referral data:', data.message);
-  }
-}
-
-
-
-
-// Function to copy the referral link to the clipboard
-function copyReferralLink() {
-  const userId = localStorage.getItem('userId');
+  const userIdFromUrl = urlParams.get('user_id'); // Get user_id from the URL
+  const storedUserId = localStorage.getItem('user_id'); // Get user_id from localStorage
   
+  // Use user_id from URL if available; otherwise, fallback to stored user_id
+  const userId = userIdFromUrl || storedUserId;
+
+  // Store the user_id in localStorage for persistence
+  if (userId) {
+    localStorage.setItem('user_id', userId);
+  }
+
+  return userId; // Return the fetched user_id
+}
+
+// Function to dynamically generate the referral link
+function generateReferralLink(userId) {
   if (!userId) {
-    console.error('User ID not found in localStorage');
+    console.error("User ID is missing, unable to generate referral link.");
+    return null;
+  }
+
+  // Return the referral link with the user_id
+  return `https://t.me/Roasterboldbot?start=${userId}`;
+}
+
+// Function to copy referral link to clipboard
+function copyReferralLinkToClipboard(referralLink) {
+  if (!referralLink) {
+    console.error("Referral link is missing, cannot copy to clipboard.");
     return;
   }
 
-  const referralLink = `https://t.me/Roasterboldbot?start=${userId}`;
-  
-  const tempInput = document.createElement('input');
+  // Create a temporary input element to copy the referral link
+  const tempInput = document.createElement("input");
   tempInput.value = referralLink;
   document.body.appendChild(tempInput);
-  
   tempInput.select();
-  document.execCommand('copy');
-  
+  document.execCommand("copy");
   document.body.removeChild(tempInput);
 
-  showNotification('Referral link copied to clipboard!');
+  // Show a notification (assuming you have a notification function)
+  showNotification("Referral link copied to clipboard!");
 }
-document.addEventListener('DOMContentLoaded', () => {
-  const referrerId = getReferrerId();
-  const userId = localStorage.getItem('userId'); 
-  const username = localStorage.getItem('username');
-  
-  if (referrerId && userId && username) {
-    sendReferralData(referrerId, userId, username);
-  }
 
-  const referralButton = document.getElementById('referralButton'); 
-  if (referralButton) {
-    referralButton.addEventListener('click', copyReferralLink);
+// Main logic to handle referral link generation and copying
+document.addEventListener("DOMContentLoaded", () => {
+  // Fetch the user_id
+  const userId = fetchUserId();
+
+  // Update the referral link dynamically
+  const referralLink = generateReferralLink(userId);
+
+  // Attach event listener to the copy button
+  const copyButton = document.getElementById("copy-invite-url");
+  if (copyButton) {
+    copyButton.addEventListener("click", () => {
+      copyReferralLinkToClipboard(referralLink);
+    });
   }
 });
+
+
 
 
 
