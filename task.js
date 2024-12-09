@@ -228,15 +228,29 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 // Update task counter
-function updateTaskCounter() {
-    const taskCount = document.querySelectorAll('.task-item').length;
-    const counterElement = document.getElementById('generalCount');
-    if (counterElement) {
-      counterElement.textContent = `(${taskCount})`;
+//<script>
+  async function updateTaskCount() {
+    try {
+      // Fetch data from the API
+      const response = await fetch('https://sunday-mini-telegram-bot.onrender.com/api/tasks');
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const tasks = await response.json();
+
+      // Get the total number of tasks
+      const taskCount = tasks.length;
+
+      // Update the generalCount span with the task count
+      const generalCountElement = document.getElementById('generalCount');
+      generalCountElement.innerHTML = `(${taskCount})`;
+    } catch (error) {
+      console.error('Error fetching or processing task data:', error);
     }
   }
 
-
-//   git add .
-//   git commit -m "update all"
-//   git push origin main
+  // Call the function when the page loads
+  window.onload = updateTaskCount;
+//</script>
