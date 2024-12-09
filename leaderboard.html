@@ -55,7 +55,7 @@
           <img src="./assets/roaster.png" alt="User Icon">
           <div class="user-details">
             <span class="username">Pishnahad_Sup</span>
-            <span class="balance">57,642,584 Rst</span>
+            <span class="points">57,642,584 Rst</span>
           </div>
         </div>
         <div class="user-rank medal">🥈</div>
@@ -66,7 +66,7 @@
           <img src="./assets/roaster.png" alt="User Icon">
           <div class="user-details">
             <span class="username">Esalat</span>
-            <span class="balance">49,256,421 Rst</span>
+            <span class="points">49,256,421 Rst</span>
           </div>
         </div>
         <div class="user-rank medal">🥉</div>
@@ -77,7 +77,7 @@
           <img src="./assets/roaster.png" alt="User Icon">
           <div class="user-details">
             <span class="username">mehranseyedi</span>
-            <span class="balance">48,601,772 Rst</span>
+            <span class="points">48,601,772 Rst</span>
           </div>
         </div>
         <div class="user-rank">#4</div>
@@ -88,7 +88,7 @@
           <img src="./assets/roaster.png" alt="User Icon">
           <div class="user-details">
             <span class="username">mehranseyedi</span>
-            <span class="balance">48,601,772 Rst</span>
+            <span class="points">48,601,772 Rst</span>
           </div>
         </div>
         <div class="user-rank">#3</div>
@@ -99,7 +99,7 @@
           <img src="./assets/roaster.png" alt="User Icon">
           <div class="user-details">
             <span class="username">mehranseyedi</span>
-            <span class="balance">48,601,772 Rst</span>
+            <span class="points">48,601,772 Rst</span>
           </div>
         </div>
         <div class="user-rank">#2</div>
@@ -112,101 +112,5 @@
   <script src="script.js"></script>
   <script src="notifications.js"></script>
   <script src="leader.js"></script>
-  
-<!-- 
-  <script>
-    // Function to get user_id from URL or localStorage
-    function getUserId() {
-      // Check if user_id is present in the URL query string
-      const urlParams = new URLSearchParams(window.location.search);
-      const userIdFromUrl = urlParams.get("user_id");
-
-      // If found in URL, return it
-      if (userIdFromUrl) {
-        localStorage.setItem("user_id", userIdFromUrl); // Save to localStorage for future use
-        return userIdFromUrl;
-      }
-
-      // Otherwise, try getting it from localStorage
-      const userIdFromStorage = localStorage.getItem("user_id");
-      return userIdFromStorage || null; // Return null if not found
-    }
-    async function fetchAndDisplayUserDetails() {
-      try {
-        const userId = getUserId();
-        if (!userId) {
-          console.error("User ID not found in URL or localStorage");
-          return;
-        }
-
-        const response = await fetch("https://sunday-mini-telegram-bot.onrender.com/api/users", { mode: "no-cors" });
-
-        if (!response.ok) {
-          throw new Error(`Failed to fetch user data: ${response.statusText}`);
-        }
-
-        const users = await response.json();
-        const user = users.find((user) => user.user_id === userId);
-        if (!user) {
-          console.error(`User with ID ${userId} not found in the database`);
-          return;
-        }
-
-        document.getElementById("myusername").textContent = user.username || "Unknown User";
-        document.getElementById("mypoints").textContent = `${user.balance || 0} Rst`;
-      } catch (error) {
-        console.error("Error fetching and displaying user details:", error);
-        alert("Unable to fetch user data. Please try again later.");
-      }
-    }
-
-
-    // Trigger the function when the DOM is fully loaded
-    document.addEventListener("DOMContentLoaded", fetchAndDisplayUserDetails); -->
-  <!-- </script> -->
-
-  <script>
-    // Function to fetch user data and update the leaderboard
-async function fetchAndDisplayUserDetails() {
-  try {
-    // Get the user_id from the URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const userId = urlParams.get('user_id');
-
-    if (!userId) {
-      console.error("User ID not found in the URL");
-      return;
-    }
-
-    // Fetch user data from the API
-    const response = await fetch(`https://new-mini-telegram-bot.onrender.com/api/users?user_id=${userId}`);
-    if (!response.ok) {
-      throw new Error(`Failed to fetch user data: ${response.statusText}`);
-    }
-
-    // Parse the JSON response
-    const users = await response.json();
-
-    // Find the user's details
-    const user = users.find((user) => user.user_id === userId);
-    if (!user) {
-      console.error("User not found in the database");
-      return;
-    }
-
-    // Update the DOM with the user's details
-    const usernameElement = document.getElementById("myusername");
-    const pointsElement = document.getElementById("mypoints");
-    usernameElement.textContent = user.username;
-    pointsElement.textContent = `${user.balance} Rst`;
-  } catch (error) {
-    console.error("Error fetching and displaying user details:", error);
-  }
-}
-
-// Run the function after the DOM content has loaded
-document.addEventListener("DOMContentLoaded", fetchAndDisplayUserDetails);
-  </script>
-
 </body>
 </html>
