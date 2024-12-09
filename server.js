@@ -577,19 +577,18 @@ app.put('/api/referrals/:user_id/claim', async (req, res) => {
 
 
 // Api rougte that control displaying all users
- app.use("/api", router);
-
 router.get('/users', async (req, res) => {
+  console.log("GET /api/users called");
   try {
     const users = await User.find({}, { user_id: 1, username: 1, balance: 1, _id: 0 });
+    console.log("Fetched users from database:", users);
     const sortedUsers = users.sort((a, b) => b.balance - a.balance);
     res.status(200).json(sortedUsers);
   } catch (error) {
-    console.error('Error fetching users:', error);
-    // res.status(500).json({ message: 'Internal server error.' });
+    console.error("Error fetching users:", error);
+    res.status(500).json({ message: "Internal server error." });
   }
 });
-
 
 
 
