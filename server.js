@@ -260,7 +260,7 @@ app.post('/api/tasks/:id/complete', async (req, res) => {
     user.completedTasks.push(taskId);
     await user.save();
 
-    res.json({ message: 'Task completed successfully', balance: user.balance });
+    //res.json({ message: 'Task completed successfully', balance: user.balance });
   } catch (error) {
     console.error('Error completing task:', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -297,7 +297,7 @@ app.put('/api/users/:user_id/complete-task', async (req, res) => {
     user.balance += task.reward;
     await user.save();
 
-    res.status(200).json({ message: 'Task completed successfully', balance: user.balance });
+    //res.status(200).json({ message: 'Task completed successfully', balance: user.balance });
   } catch (error) {
     console.error(error);
     // res.status(500).json({ error: 'Internal Server Error' });
@@ -323,7 +323,7 @@ app.put('/api/tasks/:task_id', async (req, res) => {
     user.balance += task.reward;
     await user.save();
 
-    res.status(200).json({ message: 'Task completed successfully', newBalance: user.balance });
+    //res.status(200).json({ message: 'Task completed successfully', newBalance: user.balance });
   } catch (error) {
     console.error(error);
     // res.status(500).json({ error: 'Internal Server Error' });
@@ -615,7 +615,7 @@ app.post('/api/some-action', (req, res) => {
   }
 
   // Simulate successful operation
-  res.status(200).json({ message: 'Task completed successfully', type: 'success' });
+//  res.status(200).json({ message: 'Task completed successfully', type: 'success' });
 });
 
 
