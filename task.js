@@ -13,8 +13,20 @@ document.addEventListener("DOMContentLoaded", function () {
       .then((response) => response.json())
       .then((tasks) => {
         taskListContainer.innerHTML = ""; // Clear the task list
-        tasks.forEach((task) => {
-          const taskBox = createTaskBox(task);
+
+        // Separate completed and uncompleted tasks
+        const uncompletedTasks = tasks.filter(task => !task.isCompleted);
+        const completedTasks = tasks.filter(task => task.isCompleted);
+
+        // Render uncompleted tasks first
+        uncompletedTasks.forEach((task) => {
+          const taskBox = createTaskBox(task, false);
+          taskListContainer.appendChild(taskBox);
+        });
+
+        // Render completed tasks at the bottom
+        completedTasks.forEach((task) => {
+          const taskBox = createTaskBox(task, true);
           taskListContainer.appendChild(taskBox);
         });
       })
@@ -22,7 +34,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // Create a task box element
-  function createTaskBox(task) {
+  function createTaskBox(task, isCompleted) {
     const taskBox = document.createElement("div");
     taskBox.className = "task-box";
 
@@ -36,16 +48,25 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const taskButton = document.createElement("button");
     taskButton.className = "task-btn";
-    
-    // Check if the task was completed before
-    if (localStorage.getItem(`task_${task._id}_completed`)) {
+
+    if (isCompleted || localStorage.getItem(`task_${task._id}_completed`)) {
       taskButton.innerText = "Complete 💯";
       taskButton.disabled = true;
       taskButton.classList.add("completed-btn");
     } else {
-      taskButton.innerText = "Finish";
+      taskButton.innerText = "Start";
+
+      // "Start" button click handler
       taskButton.addEventListener("click", function () {
-        handleTaskFinish(task, taskBox, taskButton);
+        window.open(task.link, "_blank"); // Open the task link in a new tab
+        taskButton.innerText = "Finish"; // Change to "Finish"
+        taskButton.classList.add("finish-btn");
+
+        // Replace the click handler for "Finish"
+        taskButton.removeEventListener("click", arguments.callee); // Remove the "Start" click handler
+        taskButton.addEventListener("click", function () {
+          handleTaskFinish(task, taskBox, taskButton);
+        });
       });
     }
 
@@ -73,6 +94,9 @@ document.addEventListener("DOMContentLoaded", function () {
           taskButton.innerText = "Complete 💯";
           taskButton.disabled = true;
           taskButton.classList.add("completed-btn");
+
+          // Move task to the bottom of the list
+          taskListContainer.appendChild(taskBox);
 
           // Optionally update the UI to reflect new balance
           displayUpdatedBalance(data.balance);
