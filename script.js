@@ -108,42 +108,45 @@ if (points === null) {
     }, 1000);
 
     claimBonusBtn.addEventListener("click", async () => {
-      points = 2000;
-      pointsElement.innerText = `${points} Rst`;
+  points = 2000; // Bonus amount
+  pointsElement.innerText = `${points} Rst`;
 
-      // Store bonus claim status in localStorage
-      localStorage.setItem("hasClaimedBonus", "true");
+  // Store bonus claim status in localStorage
+  localStorage.setItem("hasClaimedBonus", "true");
 
-      const userId = localStorage.getItem("user_id");
-      if (userId) {
-        try {
-          // Send PUT request to update balance in the database
-          const response = await fetch(
-            `https://sunday-mini-telegram-bot.onrender.com/api/users/${userId}/balance`,
-            {
-              method: "PUT",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ amount: points }), // Send the bonus points
-            }
-          );
-
-          if (response.ok) {
-            const data = await response.json();
-            console.log("Balance updated:", data);
-
-            // Optionally, update the displayed balance
-            pointsElement.innerText = `${data.balance} Rst`;
-          } else {
-            console.error("Failed to update balance:", response.statusText);
-          }
-        } catch (error) {
-          console.error("Error updating balance:", error);
+  const userId = localStorage.getItem("user_id");
+  if (userId) {
+    try {
+      // Send PUT request to update the user's balance in the database
+      const response = await fetch(
+        `https://sunday-mini-telegram-bot.onrender.com/api/users/${userId}/balance`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ amount: 2000 }), // Send the bonus points
         }
-      }
+      );
 
-      // Hide the modal
-      modal.classList.add("hidden");
-    });
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Balance updated:", data);
+
+        // Update the displayed balance with the value returned by the server
+        pointsElement.innerText = `${data.balance} Rst`;
+      } else {
+        console.error("Failed to update balance:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error updating balance:", error);
+    }
+  } else {
+    console.error("User ID is missing! Bonus not added.");
+  }
+
+  // Hide the modal
+  modal.classList.add("hidden");
+});
+    
   } else {
     points = 0;
     pointsElement.innerText = `${points} Rst`;
@@ -155,6 +158,18 @@ if (points === null) {
 
 
 
+function showToast(message) {
+  const toast = document.createElement("div");
+  toast.className = "toast";
+  toast.innerText = message;
+  document.body.appendChild(toast);
+
+  setTimeout(() => {
+    toast.remove();
+  }, 3000);
+}
+
+showToast("Bonus Claimed Successfully!");
 
 
 
