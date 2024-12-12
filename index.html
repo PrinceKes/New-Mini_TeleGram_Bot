@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
+  <title>Telegram Mini App</title>
+  <link rel="stylesheet" href="new-style.css">
+</head>
+<body>
+
+  <div class="header">
+    <img src="./assets/Avatar.jpg" alt="User Avatar">
+    <span id="userId">My ID: Loading...</span>
+  </div>
+
+  <!-- Connect wallet -->
+  <div class="new-wallet">
+    <div id="ton-connect"></div>
+    <button id="connectWalletBtn" class="connectWalletBtn">Connect Wallet</button>
+    <button id="sendTransactionBtn" class="sendTransact">Send Transaction</button>
+  </div>
+
+  <div class="content">
+    <div class="roast-icon" style="background-image: url('./assets/roast.png');"></div>
+    <div id="points" class="points">0 Rst</div>
+  </div>
+
+  <div class="buttons">
+    <div class="button" onclick="window.location.href='https://t.me/+675S9uz9O5UxMTRk'">
+      <span>👥 Join our community</span>
+      <span>›</span>
+    </div>
+  </div>
+
+  <div id="welcome-modal" class="modal hidden">
+    <div class="modal-content">
+      <h2>Welcome!</h2>
+      <p>Claim your 2000 Rst as welcome bonus!</p>
+      <button id="claim-bonus-btn" class="claim-btn">Claim Now</button>
+    </div>
+  </div> 
+
+  <div id="navbar-container"></div>
+
+<script>
+    let isWalletConnected = false;
+    let tonConnectUI = null;
+        document.addEventListener("DOMContentLoaded", async function () {
+            
+            // const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+                tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+                manifestUrl: 'https://new-mini-telegram-bot.onrender.com/tonconnect-manifest.json',
+                buttonRootId: 'ton-connect'
+            });
+            // check if wallet is already connected
+            const connectedWallet = await tonconnectUI.getWallets();
+            if(connectedWallet){
+                isWalletConnected = true;
+                console.log("Wallet is already connected:", connectedWallet);
+            }
+        });
+
+        // Connect wallet to default btn
+        async function connectedWallet() {
+            if (isWalletConnected){
+                console.log("Wallet already connected")
+                return;
+            }
+
+            try {
+                const connectedWallet = await tonConnectUI.connectWallet();
+                if (connectedWallet) {
+                    isWalletConnected = true;
+                    console.log("Wallet connected", connectedWallet);
+                }
+            } catch (error) {
+                console.error("error connecting to wallet", error);
+            }
+        }
+
+
+    // Send transaction 
+        async function sednTonTransaction() {
+            if (!isWalletConnected) {
+                console.log("Please connect your wallet first.");
+                return;
+            }
+
+            const transaction = {
+                messages: [
+                    {
+                        address: "EQABa48hjKzg09hN_HjxOic7r8T1PleIy1dRd8NvZ3922MP0",
+                        amount: "0.02"
+                    }
+                ]
+            };
+
+            try {
+                const result = await tonconnectUI.sendTransaction(transaction);
+                console.log("Transaction successful.", result);
+            } catch (error) {
+                console.error("Transaction failed", error);
+            }
+        }
+
+
+        document.getElementById("sendTransactionBtn").addEventListener("click", connectWallet);
+        document.getElementById("connectWalletBtn").addEventListener("click", sednTonTransaction);
+
+</script>
+
+</body>
+</html>
