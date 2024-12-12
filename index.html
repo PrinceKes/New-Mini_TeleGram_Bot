@@ -17,7 +17,7 @@
 
   <div class="header">
     <img src="./assets/Avatar.jpg" alt="User Avatar" >
-    <span id="userId">My ID: Loading...</span>
+    <span id="userId">User ID: Loading...</span>
   </div>
 
 
@@ -61,20 +61,25 @@
   </div>
 
   <div class="buttons">
-    <div class="button" onclick="window.location.href='https://t.me/+675S9uz9O5UxMTRk'">
+    <div class="button" onclick="window.location.href='https://t.me/pandoraedge'">
       <span>👥 Join our community</span>
       <span>›</span>
     </div>    
-  </div>
-  
+    <!-- <div class="button">
+      <span>⭐ Check your rewards</span>
+      <span>›</span>
+    </div>
+  </div> -->
+
+  <!-- Welcome Bonus Modal
   <div id="welcome-modal" class="modal hidden">
     <div class="modal-content">
       <h2>Welcome!</h2>
-      <p>Claim your 2000 Rst as welcome bonus!</p>
+      <p>Claim your 2000 Roast as a welcome bonus!</p>
       <button id="claim-bonus-btn" class="claim-btn">Claim Now</button>
     </div>
   </div>
- 
+  -->
 
 
   <div id="navbar-container"></div>
@@ -82,109 +87,100 @@
   <script src="header.js"></script>
   <script src="task-script.js"></script>
   <script src="script.js"></script>
-
-  <script src="notifications.js"></script> 
+  <script src="wallet.js"></script>
   <script>
-    const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+     const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
         manifestUrl: 'https://new-mini-telegram-bot.onrender.com/tonconnect-manifest.json',
         buttonRootId: 'ton-connect'
-        });
-    async function connectToWallet() {
-        try {
-            const connectedWallet = await tonConnectUI.connectWallet();
-            console.log('Wallet connected:', connectedWallet.address);
-        } catch (error) {
-            console.log('Connection failed:', error);
-        }
-    }
-
-    // Add connection state listener
-    let showInputField = document.querySelector('.show-TransactionInput');
-    showInputField.style.display = "none";
-    let SendTransction = document.querySelector('.SendTransction');
-    SendTransction.style.display = "none";
-    let Address;
-
-      const showUi=()=>{
-        console.log("heelo from Showui");
-          
-          SendTransction.style.display = "block";
-        
-
-      }
-
-
-    let WalletConnected = document.getElementsByClassName('isconnected')[0];
-    let message;
-
-    tonConnectUI.onStatusChange(walletInfo => {
-      if (walletInfo) {
-        // If wallet is connected, update the message
-        if (!WalletConnected.hasChildNodes()) {
-          message = document.createTextNode("Connected Wallet:");
-          WalletConnected.appendChild(message);
-        } else {
-          WalletConnected.firstChild.nodeValue = "Connected Wallet:";
-        }
-
-        showInputField.style.display = "block";
-        
-      } else {
-        WalletConnected.textContent = "";
-        
-        showInputField.style.display = 'none';
-      }
     });
+async function connectToWallet() {
+    try {
+        const connectedWallet = await tonConnectUI.connectWallet();
+        console.log('Wallet connected:', connectedWallet.address);
+    } catch (error) {
+        console.log('Connection failed:', error);
+    }
+}
+
+// Add connection state listener
+let showInputField = document.querySelector('.show-TransactionInput');
+showInputField.style.display = "none";
+let SendTransction = document.querySelector('.SendTransction');
+SendTransction.style.display = "none";
+let Address;
 
 
-    const Hide=()=>{
-      SendTransction.style.display = "none";
+
+
+  const showUi=()=>{
+    console.log("heelo from Showui");
+      
+      SendTransction.style.display = "block";
+    
+
+  }
+
+
+let WalletConnected = document.getElementsByClassName('isconnected')[0];  // Ensure you're accessing the first (and only) element with this class
+let message;
+
+tonConnectUI.onStatusChange(walletInfo => {
+  if (walletInfo) {
+    // If wallet is connected, update the message text and show the input field
+    if (!WalletConnected.hasChildNodes()) {
+      message = document.createTextNode("Connected Wallet:");
+      WalletConnected.appendChild(message);
+    } else {
+      WalletConnected.firstChild.nodeValue = "Connected Wallet:"; // Change the text directly
     }
 
+    // Show the transaction input field
+    showInputField.style.display = "block";
+    
+  } else {
+    // If wallet is disconnected, clear the message and hide the input field
+    WalletConnected.textContent = ""; // Clear existing content
+    
+    // Hide the transaction input field
+    showInputField.style.display = 'none';
+  }
+});
 
-    //transction
-    async function sendTransaction() {
-      try {
-        const walletInfo = tonConnectUI.wallet;
-        if (!walletInfo) {
-          alert("No wallet connected. Please connect your wallet first.");
-          return;
+
+const Hide=()=>{
+  SendTransction.style.display = "none";
+}
+//transction
+
+// Send Transaction with User Input (in TONs, or convert to nanotons if required)
+async function sendTransaction() {
+  try {
+    const walletInfo = tonConnectUI.wallet;
+    if (!walletInfo) {
+      alert("No wallet connected. Please connect your wallet first.");
+      return;
+    }
+
+    // Prepare the transaction object
+    const transaction = {
+      messages: [
+        {
+          address: "UQAs6dHR0NqfJWB7Cmvm92z04OMKpWeUhevuHR0DwHGl_o50",
+          amount: "0.2"
         }
+      ]
+    };
 
-        const transaction = {
-          messages: [
-            {
-              address: "UQBx2kbigJVm3ywKu6TJhfkyw77v0bcOjKvUEgWTgCrcg5NF",
-              amount: "0.2" // Use amount in TONs directly, or `amountInNanotons` if needed
-            }
-          ]
-        };
-
-        await tonConnectUI.sendTransaction(transaction);
-
-            // Trigger the modal after a successful transaction
-      handleTransactionSuccess();
-      } catch (error) {
-        console.error(`Transaction failed: ${error.message}`);
-      }
-    }
-
-    //     alert("Transaction sent successfully!");
-    //     toggleWalletModal(false);
-    //   } catch (error) {
-    //     console.log(`Transaction failed: ${error.message}`);
-    //   }
-    // }
+    // Send the transaction
+    await tonConnectUI.sendTransaction(transaction);
+    alert("Transaction sent successfully!");
+    toggleWalletModal(false); // Close the modal after successful transaction
+  } catch (error) {
+    console.log(`Transaction failed: ${error.message}`);
+  }
+}
 
 
   </script>
-
-<script src="award-script.js"></script>
 </body>
 </html>
-
-
-
-
-
-
