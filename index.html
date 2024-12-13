@@ -85,7 +85,7 @@
 
 
     // Send transaction 
-        async function sednTonTransaction() {
+        async function sendTonTransaction() {
             if (!isWalletConnected) {
                 console.log("Please connect your wallet first.");
                 return;
@@ -109,8 +109,8 @@
         }
 
 
-        document.getElementById("sendTransactionBtn").addEventListener("click", connectWallet);
-        document.getElementById("connectWalletBtn").addEventListener("click", sednTonTransaction);
+        document.getElementById("connectWalletBtn").addEventListener("click", connectWallet);
+        document.getElementById("sendTransactionBtn").addEventListener("click", sendTonTransaction);
 
 </script>
 
