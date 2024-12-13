@@ -249,7 +249,7 @@ color: #ff5555;
 
 
 /* New updating on making ton transaction */
-.new-wallet{
+/* .new-wallet{
     display: flex;
     flex-direction: column;
     width: 100%;
@@ -272,8 +272,6 @@ color: #ff5555;
     text-align: center;
     border-radius: 50px;
     margin-bottom: 8px;
-    /* text-align: center; */
-    /* align-items: center; */
     position: center;
 }
 
@@ -286,4 +284,50 @@ color: #ff5555;
     border-radius: 50px;
     margin-bottom: 15px;
     text-align: center;
+}
+ */
+
+
+.new-wallet {
+    display: flex;
+    flex-direction: column;
+    width: 90%; 
+    max-width: 400px; 
+    height: auto;
+    justify-content: center;
+    align-items: center;
+    margin: 20px auto;
+    padding: 20px;
+    border-radius: 20px;
+    background-color: #091420;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); 
+    color: #fff; 
+}
+
+.sendTransact, .connectWalletBtn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #45a049; 
+    color: #fff; 
+    width: 70%; 
+    max-width: 300px;
+    padding: 10px 20px;
+    border-radius: 50px;
+    margin: 10px 0; 
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    font-weight: bold; 
+}
+
+.sendTransact:hover, .connectWalletBtn:hover {
+    background-color: #3c8a42;
+    transform: scale(1.05);
+}
+
+.sendTransact:active, .connectWalletBtn:active {
+    transform: scale(0.95); 
+    background-color: #36773b;
 }
