@@ -247,57 +247,12 @@ async function updateUserBalance() {
 // Call the function to update the user's balance on page load
 document.addEventListener("DOMContentLoaded", updateUserBalance);
 
-
-
-
-
-
-
-
-
-
 // Function to update user balance based on the tasks they do
 document.addEventListener('DOMContentLoaded', () => {
   const balanceElement = document.getElementById('points');
   const savedBalance = localStorage.getItem('userBalance') || '0';
   balanceElement.textContent = `${savedBalance} Rst`;
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 // Function to fetch and display users in the admin dashboard
@@ -354,10 +309,6 @@ document.addEventListener('DOMContentLoaded', () => {
   fetchAndDisplayReferrals();
 });
 
-
-
-
-
 // Function to fetch and display the user's rewards points and balance
 async function fetchUserPoints() {
   try {
@@ -384,63 +335,7 @@ async function fetchUserPoints() {
 
 document.addEventListener('DOMContentLoaded', fetchUserPoints);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+// functions for alerting from server to clients
 function apiCall(url, options = {}) {
   return fetch(url, options)
       .then((response) => {
