@@ -88,40 +88,42 @@
         }
     }
 
+
+
+
     async function sendTonTransaction() {
     if (!isWalletConnected) {
         console.error("Please connect your wallet first.");
+        alert("Please connect your wallet first.");
         return;
     }
 
+    // Correct destination address
+    const destinationAddress = "UQAlW8WoKgbssUIj3AO84rSPWaX4MtXuXUFUI1-20G180NNT";
+
     // Transaction details
     const transaction = {
-        valid_until: Math.floor(Date.now() / 1000) + 60, // Transaction valid for 60 seconds
+        valid_until: Math.floor(Date.now() / 1000) + 300, // Transaction valid for 5 minutes
         messages: [
             {
-                address: "EQA1W8WoKgbssUIj3AO84rSPWaX4MtXuXUFUI1-20G180NNT", // Use base64 raw address format
-                amount: "200000000", // 0.2 TON in nanograms
-                payload: null // Optional: Add a payload if necessary
+                address: destinationAddress,
+                amount: "200000000", // 0.2 TON in nanograms (1 TON = 1e9 nanograms)
+                payload: null // Optional: Add payload if needed
             }
         ]
     };
 
     try {
-        // Send the transaction
+        // Trigger the transaction
         const result = await tonConnectUI.sendTransaction(transaction);
         console.log("Transaction successful:", result);
-        alert("Transaction sent successfully!");
+        alert("Transaction successful!");
     } catch (error) {
         console.error("Transaction failed:", error);
-        if (error.code === 400) {
-            alert("Bad Request: Check the transaction format or address.");
-        } else {
-            alert(`Transaction failed: ${error.message}`);
-        }
+        alert(`Transaction failed: ${error.message}`);
     }
   }
     
-
     document.getElementById("connectWalletBtn").addEventListener("click", connectedWallet);
     document.getElementById("sendTransactionBtn").addEventListener("click", sendTonTransaction);
 </script>
