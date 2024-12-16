@@ -1,18 +1,16 @@
 // Function to fetch the user ID from URL or localStorage
 function fetchUserId() {
   const urlParams = new URLSearchParams(window.location.search);
-  const userIdFromUrl = urlParams.get('user_id'); // Get user_id from the URL
-  const storedUserId = localStorage.getItem('user_id'); // Get user_id from localStorage
-  
-  // Use user_id from URL if available; otherwise, fallback to stored user_id
+  const userIdFromUrl = urlParams.get('user_id'); 
+  const storedUserId = localStorage.getItem('user_id'); 
+
   const userId = userIdFromUrl || storedUserId;
 
-  // Store the user_id in localStorage for persistence
   if (userId) {
     localStorage.setItem('user_id', userId);
   }
 
-  return userId; // Return the fetched user_id
+  return userId;
 }
 
 // Function to dynamically generate the referral link
@@ -22,7 +20,6 @@ function generateReferralLink(userId) {
     return null;
   }
 
-  // Return the referral link with the user_id
   return `https://t.me/Roasterboldbot?start=${userId}`;
 }
 
@@ -96,14 +93,6 @@ apiCall('https://sunday-mini-telegram-bot.onrender.com/api/some-action', {
   body: JSON.stringify({ someData: 'value' }),
 });
 
-
-
-
-
-
-// %%%%%&&&&&&&&&&&&&&#####@@@@!!!@#$%^&***&*()
-
-
 //The function that handle displaying of referrals shauld start here
 // Function to retrieve the user_id (referral_id) from URL or localStorage
 function getUserId() {
@@ -113,7 +102,7 @@ function getUserId() {
   const user_id = userIdFromUrl || storedUserId;
 
   if (user_id) {
-    localStorage.setItem('user_id', user_id); // Update localStorage for persistence
+    localStorage.setItem('user_id', user_id);
   }
 
   return user_id;
@@ -166,8 +155,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
 
       const referredUsers = await response.json();
-      renderReferredUsers(referredUsers); // Use the reusable function to render users
-      attachClaimButtonListeners(); // Attach listeners after rendering
+      renderReferredUsers(referredUsers); 
+      attachClaimButtonListeners();
     } catch (error) {
       console.error('Error loading referred users:', error);
     }
@@ -179,7 +168,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const referredUserId = claimButton.dataset.referredId;
 
     try {
-      // Perform your desired action here
       const response = await fetch(`/api/referrals/${referralId}/custom-action`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -200,7 +188,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }
 
-  // Attach event listeners to "Claim" buttons
   function attachClaimButtonListeners() {
     const claimButtons = document.querySelectorAll('.claim-button');
     claimButtons.forEach((button) =>
@@ -208,7 +195,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     );
   }
 
-  // Load referred users on page load
   await loadReferredUsers();
 });
 
