@@ -349,8 +349,7 @@ app.put('/api/tasks/:task_id', async (req, res) => {
 
 
 
-//all update server code for referringconst express = require('express');
-
+//all update server code for referring
 // Middleware to handle first-time user profile creation
 app.use(async (req, res, next) => {
   const { userId, username } = req.query;
@@ -363,7 +362,7 @@ app.use(async (req, res, next) => {
   // Skip processing if userId or username is missing
   if (!userId || !username) {
     console.warn("Skipping user profile creation due to missing 'userId' or 'username'.");
-    return next(); // Do not block the request; just log and move forward
+    return next(); 
   }
 
   try {
@@ -375,7 +374,7 @@ app.use(async (req, res, next) => {
       const newUserProfile = new Referral({
         referral_id: userId,
         username,
-        referrals: [], // Initialize referrals as an empty array
+        referrals: [],
       });
       await newUserProfile.save();
       console.log(`Created new user profile for: ${username}`);
@@ -383,7 +382,7 @@ app.use(async (req, res, next) => {
       console.log(`User already exists: ${username}`);
     }
 
-    next(); // Proceed to the next middleware or route
+    next();
   } catch (error) {
     console.error('Error checking or creating user profile:', error.message);
     res.status(500).json({ message: 'Error checking or creating user profile', error: error.message });
@@ -492,7 +491,7 @@ app.get('/api/referrals/:referral_id', async (req, res) => {
 
 
 
-// PUT: Claim referral reward
+// Claim referral reward
 // Mark referral as claimed
 app.put('/api/referrals/:referral_id/claim', async (req, res) => {
   const { referral_id } = req.params;
@@ -578,20 +577,16 @@ app.put('/api/referrals/:user_id/claim', async (req, res) => {
 
 
 
- // CODE BY FARAZ
+
  // Fetch all users
  app.get('/api/users', async (req, res) => {
    try {
-     // Fetch all users and include their balance (roast value)
      const users = await User.find({}, { user_id: 1, username: 1, balance: 1, _id: 0 });
-
-     // Sort users by balance in descending order for leaderboard
      const sortedUsers = users.sort((a, b) => b.balance - a.balance);
 
      res.status(200).json(sortedUsers);
    } catch (error) {
      console.error('Error fetching users:', error);
-     // res.status(500).json({ message: 'Internal server error.' });
    }
  });
 
@@ -606,7 +601,7 @@ app.put('/api/referrals/:user_id/claim', async (req, res) => {
 
 
 
-// this function works for all alerts customizations on the main pages
+// this function works for all alerts and notifications customizations on the main pages
 app.post('/api/some-action', (req, res) => {
   const { someData } = req.body;
 
@@ -614,8 +609,6 @@ app.post('/api/some-action', (req, res) => {
       return res.status(400).json({ message: 'Invalid data provided', type: 'error' });
   }
 
-  // Simulate successful operation
-//  res.status(200).json({ message: 'Task completed successfully', type: 'success' });
 });
 
 
