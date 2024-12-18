@@ -54,6 +54,9 @@
 
 
 
+
+
+  
   <script>
     let tonConnectUI;
 
@@ -74,19 +77,19 @@
           return;
         }
 
-        // Build transaction
+        // Build the transaction (sending 0.1 TON)
         const transaction = {
           valid_until: Math.floor(Date.now() / 1000) + 300, // 5 min validity
           messages: [
             {
               address: "UQC10jKrD0oFbmkmWXTyRsjOtC-OMAY5iWEH861QGcl8fRxM", // Replace with actual address
-              amount: "200000000", // 0.2 TON (in nanograms)
+              amount: "100000000", // 0.1 TON (in nanograms)
               payload: null
             }
           ]
         };
 
-        // Request to sign transaction
+        // Request to sign the transaction using TON Connect UI
         const signedTransaction = await tonConnectUI.sendTransaction(transaction);
 
         // Convert signed transaction to BOC format and send to TONAPI
@@ -94,13 +97,14 @@
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": "AHEQMJXHFIPPNWAAAAAMS66ICS3DQV37VHOKP6WF7AYGIBVQLIMVZIVP2NAOHEK3KRCPKMA" // Replace with your token
+            "Authorization": "AHEQMJXHFIPPNWAAAAAMS66ICS3DQV37VHOKP6WF7AYGIBVQLIMVZIVP2NAOHEK3KRCPKMA" // Your provided API Key
           },
           body: JSON.stringify({
             boc: signedTransaction.boc
           })
         });
 
+        // Check the response from TONAPI
         const result = await response.json();
 
         if (response.ok) {
@@ -116,6 +120,7 @@
       }
     });
   </script>
+
   
 </body>
 </html>
