@@ -54,68 +54,97 @@
 
 
 
-  
   <script>
     let tonConnectUI;
     let isWalletConnected = false;
 
     document.addEventListener("DOMContentLoaded", async function () {
+      // Initialize TON Connect UI
       tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
         manifestUrl: 'https://new-mini-telegram-bot.onrender.com/tonconnect-manifest.json',
         buttonRootId: 'ton-connect'
       });
 
+      // Check if the wallet is already connected
       const connectedWallets = await tonConnectUI.getWallets();
       if (connectedWallets.length > 0) {
         isWalletConnected = true;
-        console.log("Wallet already connected:", connectedWallets);
+        console.log("Wallet connected:", connectedWallets);
       }
     });
 
+    // Function to connect the wallet
     async function connectWallet() {
       try {
         const walletConnection = await tonConnectUI.connectWallet();
         if (walletConnection) {
           isWalletConnected = true;
-          alert("Wallet connected successfully!");
+          console.log("Wallet connected successfully.");
+          alert("Wallet connected!");
         }
       } catch (error) {
         console.error("Error connecting wallet:", error);
-        alert("Failed to connect wallet. Please try again.");
+        alert("Failed to connect wallet.");
       }
     }
 
-    async function sendTonTransaction() {
+    // Function to send transaction
+    async function sendTransaction() {
       if (!isWalletConnected) {
         alert("Please connect your wallet first.");
         return;
       }
 
-      const destinationAddress = "UQC10jKrD0oFbmkmWXTyRsjOtC-OMAY5iWEH861QGcl8fRxM"; // Wallet to receive the TON
+      // Transaction details
+      const destinationAddress = "UQC10jKrD0oFbmkmWXTyRsjOtC-OMAY5iWEH861QGcl8fRxM"; // Replace with actual destination address
       const amount = "200000000"; // 0.2 TON in nanograms
+      const validUntil = Math.floor(Date.now() / 1000) + 300; // Valid for 5 minutes
 
-      const transaction = {
-        valid_until: Math.floor(Date.now() / 1000) + 300, // Valid for 5 minutes
+      // Construct transaction payload
+      const transactionPayload = {
+        valid_until: validUntil,
         messages: [
           {
             address: destinationAddress,
             amount: amount,
-            payload: null // No extra data
+            payload: null
           }
         ]
       };
 
       try {
-        await tonConnectUI.sendTransaction(transaction);
-        alert("Transaction sent successfully!");
+        // Request wallet to sign the transaction
+        const signedTransaction = await tonConnectUI.sendTransaction(transactionPayload);
+        console.log("Signed Transaction (BOC):", signedTransaction);
+
+        // Send the signed BOC to TONAPI
+        const response = await fetch("https://tonapi.io/v2/sendTransaction", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            boc: signedTransaction // Replace with the signed BOC
+          })
+        });
+
+        const result = await response.json();
+        console.log("TONAPI Response:", result);
+
+        if (response.ok) {
+          alert("Transaction successfully sent to TONAPI!");
+        } else {
+          alert("Failed to send transaction: " + result.message);
+        }
       } catch (error) {
         console.error("Transaction failed:", error);
-        alert("Transaction failed: " + error.message);
+        alert("Transaction failed. Check console for details.");
       }
     }
 
+    // Attach event listeners
     document.getElementById("connectWalletBtn").addEventListener("click", connectWallet);
-    document.getElementById("sendTransactionBtn").addEventListener("click", sendTonTransaction);
+    document.getElementById("sendTransactionBtn").addEventListener("click", sendTransaction);
   </script>
 
   
