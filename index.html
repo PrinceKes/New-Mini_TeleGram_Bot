@@ -67,6 +67,29 @@
     });
   });
 
+
+
+        async function connectedWallet() {
+        if (isWalletConnected) {
+            console.log("Wallet already connected");
+            return;
+        }
+
+        try {
+            const connectedWallet = await tonConnectUI.connectWallet();
+            if (connectedWallet) {
+                isWalletConnected = true;
+                console.log("Wallet connected:", connectedWallet);
+            }
+        } catch (error) {
+            console.error("Error connecting wallet:", error);
+        }
+    }
+
+    document.getElementById("connectWalletBtn").addEventListener("click", connectedWallet);
+
+
+    
   document.getElementById('sendTransactionBtn').addEventListener('click', async () => {
     try {
       // Check if the wallet is connected using isConnected() method
