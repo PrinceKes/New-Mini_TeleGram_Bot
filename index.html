@@ -38,74 +38,73 @@
   <script src="header.js"></script>
   <script src="task-script.js"></script>
   <script src="script.js"></script>
+<script>
+  let tonConnectUI;
 
-  <script>
-    let tonConnectUI;
-
-    document.addEventListener("DOMContentLoaded", async function () {
-      // Initialize TON Connect UI
-      tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-        manifestUrl: 'https://new-mini-telegram-bot.onrender.com/tonconnect-manifest.json',
-        buttonRootId: 'ton-connect'
-      });
+  document.addEventListener("DOMContentLoaded", async function () {
+    // Initialize TON Connect UI
+    tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+      manifestUrl: 'https://new-mini-telegram-bot.onrender.com/tonconnect-manifest.json',
+      buttonRootId: 'ton-connect'
     });
+  });
 
-    // Function to handle wallet connection
-    async function connectedWallet() {
-      if (isWalletConnected) {
-        console.log("Wallet already connected");
+  // Function to handle wallet connection
+  async function connectedWallet() {
+    try {
+      await tonConnectUI.connectWallet();
+      console.log("Wallet successfully connected.");
+    } catch (error) {
+      console.error("Error connecting wallet:", error);
+      alert("Failed to connect wallet. Please try again.");
+    }
+  }
+
+  // Function to handle sending a transaction
+  async function sendTransaction() {
+    try {
+      // Check if a wallet is connected
+      const walletInfo = tonConnectUI.wallet;
+      if (!walletInfo) {
+        alert("Please connect your wallet first!");
         return;
       }
 
-      try {
-        const connectedWallet = await tonConnectUI.connectWallet();
-        if (connectedWallet) {
-          isWalletConnected = true;
-          console.log("Wallet connected:", connectedWallet);
-        }
-      } catch (error) {
-        console.error("Error connecting wallet:", error);
+      console.log("Connected wallet info:", walletInfo);
+
+      // Prepare the transaction
+      const transaction = {
+        validUntil: Math.floor(Date.now() / 1000) + 300, // Transaction expires in 5 minutes
+        messages: [
+          {
+            address: "UQC10jKrD0oFbmkmWXTyRsjOtC-OMAY5iWEH861QGcl8fRxM", // Admin TON address
+            amount: "200000000", // Amount in nanocoins (0.2 TON = 200,000,000 nanocoins)
+            payload: "", // Optional payload (metadata)
+          },
+        ],
+      };
+
+      // Send the transaction
+      const result = await tonConnectUI.sendTransaction(transaction);
+
+      if (result) {
+        console.log("Transaction successful:", result);
+        alert("Transaction sent successfully!");
+      } else {
+        console.error("Transaction failed:", result);
+        alert("Transaction failed. Please try again.");
       }
+    } catch (error) {
+      console.error("Error initiating transaction:", error);
+      alert("Error initiating transaction. Please try again.");
     }
+  }
 
-    // Function to handle sending a transaction
-    async function sendTransaction() {
-      try {
-        // Get the connected wallet address
-        const wallet = await tonConnectUI.getConnectedWallet();
-        if (!wallet) {
-          console.error("No wallet connected.");
-          alert("Please connect your wallet first!");
-          return;
-        }
+  // Event Listeners
+  document.getElementById("connectWalletBtn").addEventListener("click", connectedWallet);
+  document.getElementById("sendTransactionBtn").addEventListener("click", sendTransaction);
+</script>
 
-        // Prepare the transaction details
-        const transaction = {
-          to: "UQC10jKrD0oFbmkmWXTyRsjOtC-OMAY5iWEH861QGcl8fRxM", // Admin TON address
-          value: "0.2", // 0.2 TON
-          data: "", // Optional, leave empty for simple transfers
-        };
-
-        // Send the transaction
-        const result = await tonConnectUI.sendTransaction(transaction);
-
-        if (result.success) {
-          console.log("Transaction successful:", result);
-          alert("Transaction sent successfully!");
-        } else {
-          console.error("Transaction failed:", result);
-          alert("Transaction failed. Please try again.");
-        }
-      } catch (error) {
-        console.error("Error sending transaction:", error);
-        alert("Error initiating transaction. Please try again.");
-      }
-    }
-
-    // Event Listeners
-    document.getElementById("connectWalletBtn").addEventListener("click", connectedWallet);
-    document.getElementById("sendTransactionBtn").addEventListener("click", sendTransaction);
-  </script>
 
 </body>
 </html>
