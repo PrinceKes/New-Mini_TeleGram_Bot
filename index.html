@@ -18,12 +18,9 @@
   <!-- Connect wallet -->
   <div class="new-wallet">
     <div id="ton-connect"></div>
-    <button id="connectWalletBtn" class="connectWalletBtn"> Verify Connection</button>
+    <button id="connectWalletBtn" class="connectWalletBtn">Verify Connection</button>
     <button id="sendTransactionBtn" class="sendTransact">Send Transaction</button>
   </div>
-
-
-  
 
   <div class="content">
     <div class="roast-icon" style="background-image: url('./assets/roast.png');"></div>
@@ -37,132 +34,78 @@
     </div>
   </div>
   
-<!--
-  <div id="welcome-modal" class="modal hidden">
-    <div class="modal-content">
-      <h2>Welcome!</h2>
-      <p>Claim your 2000 Rst as welcome bonus!</p>
-      <button id="claim-bonus-btn" class="claim-btn">Claim Now</button>
-    </div>
-  </div> 
-  -->
-
   <div id="navbar-container"></div>
   <script src="header.js"></script>
   <script src="task-script.js"></script>
   <script src="script.js"></script>
 
-
-
-
-
   <script>
-  let tonConnectUI;
+    let tonConnectUI;
 
-  document.addEventListener("DOMContentLoaded", async function () {
-    // Initialize TON Connect UI
-    tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-      manifestUrl: 'https://new-mini-telegram-bot.onrender.com/tonconnect-manifest.json',
-      buttonRootId: 'ton-connect'
-    });
-  });
-
-
-
-        async function connectedWallet() {
-        if (isWalletConnected) {
-            console.log("Wallet already connected");
-            return;
-        }
-
-        try {
-            const connectedWallet = await tonConnectUI.connectWallet();
-            if (connectedWallet) {
-                isWalletConnected = true;
-                console.log("Wallet connected:", connectedWallet);
-            }
-        } catch (error) {
-            console.error("Error connecting wallet:", error);
-        }
-    }
-
-document.getElementById("connectWalletBtn").addEventListener("click", connectedWallet);
-</script>
-
-
-
-  
-</body>
-</html>
-
-
-
-
-
-
-<!-- 
-  <p id="status">Status: Not connected</p>
-
-  <script>
-    // Initialize TonConnect with your manifest URL
-    const tonConnect = new TONCONNECT.TonConnect({
-      manifestUrl: 'https://new-mini-telegram-bot.onrender.com/tonconnect-manifest.json'
+    document.addEventListener("DOMContentLoaded", async function () {
+      // Initialize TON Connect UI
+      tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+        manifestUrl: 'https://new-mini-telegram-bot.onrender.com/tonconnect-manifest.json',
+        buttonRootId: 'ton-connect'
+      });
     });
 
-    // UI Elements
-    const connectWalletBtn = document.getElementById("connectWalletBtn");
-    const sendTransactionBtn = document.getElementById("sendTransactionBtn");
-    const status = document.getElementById("status");
+    // Function to handle wallet connection
+    async function connectedWallet() {
+      if (isWalletConnected) {
+        console.log("Wallet already connected");
+        return;
+      }
 
-    let walletAddress = null;
-
-    // Step 1: Connect Wallet
-    async function connectWallet() {
       try {
-        // Request connection to TON wallet
-        await tonConnect.connect();
-        const account = tonConnect.account;
-
-        if (account) {
-          walletAddress = account.address;
-          status.innerText = `Connected Wallet: ${walletAddress}`;
-          sendTransactionBtn.disabled = false;
-        } else {
-          status.innerText = "Wallet not connected.";
+        const connectedWallet = await tonConnectUI.connectWallet();
+        if (connectedWallet) {
+          isWalletConnected = true;
+          console.log("Wallet connected:", connectedWallet);
         }
       } catch (error) {
-        console.error("Wallet connection failed:", error);
-        status.innerText = "Failed to connect wallet.";
+        console.error("Error connecting wallet:", error);
       }
     }
 
-    // Step 2: Send Transaction
+    // Function to handle sending a transaction
     async function sendTransaction() {
       try {
-        const adminWalletAddress = "UQC10jKrD0oFbmkmWXTyRsjOtC-OMAY5iWEH861QGcl8fRxM"; // Replace with your admin's TON wallet address
-        const amountInNanoTon = (0.1 * 1e9).toString(); // 0.1 TON in nanoTON
+        // Get the connected wallet address
+        const wallet = await tonConnectUI.getConnectedWallet();
+        if (!wallet) {
+          console.error("No wallet connected.");
+          alert("Please connect your wallet first!");
+          return;
+        }
 
-        await tonConnect.sendTransaction({
-          validUntil: Math.floor(Date.now() / 1000) + 300, // Valid for 5 minutes
-          messages: [
-            {
-              address: adminWalletAddress,
-              amount: amountInNanoTon,
-            },
-          ],
-        });
+        // Prepare the transaction details
+        const transaction = {
+          to: "UQC10jKrD0oFbmkmWXTyRsjOtC-OMAY5iWEH861QGcl8fRxM", // Admin TON address
+          value: "0.2", // 0.2 TON
+          data: "", // Optional, leave empty for simple transfers
+        };
 
-        status.innerText = "Transaction sent successfully!";
+        // Send the transaction
+        const result = await tonConnectUI.sendTransaction(transaction);
+
+        if (result.success) {
+          console.log("Transaction successful:", result);
+          alert("Transaction sent successfully!");
+        } else {
+          console.error("Transaction failed:", result);
+          alert("Transaction failed. Please try again.");
+        }
       } catch (error) {
-        console.error("Transaction failed:", error);
-        status.innerText = "Failed to send transaction.";
+        console.error("Error sending transaction:", error);
+        alert("Error initiating transaction. Please try again.");
       }
     }
 
     // Event Listeners
-    connectWalletBtn.addEventListener("click", connectWallet);
-    sendTransactionBtn.addEventListener("click", sendTransaction);
+    document.getElementById("connectWalletBtn").addEventListener("click", connectedWallet);
+    document.getElementById("sendTransactionBtn").addEventListener("click", sendTransaction);
   </script>
+
 </body>
 </html>
- -->
