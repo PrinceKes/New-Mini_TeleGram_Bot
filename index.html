@@ -3,105 +3,70 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
-  <title>Telegram Mini App</title>
-  <link rel="stylesheet" href="new-style.css">
+  <title>TON Wallet Integration</title>
+  <script src="https://unpkg.com/@tonconnect/sdk@latest/dist/tonconnect-sdk.min.js"></script>
 </head>
 <body>
+  <h1>TON Wallet Transaction</h1>
 
-  <div class="header">
-    <img src="./assets/Avatar.jpg" alt="User Avatar">
-    <span id="userId">My ID: Loading...</span>
-  </div>
+  <!-- Buttons -->
+  <button id="connectWalletBtn">Connect Wallet</button>
+  <button id="sendTransactionBtn" disabled>Send Transaction</button>
 
-  <!-- Connect wallet -->
-  <div class="new-wallet">
-    <div id="ton-connect"></div>
-    <button id="verifyConnectionBtn" class="connectWalletBtn">Verify Connection</button>
-    <button id="sendTransactionBtn" class="sendTransact">Send Transaction</button>
-  </div>
-
-  <div class="content">
-    <div class="roast-icon" style="background-image: url('./assets/roast.png');"></div>
-    <div id="points" class="points">0 Rst</div>
-  </div>
-
-  <div class="buttons">
-    <div class="button" onclick="window.location.href='https://t.me/+675S9uz9O5UxMTRk'">
-      <span>👥 Join our community</span>
-      <span>›</span>
-    </div>
-  </div>
-
+  <p id="status">Status: Not connected</p>
 
   <script>
-  let tonConnectUI;
-
-  document.addEventListener("DOMContentLoaded", async function () {
-    // Initialize TON Connect UI
-    tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-      manifestUrl: 'https://new-mini-telegram-bot.onrender.com/tonconnect-manifest.json',
-      buttonRootId: 'ton-connect'
+    const tonConnect = new TONCONNECT.TonConnect({
+      manifestUrl: 'https://new-mini-telegram-bot.onrender.com/tonconnect-manifest.json' // Replace with your manifest.json URL
     });
-  });
 
-  // Function to check wallet connection
-  async function verifyWalletConnection() {
-    const walletConnection = tonConnectUI.connected;
-    if (walletConnection) {
-      alert("Wallet is connected!");
-      console.log("Connected Wallet:", walletConnection);
-    } else {
-      alert("No wallet connected. Please connect your wallet first.");
-    }
-  }
+    const connectWalletBtn = document.getElementById("connectWalletBtn");
+    const sendTransactionBtn = document.getElementById("sendTransactionBtn");
+    const status = document.getElementById("status");
 
-  document.getElementById("verifyConnectionBtn").addEventListener("click", verifyWalletConnection);
+    let walletAddress = null;
 
-  // Send Transaction
-  document.getElementById('sendTransactionBtn').addEventListener('click', async () => {
-    const walletConnection = tonConnectUI.connected;
+    // Step 1: Connect Telegram TON Space Wallet
+    async function connectWallet() {
+      try {
+        await tonConnect.connectWallet();
+        const account = await tonConnect.account();
+        walletAddress = account.address;
 
-    if (!walletConnection) {
-      alert("Please connect your wallet first.");
-      return;
-    }
-
-    try {
-      // Validate the amount and recipient address
-      const recipientAddress = "UQCzy0UqKII4b24QGdHI8afpojEIVcwOhfd_EPO8jxc2i-0C"; // Replace with destination address
-      const amount = "100000000"; // 0.1 TON in nanograms (1 TON = 1e9 nanograms)
-
-      if (!recipientAddress || isNaN(amount) || parseInt(amount) <= 0) {
-        throw new Error("Invalid recipient address or transaction amount.");
+        status.innerText = `Connected Wallet: ${walletAddress}`;
+        sendTransactionBtn.disabled = false;
+      } catch (error) {
+        console.error("Connection failed:", error);
+        status.innerText = "Failed to connect wallet.";
       }
-
-      // Build the transaction
-      const transaction = {
-        valid_until: Math.floor(Date.now() / 1000) + 300, // Transaction valid for 5 minutes
-        messages: [
-          {
-            address: recipientAddress,
-            amount: amount,
-            payload: null
-          }
-        ]
-      };
-
-      // Request wallet to send the transaction
-      console.log("Sending transaction:", transaction);
-      const result = await tonConnectUI.sendTransaction(transaction);
-
-      console.log("Transaction Result:", result);
-      alert("Transaction sent successfully!");
-
-    } catch (error) {
-      console.error("Error Sending Transaction:", error.message || error);
-      alert(`Failed to send transaction: ${error.message || "Unknown error"}`);
     }
-  });
+
+    // Step 2: Send Transaction to Admin Wallet
+    async function sendTransaction() {
+      try {
+        const adminWalletAddress = "YOUR_ADMIN_WALLET_ADDRESS"; // Replace with your TON wallet address
+        const amountInNanoTon = 0.1 * 1e9; // 0.1 TON converted to nanoTON
+
+        await tonConnect.sendTransaction({
+          validUntil: Math.floor(Date.now() / 1000) + 300, // 5-minute validity
+          messages: [
+            {
+              address: adminWalletAddress,
+              amount: amountInNanoTon.toString(),
+            },
+          ],
+        });
+
+        status.innerText = "Transaction sent successfully!";
+      } catch (error) {
+        console.error("Transaction failed:", error);
+        status.innerText = "Failed to send transaction.";
+      }
+    }
+
+    // Button Event Listeners
+    connectWalletBtn.addEventListener("click", connectWallet);
+    sendTransactionBtn.addEventListener("click", sendTransaction);
   </script>
-  
 </body>
 </html>
