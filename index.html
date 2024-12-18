@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-<!--   <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script> -->
+  <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
   <title>Telegram Mini App</title>
   <link rel="stylesheet" href="new-style.css">
 </head>
@@ -16,11 +16,21 @@
   </div>
 
   <!-- Connect wallet -->
-  <div class="new-wallet">
+<!--   <div class="new-wallet">
     <div id="ton-connect"></div>
     <button id="connectWalletBtn" class="connectWalletBtn"> Verify Connection</button>
     <button id="sendTransactionBtn" class="sendTransact">Send Transaction</button>
-  </div>
+  </div> -->
+
+      <div>
+        <h2>TON Wallet Integration</h2>
+        <button id="connectWalletBtn">Connect Wallet</button>
+        <button id="sendTransactionBtn" disabled>Send Transaction</button>
+        <div id="status"></div>
+    </div>
+
+
+  
 
   <div class="content">
     <div class="roast-icon" style="background-image: url('./assets/roast.png');"></div>
@@ -52,74 +62,75 @@
 
 
 
-<script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
 <script>
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const manifestUrl = 'https://new-mini-telegram-bot.onrender.com/tonconnect-manifest.json';
     let tonConnectUI;
-    let isWalletConnected = false;
 
-    document.addEventListener("DOMContentLoaded", async function () {
+    const connectBtn = document.getElementById("connectWalletBtn");
+    const sendTransactionBtn = document.getElementById("sendTransactionBtn");
+    const statusDiv = document.getElementById("status");
+
+    async function initializeTonConnect() {
         tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-            manifestUrl: 'https://new-mini-telegram-bot.onrender.com/tonconnect-manifest.json',
-            buttonRootId: 'ton-connect',
+            manifestUrl: manifestUrl,
         });
+        console.log("TON Connect Initialized");
 
-        try {
-            const connectedWallets = await tonConnectUI.getWallets();
-            if (connectedWallets && connectedWallets.length > 0) {
-                isWalletConnected = true;
-                console.log("Wallet already connected:", connectedWallets);
-            }
-        } catch (error) {
-            console.error("Error fetching connected wallets:", error);
-        }
-    });
-
-    async function connectedWallet() {
-        try {
-            const walletConnection = await tonConnectUI.connectWallet();
-            if (walletConnection) {
-                isWalletConnected = true;
-                console.log("Wallet connected successfully:", walletConnection);
-                alert("Wallet connected!");
-            }
-        } catch (error) {
-            console.error("Error connecting wallet:", error);
-            alert("Failed to connect wallet. Please try again.");
+        // Check if wallet is already connected
+        const connectedWallets = await tonConnectUI.getWallets();
+        if (connectedWallets.length > 0) {
+            updateStatus("Wallet already connected.");
+            sendTransactionBtn.disabled = false;
         }
     }
 
-    async function sendTonTransaction() {
-        if (!isWalletConnected) {
-            console.error("Wallet not connected.");
-            alert("Please connect your wallet first.");
-            return;
+    async function connectWallet() {
+        try {
+            const walletInfo = await tonConnectUI.connectWallet();
+            console.log("Wallet Connected:", walletInfo);
+            updateStatus(`Wallet connected: ${walletInfo.address}`);
+            sendTransactionBtn.disabled = false;
+        } catch (error) {
+            console.error("Error connecting wallet:", error.message);
+            updateStatus("Failed to connect wallet. Please try again.");
         }
+    }
 
-        const destinationAddress = "UQC10jKrD0oFbmkmWXTyRsjOtC-OMAY5iWEH861QGcl8fRxM";
-        const amount = "200000000"; // 0.2 TON in nanograms
-
+    async function sendTransaction() {
         const transaction = {
             messages: [
                 {
-                    address: destinationAddress,
-                    amount: amount
-                }
-            ]
+                    address: "UQC10jKrD0oFbmkmWXTyRsjOtC-OMAY5iWEH861QGcl8fRxM", // Replace with the actual recipient
+                    amount: "200000000", // 0.2 TON in nanograms
+                },
+            ],
         };
 
         try {
             await tonConnectUI.sendTransaction(transaction);
-            console.log("Transaction sent successfully.");
-            alert("Transaction successful!");
+            updateStatus("Transaction sent successfully!");
         } catch (error) {
-            console.error("Transaction failed:", error);
-            alert("Transaction failed. Please try again.");
+            console.error("Transaction failed:", error.message);
+            updateStatus("Failed to send transaction. Please confirm it in your wallet.");
         }
     }
 
-    // Event listeners
-    document.getElementById("connectWalletBtn").addEventListener("click", connectedWallet);
-    document.getElementById("sendTransactionBtn").addEventListener("click", sendTonTransaction);
+    function updateStatus(message) {
+        statusDiv.textContent = message;
+    }
+
+    // Event Listeners
+    connectBtn.addEventListener("click", connectWallet);
+    sendTransactionBtn.addEventListener("click", sendTransaction);
+
+    // Initialize
+    initializeTonConnect();
+});
+
+
+  
 </script>
 
   
