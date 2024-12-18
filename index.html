@@ -16,43 +16,50 @@
   <p id="status">Status: Not connected</p>
 
   <script>
+    // Initialize TonConnect with your manifest URL
     const tonConnect = new TONCONNECT.TonConnect({
-      manifestUrl: 'https://new-mini-telegram-bot.onrender.com/tonconnect-manifest.json' // Replace with your manifest.json URL
+      manifestUrl: 'https://new-mini-telegram-bot.onrender.com/tonconnect-manifest.json'
     });
 
+    // UI Elements
     const connectWalletBtn = document.getElementById("connectWalletBtn");
     const sendTransactionBtn = document.getElementById("sendTransactionBtn");
     const status = document.getElementById("status");
 
     let walletAddress = null;
 
-    // Step 1: Connect Telegram TON Space Wallet
+    // Step 1: Connect Wallet
     async function connectWallet() {
       try {
-        await tonConnect.connectWallet();
-        const account = await tonConnect.account();
-        walletAddress = account.address;
+        // Request connection to TON wallet
+        await tonConnect.connect();
+        const account = tonConnect.account;
 
-        status.innerText = `Connected Wallet: ${walletAddress}`;
-        sendTransactionBtn.disabled = false;
+        if (account) {
+          walletAddress = account.address;
+          status.innerText = `Connected Wallet: ${walletAddress}`;
+          sendTransactionBtn.disabled = false;
+        } else {
+          status.innerText = "Wallet not connected.";
+        }
       } catch (error) {
-        console.error("Connection failed:", error);
+        console.error("Wallet connection failed:", error);
         status.innerText = "Failed to connect wallet.";
       }
     }
 
-    // Step 2: Send Transaction to Admin Wallet
+    // Step 2: Send Transaction
     async function sendTransaction() {
       try {
-        const adminWalletAddress = "UQC10jKrD0oFbmkmWXTyRsjOtC-OMAY5iWEH861QGcl8fRxM"; // Replace with your TON wallet address
-        const amountInNanoTon = 0.1 * 1e9; // 0.1 TON converted to nanoTON
+        const adminWalletAddress = "UQC10jKrD0oFbmkmWXTyRsjOtC-OMAY5iWEH861QGcl8fRxM"; // Replace with your admin's TON wallet address
+        const amountInNanoTon = (0.1 * 1e9).toString(); // 0.1 TON in nanoTON
 
         await tonConnect.sendTransaction({
-          validUntil: Math.floor(Date.now() / 1000) + 300, // 5-minute validity
+          validUntil: Math.floor(Date.now() / 1000) + 300, // Valid for 5 minutes
           messages: [
             {
               address: adminWalletAddress,
-              amount: amountInNanoTon.toString(),
+              amount: amountInNanoTon,
             },
           ],
         });
@@ -64,7 +71,7 @@
       }
     }
 
-    // Button Event Listeners
+    // Event Listeners
     connectWalletBtn.addEventListener("click", connectWallet);
     sendTransactionBtn.addEventListener("click", sendTransaction);
   </script>
