@@ -82,43 +82,38 @@
     }
 
 
-
-  async function sendTonTransaction() {
+async function sendTonTransaction() {
   if (!isWalletConnected) {
     console.error("Wallet not connected.");
     alert("Please connect your wallet first.");
     return;
   }
 
-  // Define destination address and amount
-  const destinationAddress = "UQC10jKrD0oFbmkmWXTyRsjOtC-OMAY5iWEH861QGcl8fRxM"; // Correct TON address
+  // Define the destination address and amount
+  const destinationAddress = "UQAlW8WoKgbssUIj3AO84rSPWaX4MtXuXUFUI1-20G180NNT"; // Correct TON address
   const amount = "200000000"; // 0.2 TON in nanograms (1 TON = 1e9 nanograms)
 
-  // Build transaction manually using alternative structure
-  const transaction = {
-    valid_until: Math.floor(Date.now() / 1000) + 300, // Transaction valid for 5 minutes
-    messages: [
-      {
-        address: destinationAddress, // Recipient TON address
-        amount: amount, // Amount to send
-        stateInit: null, // Optional state initialization (not needed here)
-        payload: null, // Optional payload
-      },
-    ],
-  };
-
   try {
-    // Use tonConnectUI to send the transaction
+    // Send transaction using TON Connect
     await tonConnectUI.sendTransaction({
-      network: "mainnet", // Ensure you specify the correct network (mainnet or testnet)
-      payload: transaction, // Pass the transaction object
+      to: destinationAddress, // Destination address
+      value: amount, // Amount in nanograms
+      timeout: 300, // Timeout in seconds (transaction valid for 5 minutes)
+      data: null, // No additional payload
     });
 
     console.log("Transaction sent successfully.");
     alert("Transaction successful!");
   } catch (error) {
     console.error("Transaction failed:", error);
-    alert("Transaction failed: " + error.message);
+
+    if (error instanceof TonConnectError) {
+      // Specific TON Connect error handling
+      alert(`Transaction failed: [${error.code}] ${error.message}`);
+    } else {
+      // General error handling
+      alert("Transaction failed. Please try again.");
+    }
   }
 }
 
