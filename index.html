@@ -58,68 +58,69 @@
 
   
   <script>
-    let tonConnectUI;
+  let tonConnectUI;
 
-    document.addEventListener("DOMContentLoaded", async function () {
-      // Initialize TON Connect UI
-      tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-        manifestUrl: 'https://new-mini-telegram-bot.onrender.com/tonconnect-manifest.json',
-        buttonRootId: 'ton-connect'
-      });
+  document.addEventListener("DOMContentLoaded", async function () {
+    // Initialize TON Connect UI
+    tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+      manifestUrl: 'https://new-mini-telegram-bot.onrender.com/tonconnect-manifest.json',
+      buttonRootId: 'ton-connect'
     });
+  });
 
-    document.getElementById('sendTransactionBtn').addEventListener('click', async () => {
-      try {
-        // Validate if the wallet is connected
-        const wallet = await tonConnectUI.connectedWallet();
-        if (!wallet) {
-          alert("Connect your wallet first.");
-          return;
-        }
-
-        // Build the transaction (sending 0.1 TON)
-        const transaction = {
-          valid_until: Math.floor(Date.now() / 1000) + 300, // 5 min validity
-          messages: [
-            {
-              address: "UQC10jKrD0oFbmkmWXTyRsjOtC-OMAY5iWEH861QGcl8fRxM", // Replace with actual address
-              amount: "100000000", // 0.1 TON (in nanograms)
-              payload: null
-            }
-          ]
-        };
-
-        // Request to sign the transaction using TON Connect UI
-        const signedTransaction = await tonConnectUI.sendTransaction(transaction);
-
-        // Convert signed transaction to BOC format and send to TONAPI
-        const response = await fetch("https://tonapi.io/v2/sendTransaction", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": "AHEQMJXHFIPPNWAAAAAMS66ICS3DQV37VHOKP6WF7AYGIBVQLIMVZIVP2NAOHEK3KRCPKMA" // Your provided API Key
-          },
-          body: JSON.stringify({
-            boc: signedTransaction.boc
-          })
-        });
-
-        // Check the response from TONAPI
-        const result = await response.json();
-
-        if (response.ok) {
-          alert("Transaction sent successfully!");
-          console.log("Transaction Result:", result);
-        } else {
-          alert("Transaction failed: " + result.error);
-          console.error("Error Response:", result);
-        }
-      } catch (error) {
-        console.error("Error during transaction:", error);
-        alert("An error occurred while sending the transaction.");
+  document.getElementById('sendTransactionBtn').addEventListener('click', async () => {
+    try {
+      // Check if the wallet is connected using isConnected() method
+      const isConnected = await tonConnectUI.isConnected();
+      if (!isConnected) {
+        alert("Connect your wallet first.");
+        return;
       }
-    });
-  </script>
+
+      // Build the transaction (sending 0.1 TON)
+      const transaction = {
+        valid_until: Math.floor(Date.now() / 1000) + 300, // 5 min validity
+        messages: [
+          {
+            address: "UQC10jKrD0oFbmkmWXTyRsjOtC-OMAY5iWEH861QGcl8fRxM", // Replace with actual address
+            amount: "100000000", // 0.1 TON (in nanograms)
+            payload: null
+          }
+        ]
+      };
+
+      // Request to sign the transaction using TON Connect UI
+      const signedTransaction = await tonConnectUI.sendTransaction(transaction);
+
+      // Convert signed transaction to BOC format and send to TONAPI
+      const response = await fetch("https://tonapi.io/v2/sendTransaction", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "AHEQMJXHFIPPNWAAAAAMS66ICS3DQV37VHOKP6WF7AYGIBVQLIMVZIVP2NAOHEK3KRCPKMA" // Your provided API Key
+        },
+        body: JSON.stringify({
+          boc: signedTransaction.boc
+        })
+      });
+
+      // Check the response from TONAPI
+      const result = await response.json();
+
+      if (response.ok) {
+        alert("Transaction sent successfully!");
+        console.log("Transaction Result:", result);
+      } else {
+        alert("Transaction failed: " + result.error);
+        console.error("Error Response:", result);
+      }
+    } catch (error) {
+      console.error("Error during transaction:", error);
+      alert("An error occurred while sending the transaction.");
+    }
+  });
+</script>
+
 
   
 </body>
