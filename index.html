@@ -34,61 +34,74 @@
     </div>
   </div>
 
+
   <script>
-    let tonConnectUI;
+  let tonConnectUI;
 
-    document.addEventListener("DOMContentLoaded", async function () {
-      // Initialize TON Connect UI
-      tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-        manifestUrl: 'https://new-mini-telegram-bot.onrender.com/tonconnect-manifest.json',
-        buttonRootId: 'ton-connect'
-      });
+  document.addEventListener("DOMContentLoaded", async function () {
+    // Initialize TON Connect UI
+    tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+      manifestUrl: 'https://new-mini-telegram-bot.onrender.com/tonconnect-manifest.json',
+      buttonRootId: 'ton-connect'
     });
+  });
 
-    // Function to check wallet connection
-    async function verifyWalletConnection() {
-      const walletConnection = tonConnectUI.connected;
-      if (walletConnection) {
-        alert("Wallet is connected!");
-        console.log("Connected Wallet:", walletConnection);
-      } else {
-        alert("No wallet connected. Please connect your wallet first.");
-      }
+  // Function to check wallet connection
+  async function verifyWalletConnection() {
+    const walletConnection = tonConnectUI.connected;
+    if (walletConnection) {
+      alert("Wallet is connected!");
+      console.log("Connected Wallet:", walletConnection);
+    } else {
+      alert("No wallet connected. Please connect your wallet first.");
+    }
+  }
+
+  document.getElementById("verifyConnectionBtn").addEventListener("click", verifyWalletConnection);
+
+  // Send Transaction
+  document.getElementById('sendTransactionBtn').addEventListener('click', async () => {
+    const walletConnection = tonConnectUI.connected;
+
+    if (!walletConnection) {
+      alert("Please connect your wallet first.");
+      return;
     }
 
-    document.getElementById("verifyConnectionBtn").addEventListener("click", verifyWalletConnection);
+    try {
+      // Validate the amount and recipient address
+      const recipientAddress = "UQC10jKrD0oFbmkmWXTyRsjOtC-OMAY5iWEH861QGcl8fRxM"; // Replace with destination address
+      const amount = "100000000"; // 0.1 TON in nanograms (1 TON = 1e9 nanograms)
 
-    // Send Transaction
-    document.getElementById('sendTransactionBtn').addEventListener('click', async () => {
-      const walletConnection = tonConnectUI.connected;
-      if (!walletConnection) {
-        alert("Please connect your wallet first.");
-        return;
+      if (!recipientAddress || isNaN(amount) || parseInt(amount) <= 0) {
+        throw new Error("Invalid recipient address or transaction amount.");
       }
 
-      try {
-        // Build the transaction
-        const transaction = {
-          valid_until: Math.floor(Date.now() / 1000) + 300, // Transaction valid for 5 minutes
-          messages: [
-            {
-              address: "UQC10jKrD0oFbmkmWXTyRsjOtC-OMAY5iWEH861QGcl8fRxM", // Replace with your destination address
-              amount: "100000000", // 0.1 TON in nanograms
-              payload: null
-            }
-          ]
-        };
+      // Build the transaction
+      const transaction = {
+        valid_until: Math.floor(Date.now() / 1000) + 300, // Transaction valid for 5 minutes
+        messages: [
+          {
+            address: recipientAddress,
+            amount: amount,
+            payload: null
+          }
+        ]
+      };
 
-        // Request the wallet to send the transaction
-        const result = await tonConnectUI.sendTransaction(transaction);
-        console.log("Transaction result:", result);
+      // Request wallet to send the transaction
+      console.log("Sending transaction:", transaction);
+      const result = await tonConnectUI.sendTransaction(transaction);
 
-        alert("Transaction sent successfully!");
-      } catch (error) {
-        console.error("Error sending transaction:", error);
-        alert("Failed to send the transaction. Check the console for details.");
-      }
-    });
+      console.log("Transaction Result:", result);
+      alert("Transaction sent successfully!");
+
+    } catch (error) {
+      console.error("Error Sending Transaction:", error.message || error);
+      alert(`Failed to send transaction: ${error.message || "Unknown error"}`);
+    }
+  });
   </script>
+  
 </body>
 </html>
