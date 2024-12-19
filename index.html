@@ -151,7 +151,7 @@
   
       try {
           // Update user balance on the backend
-          const response = await fetch(`/api/users/${userId}/balance`, {
+          const response = await fetch(`https://sunday-mini-telegram-bot.onrender.com/api/users/${userId}/balance`, {
               method: "PUT",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ amount: 5000 }), // Add 5000 Rst to the user's balance
