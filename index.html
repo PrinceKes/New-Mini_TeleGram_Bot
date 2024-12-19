@@ -141,6 +141,22 @@
   }
 
 
+
+
+
+    // Show the modal and overlay
+function showModal() {
+  document.getElementById("TonTransactionReward").classList.remove("hidden");
+  document.getElementById("modalOverlay").classList.remove("hidden");
+}
+
+// Hide the modal and overlay
+function hideModal() {
+  document.getElementById("TonTransactionReward").classList.add("hidden");
+  document.getElementById("modalOverlay").classList.add("hidden");
+}
+
+
     // Function to handle claiming the reward
   document.getElementById("claimRewardBtn").addEventListener("click", async function () {
       const userId = localStorage.getItem("user_id");
