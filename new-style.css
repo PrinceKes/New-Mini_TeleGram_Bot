@@ -346,6 +346,9 @@ color: #ff5555;
 /* Styles that handles the ton transaction modal */
 
 
+.hidden {
+  display: none;
+}
 
 .claimbody {
     background-color: #000;
@@ -387,7 +390,7 @@ color: #ff5555;
     color: #000;
     transform: scale(1.05);
   }
-  
+
 
   @media (max-width: 768px) {
     .claimbody {
