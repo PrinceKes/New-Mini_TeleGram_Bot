@@ -66,8 +66,9 @@ z-index: 1000;
     font-weight: bold;
   }
   .tasks-title p {
-    color: #b3b3b3;
-    font-size: 16px;
+    color: black;
+    font-size: 14px;
+    font-weight: 500;
   }
 
   .task-tabs {
