@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", function () {
     taskButton.className = "task-btn";
 
     if (isCompleted || localStorage.getItem(`task_${task._id}_completed`)) {
-      taskButton.innerText = "Complete 💯";
+      taskButton.innerText = "Completed 💯";
       taskButton.disabled = true;
       taskButton.classList.add("completed-btn");
     } else {
@@ -90,16 +90,16 @@ document.addEventListener("DOMContentLoaded", function () {
         taskButton.classList.add("finish-btn");
 
         // Change button behavior to handle task finish
-        taskButton.onclick = function () {
-          handleTaskFinish(task, taskBox, taskButton);
-        };
+        taskButton.onclick = () => handleTaskFinish(task, taskBox, taskButton);
       }
     }, 1000);
 
-    // Prevent multiple clicks during the countdown
-    taskButton.onclick = function () {
-      alert("You are yet to complete the task, go back.");
-    };
+    // Handle early click on "Loading..." button
+    taskButton.addEventListener("click", function handleEarlyClick() {
+      if (timer > 0) {
+        alert("You are yet to complete the task, go back.");
+      }
+    });
   }
 
   // Handle task finish (updating user balance)
@@ -117,7 +117,7 @@ document.addEventListener("DOMContentLoaded", function () {
           // Mark task as completed in local storage
           localStorage.setItem(`task_${task._id}_completed`, true);
 
-          taskButton.innerText = "Complete 💯";
+          taskButton.innerText = "Completed 💯";
           taskButton.disabled = true;
           taskButton.classList.remove("finish-btn");
           taskButton.classList.add("completed-btn");
@@ -140,7 +140,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
   fetchTasks();
 });
-
 
 
 
