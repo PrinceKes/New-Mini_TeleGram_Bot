@@ -90,16 +90,16 @@ document.addEventListener("DOMContentLoaded", function () {
         taskButton.classList.add("finish-btn");
 
         // Change button behavior to handle task finish
-        taskButton.onclick = () => handleTaskFinish(task, taskBox, taskButton);
+        taskButton.onclick = function () {
+          handleTaskFinish(task, taskBox, taskButton);
+        };
       }
     }, 1000);
 
-    // Handle early click on "Loading..." button
-    taskButton.addEventListener("click", function handleEarlyClick() {
-      if (timer > 0) {
-        alert("You are yet to complete the task, go back.");
-      }
-    });
+    // Prevent multiple clicks during the countdown
+    taskButton.onclick = function () {
+      alert("You are yet to complete the task, go back.");
+    };
   }
 
   // Handle task finish (updating user balance)
@@ -140,6 +140,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   fetchTasks();
 });
+
 
 
 
