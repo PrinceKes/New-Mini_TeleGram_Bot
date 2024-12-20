@@ -1,4 +1,3 @@
-
 document.addEventListener("DOMContentLoaded", function () {
   const userId = localStorage.getItem("user_id");
   const taskListContainer = document.getElementById("taskList");
@@ -29,6 +28,14 @@ document.addEventListener("DOMContentLoaded", function () {
         });
       })
       .catch((error) => console.error("Error fetching tasks:", error));
+  }
+
+  // Open link in a new window or external app
+  function openLinkInNewWindow(link) {
+    const newWindow = window.open(link, "_blank");
+    if (!newWindow) {
+      alert("Unable to open the link. Please check your browser settings.");
+    }
   }
 
   // Create a task box element
@@ -64,6 +71,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Start task with timer
   function startTaskWithTimer(task, taskBox, taskButton) {
+    openLinkInNewWindow(task.link); // Open the link in a new window or external app
+
     let timer = 60; // Set timer to 60 seconds
     taskButton.innerText = `Loading... (${timer}s)`;
     taskButton.disabled = true;
@@ -81,15 +90,11 @@ document.addEventListener("DOMContentLoaded", function () {
         taskButton.classList.add("finish-btn");
 
         // Change button behavior to handle task finish
-        taskButton.addEventListener("click", function handleFinish() {
-          handleTaskFinish(task, taskBox, taskButton);
-          alert("Okay, you've been rewarded for completing the task.");
-          taskButton.removeEventListener("click", handleFinish);
-        });
+        taskButton.onclick = () => handleTaskFinish(task, taskBox, taskButton);
       }
     }, 1000);
 
-    // Handle "Loading..." button clicks
+    // Handle early click on "Loading..." button
     taskButton.addEventListener("click", function handleEarlyClick() {
       if (timer > 0) {
         alert("You are yet to complete the task, go back.");
@@ -114,6 +119,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
           taskButton.innerText = "Complete 💯";
           taskButton.disabled = true;
+          taskButton.classList.remove("finish-btn");
           taskButton.classList.add("completed-btn");
 
           displayUpdatedBalance(data.balance);
@@ -136,7 +142,13 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 
-  
+
+
+
+
+
+
+
 
 
 // Update task counter
