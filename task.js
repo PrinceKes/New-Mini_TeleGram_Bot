@@ -69,47 +69,116 @@ document.addEventListener("DOMContentLoaded", function () {
     return taskBox;
   }
 
+
+
+  
   // Handle task finish
-  function handleTaskFinish(task, taskBox, taskButton) {
-    // Update user balance
-    fetch(`https://sunday-mini-telegram-bot.onrender.com/api/users/${userId}/balance`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ amount: task.reward }),
+  // Handle task finish
+function handleTaskFinish(task, taskBox, taskButton) {
+  // Update user balance
+  fetch(`https://sunday-mini-telegram-bot.onrender.com/api/users/${userId}/balance`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ amount: task.reward }),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.message === "Balance updated") {
+        console.log("User balance updated:", data.balance);
+
+        // Mark task as completed in local storage
+        localStorage.setItem(`task_${task._id}_completed`, true);
+
+        taskButton.innerText = "Complete 💯";
+        taskButton.disabled = true;
+        taskButton.classList.add("completed-btn");
+
+        taskListContainer.appendChild(taskBox);
+
+        displayUpdatedBalance(data.balance);
+        alert("Okay, you've been rewarded for completing the task!");
+      } else {
+        console.error("Failed to update balance:", data.error);
+      }
     })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.message === "Balance updated") {
-          console.log("User balance updated:", data.balance);
+    .catch((error) => console.error("Error updating balance:", error));
+}
 
-          // Mark task as completed in local storage
-          localStorage.setItem(`task_${task._id}_completed`, true);
+function createTaskBox(task, isCompleted) {
+  const taskBox = document.createElement("div");
+  taskBox.className = "task-box";
 
-          taskButton.innerText = "Complete 💯";
-          taskButton.disabled = true;
-          taskButton.classList.add("completed-btn");
+  const taskContent = document.createElement("div");
+  taskContent.className = "task-content";
+  taskContent.innerHTML = `
+    <h4>${task.title}</h4>
+    <p>+ ${task.reward} Rst</p>
+  `;
+  taskBox.appendChild(taskContent);
 
-          taskListContainer.appendChild(taskBox);
+  const taskButton = document.createElement("button");
+  taskButton.className = "task-btn";
 
-          displayUpdatedBalance(data.balance);
-        } else {
-          console.error("Failed to update balance:", data.error);
+  if (isCompleted || localStorage.getItem(`task_${task._id}_completed`)) {
+    taskButton.innerText = "Complete 💯";
+    taskButton.disabled = true;
+    taskButton.classList.add("completed-btn");
+  } else {
+    taskButton.innerText = "Start";
+
+    taskButton.addEventListener("click", function () {
+      window.open(task.link, "_blank");
+
+      // Set "Loading" state with a 60-second timer
+      taskButton.innerText = "Loading";
+      taskButton.disabled = true;
+
+      let timer = 60;
+      const countdownInterval = setInterval(() => {
+        timer -= 1;
+        taskButton.innerText = `Loading (${timer}s)`;
+
+        if (timer <= 0) {
+          clearInterval(countdownInterval);
+          taskButton.innerText = "Finish";
+          taskButton.disabled = false;
+          taskButton.classList.add("finish-btn");
+
+          taskButton.removeEventListener("click", arguments.callee); // Remove existing event listener
+          taskButton.addEventListener("click", function () {
+            handleTaskFinish(task, taskBox, taskButton);
+          });
         }
-      })
-      .catch((error) => console.error("Error updating balance:", error));
+      }, 1000);
+
+      // Add an event listener for clicking "Loading"
+      taskButton.addEventListener("click", function () {
+        if (timer > 0) {
+          alert("You are yet to complete the task, go back!");
+        }
+      });
+    });
   }
 
-  function displayUpdatedBalance(balance) {
-    const balanceDisplay = document.getElementById("points");
-    if (balanceDisplay) {
-      balanceDisplay.innerText = `Balance: ${balance} Rst`;
-    }
+  taskBox.appendChild(taskButton);
+  return taskBox;
+}
+
+function displayUpdatedBalance(balance) {
+  const balanceDisplay = document.getElementById("points");
+  if (balanceDisplay) {
+    balanceDisplay.innerText = `Balance: ${balance} Rst`;
   }
+}
 
-  fetchTasks();
-});
+fetchTasks();
+  
 
 
+
+
+
+  
 
 
 // Update task counter
