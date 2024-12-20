@@ -74,6 +74,46 @@ document.addEventListener("DOMContentLoaded", function () {
   
   // Handle task finish
   // Handle task finish
+
+
+// Handle task start and finish
+function handleTaskStartAndFinish(task, taskBox, taskButton) {
+  let timer = 60; // Set the timer for 60 seconds
+  let countdownInterval;
+
+  // Disable the button initially when starting the task
+  taskButton.innerText = "Loading...";
+  taskButton.disabled = true;
+  taskButton.classList.add("loading-btn");
+
+  // Timer countdown
+  countdownInterval = setInterval(function () {
+    taskButton.innerText = `Loading... (${timer}s)`;
+    timer--;
+
+    if (timer <= 0) {
+      // Timer has completed
+      clearInterval(countdownInterval);
+      taskButton.innerText = "Finish"; // Change button to Finish
+      taskButton.disabled = false; // Enable button
+      taskButton.classList.remove("loading-btn");
+    }
+  }, 1000);
+
+  // Handle button click during loading
+  taskButton.addEventListener("click", function () {
+    if (timer > 0) {
+      // If timer is not finished yet
+      alert("You are yet to complete the task, go back");
+    } else {
+      // If timer is completed, mark task as finished
+      handleTaskFinish(task, taskBox, taskButton);
+      alert("Okay, you've been rewarded for completing the task.");
+    }
+  });
+}
+
+// Handle task finish (updating user balance)
 function handleTaskFinish(task, taskBox, taskButton) {
   // Update user balance
   fetch(`https://sunday-mini-telegram-bot.onrender.com/api/users/${userId}/balance`, {
@@ -96,72 +136,11 @@ function handleTaskFinish(task, taskBox, taskButton) {
         taskListContainer.appendChild(taskBox);
 
         displayUpdatedBalance(data.balance);
-        alert("Okay, you've been rewarded for completing the task!");
       } else {
         console.error("Failed to update balance:", data.error);
       }
     })
     .catch((error) => console.error("Error updating balance:", error));
-}
-
-function createTaskBox(task, isCompleted) {
-  const taskBox = document.createElement("div");
-  taskBox.className = "task-box";
-
-  const taskContent = document.createElement("div");
-  taskContent.className = "task-content";
-  taskContent.innerHTML = `
-    <h4>${task.title}</h4>
-    <p>+ ${task.reward} Rst</p>
-  `;
-  taskBox.appendChild(taskContent);
-
-  const taskButton = document.createElement("button");
-  taskButton.className = "task-btn";
-
-  if (isCompleted || localStorage.getItem(`task_${task._id}_completed`)) {
-    taskButton.innerText = "Complete 💯";
-    taskButton.disabled = true;
-    taskButton.classList.add("completed-btn");
-  } else {
-    taskButton.innerText = "Start";
-
-    taskButton.addEventListener("click", function () {
-      window.open(task.link, "_blank");
-
-      // Set "Loading" state with a 60-second timer
-      taskButton.innerText = "Loading";
-      taskButton.disabled = true;
-
-      let timer = 60;
-      const countdownInterval = setInterval(() => {
-        timer -= 1;
-        taskButton.innerText = `Loading (${timer}s)`;
-
-        if (timer <= 0) {
-          clearInterval(countdownInterval);
-          taskButton.innerText = "Finish";
-          taskButton.disabled = false;
-          taskButton.classList.add("finish-btn");
-
-          taskButton.removeEventListener("click", arguments.callee); // Remove existing event listener
-          taskButton.addEventListener("click", function () {
-            handleTaskFinish(task, taskBox, taskButton);
-          });
-        }
-      }, 1000);
-
-      // Add an event listener for clicking "Loading"
-      taskButton.addEventListener("click", function () {
-        if (timer > 0) {
-          alert("You are yet to complete the task, go back!");
-        }
-      });
-    });
-  }
-
-  taskBox.appendChild(taskButton);
-  return taskBox;
 }
 
 function displayUpdatedBalance(balance) {
