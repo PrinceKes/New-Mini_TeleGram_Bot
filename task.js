@@ -1,3 +1,4 @@
+
 document.addEventListener("DOMContentLoaded", function () {
   const userId = localStorage.getItem("user_id");
   const taskListContainer = document.getElementById("taskList");
@@ -14,8 +15,8 @@ document.addEventListener("DOMContentLoaded", function () {
       .then((tasks) => {
         taskListContainer.innerHTML = "";
 
-        const uncompletedTasks = tasks.filter(task => !task.isCompleted);
-        const completedTasks = tasks.filter(task => task.isCompleted);
+        const uncompletedTasks = tasks.filter((task) => !task.isCompleted);
+        const completedTasks = tasks.filter((task) => task.isCompleted);
 
         uncompletedTasks.forEach((task) => {
           const taskBox = createTaskBox(task, false);
@@ -52,16 +53,8 @@ document.addEventListener("DOMContentLoaded", function () {
       taskButton.classList.add("completed-btn");
     } else {
       taskButton.innerText = "Start";
-      
       taskButton.addEventListener("click", function () {
-        window.open(task.link, "_blank"); 
-        taskButton.innerText = "Finish";
-        taskButton.classList.add("finish-btn");
-
-        taskButton.removeEventListener("click", arguments.callee); 
-        taskButton.addEventListener("click", function () {
-          handleTaskFinish(task, taskBox, taskButton);
-        });
+        startTaskWithTimer(task, taskBox, taskButton);
       });
     }
 
@@ -69,92 +62,78 @@ document.addEventListener("DOMContentLoaded", function () {
     return taskBox;
   }
 
-
-
-  
-  // Handle task finish
-  // Handle task finish
-
-
-// Handle task start and finish
-function handleTaskStartAndFinish(task, taskBox, taskButton) {
-  let timer = 60; // Set the timer for 60 seconds
-  let countdownInterval;
-
-  // Disable the button initially when starting the task
-  taskButton.innerText = "Loading...";
-  taskButton.disabled = true;
-  taskButton.classList.add("loading-btn");
-
-  // Timer countdown
-  countdownInterval = setInterval(function () {
+  // Start task with timer
+  function startTaskWithTimer(task, taskBox, taskButton) {
+    let timer = 60; // Set timer to 60 seconds
     taskButton.innerText = `Loading... (${timer}s)`;
-    timer--;
+    taskButton.disabled = true;
+    taskButton.classList.add("loading-btn");
 
-    if (timer <= 0) {
-      // Timer has completed
-      clearInterval(countdownInterval);
-      taskButton.innerText = "Finish"; // Change button to Finish
-      taskButton.disabled = false; // Enable button
-      taskButton.classList.remove("loading-btn");
-    }
-  }, 1000);
+    const countdownInterval = setInterval(() => {
+      timer--;
+      taskButton.innerText = `Loading... (${timer}s)`;
 
-  // Handle button click during loading
-  taskButton.addEventListener("click", function () {
-    if (timer > 0) {
-      // If timer is not finished yet
-      alert("You are yet to complete the task, go back");
-    } else {
-      // If timer is completed, mark task as finished
-      handleTaskFinish(task, taskBox, taskButton);
-      alert("Okay, you've been rewarded for completing the task.");
-    }
-  });
-}
+      if (timer <= 0) {
+        clearInterval(countdownInterval);
+        taskButton.innerText = "Finish";
+        taskButton.disabled = false;
+        taskButton.classList.remove("loading-btn");
+        taskButton.classList.add("finish-btn");
 
-// Handle task finish (updating user balance)
-function handleTaskFinish(task, taskBox, taskButton) {
-  // Update user balance
-  fetch(`https://sunday-mini-telegram-bot.onrender.com/api/users/${userId}/balance`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ amount: task.reward }),
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      if (data.message === "Balance updated") {
-        console.log("User balance updated:", data.balance);
-
-        // Mark task as completed in local storage
-        localStorage.setItem(`task_${task._id}_completed`, true);
-
-        taskButton.innerText = "Complete 💯";
-        taskButton.disabled = true;
-        taskButton.classList.add("completed-btn");
-
-        taskListContainer.appendChild(taskBox);
-
-        displayUpdatedBalance(data.balance);
-      } else {
-        console.error("Failed to update balance:", data.error);
+        // Change button behavior to handle task finish
+        taskButton.addEventListener("click", function handleFinish() {
+          handleTaskFinish(task, taskBox, taskButton);
+          alert("Okay, you've been rewarded for completing the task.");
+          taskButton.removeEventListener("click", handleFinish);
+        });
       }
-    })
-    .catch((error) => console.error("Error updating balance:", error));
-}
+    }, 1000);
 
-function displayUpdatedBalance(balance) {
-  const balanceDisplay = document.getElementById("points");
-  if (balanceDisplay) {
-    balanceDisplay.innerText = `Balance: ${balance} Rst`;
+    // Handle "Loading..." button clicks
+    taskButton.addEventListener("click", function handleEarlyClick() {
+      if (timer > 0) {
+        alert("You are yet to complete the task, go back.");
+      }
+    });
   }
-}
 
-fetchTasks();
-  
+  // Handle task finish (updating user balance)
+  function handleTaskFinish(task, taskBox, taskButton) {
+    fetch(`https://sunday-mini-telegram-bot.onrender.com/api/users/${userId}/balance`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ amount: task.reward }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.message === "Balance updated") {
+          console.log("User balance updated:", data.balance);
 
+          // Mark task as completed in local storage
+          localStorage.setItem(`task_${task._id}_completed`, true);
 
+          taskButton.innerText = "Complete 💯";
+          taskButton.disabled = true;
+          taskButton.classList.add("completed-btn");
 
+          displayUpdatedBalance(data.balance);
+        } else {
+          console.error("Failed to update balance:", data.error);
+        }
+      })
+      .catch((error) => console.error("Error updating balance:", error));
+  }
+
+  // Display updated balance
+  function displayUpdatedBalance(balance) {
+    const balanceDisplay = document.getElementById("points");
+    if (balanceDisplay) {
+      balanceDisplay.innerText = `Balance: ${balance} Rst`;
+    }
+  }
+
+  fetchTasks();
+});
 
 
   
