@@ -30,6 +30,45 @@ document.addEventListener("DOMContentLoaded", function () {
       .catch((error) => console.error("Error fetching tasks:", error));
   }
 
+
+
+
+
+
+
+
+
+
+
+  function fetchTasks() {
+  fetch("https://sunday-mini-telegram-bot.onrender.com/api/tasks")
+    .then((response) => response.json())
+    .then((tasks) => {
+      taskListContainer.innerHTML = "";
+
+      // Sort tasks: Uncompleted tasks first, then completed tasks
+      const sortedTasks = tasks.sort((a, b) => a.isCompleted - b.isCompleted);
+
+      sortedTasks.forEach((task) => {
+        const taskBox = createTaskBox(task, task.isCompleted);
+        taskListContainer.appendChild(taskBox);
+      });
+    })
+    .catch((error) => console.error("Error fetching tasks:", error));
+  }
+  
+
+
+
+
+  
+
+
+
+
+
+
+  
   // Open link in a new window or external app
   function openLinkInNewWindow(link) {
     const newWindow = window.open(link, "_blank");
