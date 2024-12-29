@@ -7,57 +7,74 @@ document.addEventListener("DOMContentLoaded", function () {
     return;
   }
 
-  // Fetch tasks for the current user
-  function fetchTasks() {
-    fetch("https://sunday-mini-telegram-bot.onrender.com/api/tasks")
-      .then((response) => response.json())
-      .then((tasks) => {
-        taskListContainer.innerHTML = "";
+  // // Fetch tasks for the current user
+  // function fetchTasks() {
+  //   fetch("https://sunday-mini-telegram-bot.onrender.com/api/tasks")
+  //     .then((response) => response.json())
+  //     .then((tasks) => {
+  //       taskListContainer.innerHTML = "";
 
-        const uncompletedTasks = tasks.filter((task) => !task.isCompleted);
-        const completedTasks = tasks.filter((task) => task.isCompleted);
+  //       const uncompletedTasks = tasks.filter((task) => !task.isCompleted);
+  //       const completedTasks = tasks.filter((task) => task.isCompleted);
 
-        uncompletedTasks.forEach((task) => {
-          const taskBox = createTaskBox(task, false);
-          taskListContainer.appendChild(taskBox);
-        });
+  //       uncompletedTasks.forEach((task) => {
+  //         const taskBox = createTaskBox(task, false);
+  //         taskListContainer.appendChild(taskBox);
+  //       });
 
-        completedTasks.forEach((task) => {
-          const taskBox = createTaskBox(task, true);
-          taskListContainer.appendChild(taskBox);
-        });
-      })
-      .catch((error) => console.error("Error fetching tasks:", error));
-  }
-
-
+  //       completedTasks.forEach((task) => {
+  //         const taskBox = createTaskBox(task, true);
+  //         taskListContainer.appendChild(taskBox);
+  //       });
+  //     })
+  //     .catch((error) => console.error("Error fetching tasks:", error));
+  // }
 
 
 
+  // function fetchTasks() {
+  // fetch("https://sunday-mini-telegram-bot.onrender.com/api/tasks")
+  //   .then((response) => response.json())
+  //   .then((tasks) => {
+  //     taskListContainer.innerHTML = "";
 
+  //     // Sort tasks: Uncompleted tasks first, then completed tasks
+  //     const sortedTasks = tasks.sort((a, b) => a.isCompleted - b.isCompleted);
 
+  //     sortedTasks.forEach((task) => {
+  //       const taskBox = createTaskBox(task, task.isCompleted);
+  //       taskListContainer.appendChild(taskBox);
+  //     });
+  //   })
+  //   .catch((error) => console.error("Error fetching tasks:", error));
+  // }
+  
 
-
-
-
+// New function to fetch task accordindly for users
   function fetchTasks() {
   fetch("https://sunday-mini-telegram-bot.onrender.com/api/tasks")
     .then((response) => response.json())
     .then((tasks) => {
       taskListContainer.innerHTML = "";
 
-      // Sort tasks: Uncompleted tasks first, then completed tasks
-      const sortedTasks = tasks.sort((a, b) => a.isCompleted - b.isCompleted);
+      // Separate tasks based on completion status for the current user
+      const incompleteTasks = tasks.filter(
+        (task) => !localStorage.getItem(`task_${task._id}_completed`) && !task.isCompleted
+      );
+      const completedTasks = tasks.filter(
+        (task) => localStorage.getItem(`task_${task._id}_completed`) || task.isCompleted
+      );
+
+      // Sort by incomplete tasks first
+      const sortedTasks = [...incompleteTasks, ...completedTasks];
 
       sortedTasks.forEach((task) => {
-        const taskBox = createTaskBox(task, task.isCompleted);
+        const taskBox = createTaskBox(task, task.isCompleted || localStorage.getItem(`task_${task._id}_completed`));
         taskListContainer.appendChild(taskBox);
       });
     })
     .catch((error) => console.error("Error fetching tasks:", error));
-  }
-  
-
+}
 
 
 
