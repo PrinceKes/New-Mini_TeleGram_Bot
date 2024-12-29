@@ -105,12 +105,15 @@ async function handleTaskVerify(task, userId, button) {
   try {
     // Update the user's balance
     const response = await fetch(`https://sunday-mini-telegram-bot.onrender.com/api/users/${userId}/balance`, {
-      method: "POST",
+      method: "PUT", // Changed to PUT to match server-side implementation
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ reward: task.reward }),
+      body: JSON.stringify({ amount: task.reward }), // Use 'amount' instead of 'reward'
     });
 
     if (!response.ok) throw new Error("Failed to update balance");
+
+    const result = await response.json(); // Parse the response
+    console.log(result.message); // Log success message (optional)
 
     // Mark task as completed
     const completedTasks = JSON.parse(localStorage.getItem(`completedTasks_${userId}`)) || [];
@@ -131,7 +134,6 @@ async function handleTaskVerify(task, userId, button) {
     alert("An error occurred while verifying the task.");
   }
 }
-
 
 
 
