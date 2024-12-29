@@ -405,6 +405,48 @@ color: #ff5555;
   transform: scale(1.05);
 }
 
+
+
+
+
+
+
+
+
+/* Here are the css that controls all the alert notifications and alerts */
+/* Optional CSS to enhance notification appearance */
+#notification-container {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  width: 90%;
+  max-width: 400px;
+  pointer-events: none;
+}
+
+.notification {
+  background: #4caf50; /* Success green */
+  color: #fff;
+  padding: 15px;
+  border-radius: 5px;
+  margin: 10px 0;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  pointer-events: auto;
+  font-size: 16px;
+  font-family: Arial, sans-serif;
+}
+
+.notification.error {
+  background: #f44336; /* Error red */
+}
+
+.notification.success {
+  background: #4caf50; /* Success green */
+}
+
   @media (max-width: 768px) {
     .claimbody {
       padding: 15px;
