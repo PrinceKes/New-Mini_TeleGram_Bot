@@ -30,39 +30,6 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 });
 
-// // Function to update the header with the user ID and avatar
-// function updateHeader(userId, avatarUrl) {
-//   const userIdElement = document.getElementById("userId");
-//   const avatarElement = document.querySelector(".header img");
-
-//   if (userIdElement) {
-//     userIdElement.innerText = `User ID: ${userId}`;
-//   }
-
-//   if (avatarElement && avatarUrl) {
-//     avatarElement.src = avatarUrl;
-//   }
-// }
-
-// // Function to save the user ID and username to the database via API
-// function saveUserIdToDatabase(user_id) {
-//   const urlParams = new URLSearchParams(window.location.search);
-//   const username = urlParams.get("tg.username"); // Ensure username is fetched correctly
-
-//   fetch("https://sunday-mini-telegram-bot.onrender.com/api/users/register", {
-//     method: "POST",
-//     headers: { "Content-Type": "application/json" },
-//     body: JSON.stringify({ user_id, username }),
-//   })
-//     .then((response) => response.json())
-//     .then((data) => {
-//       console.log("User saved:", data);
-//     })
-//     .catch((error) => {
-//       console.error("Error saving user:", error);
-//     });
-// }
-
 // Function to fetch tasks and display them on the page
 async function fetchAndDisplayTasks(userId) {
   try {
@@ -170,6 +137,41 @@ async function handleTaskVerify(task, userId, button) {
 
 
 
+
+
+
+// // Function to update the header with the user ID and avatar
+// function updateHeader(userId, avatarUrl) {
+//   const userIdElement = document.getElementById("userId");
+//   const avatarElement = document.querySelector(".header img");
+
+//   if (userIdElement) {
+//     userIdElement.innerText = `User ID: ${userId}`;
+//   }
+
+//   if (avatarElement && avatarUrl) {
+//     avatarElement.src = avatarUrl;
+//   }
+// }
+
+// // Function to save the user ID and username to the database via API
+// function saveUserIdToDatabase(user_id) {
+//   const urlParams = new URLSearchParams(window.location.search);
+//   const username = urlParams.get("tg.username"); // Ensure username is fetched correctly
+
+//   fetch("https://sunday-mini-telegram-bot.onrender.com/api/users/register", {
+//     method: "POST",
+//     headers: { "Content-Type": "application/json" },
+//     body: JSON.stringify({ user_id, username }),
+//   })
+//     .then((response) => response.json())
+//     .then((data) => {
+//       console.log("User saved:", data);
+//     })
+//     .catch((error) => {
+//       console.error("Error saving user:", error);
+//     });
+// }
 
 
 
