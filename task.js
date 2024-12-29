@@ -127,8 +127,8 @@ async function handleTaskVerify(task, userId, button) {
     button.className = "task-btn completed-btn";
     button.disabled = true;
 
-    // Show success alert
-    alert("Task completed successfully!");
+    // Show success notification
+    showNotification("Task completed successfully!", "success", 3000);
 
     // Re-fetch and sort tasks to move completed tasks to the bottom
     fetchAndDisplayTasks(userId);
