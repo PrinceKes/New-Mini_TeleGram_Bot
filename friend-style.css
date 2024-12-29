@@ -364,17 +364,39 @@
 
 
 /*Here are the css that controls the notifications and alert on this page*/
+/* Optional CSS to enhance notification appearance */
 #notification-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  width: 90%;
+  max-width: 400px;
+  pointer-events: none;
 }
 
 .notification {
-    transition: all 0.3s ease;
-    font-size: 16px;
-    animation: fadeIn 0.5s ease, fadeOut 0.5s ease 2.5s;
+  background: #4caf50; /* Success green */
+  color: #fff;
+  padding: 15px;
+  border-radius: 5px;
+  margin: 10px 0;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  pointer-events: auto;
+  font-size: 16px;
+  font-family: Arial, sans-serif;
 }
+
+.notification.error {
+  background: #f44336; /* Error red */
+}
+
+.notification.success {
+  background: #4caf50; /* Success green */
+}
+
 
 @keyframes fadeIn {
     from {
