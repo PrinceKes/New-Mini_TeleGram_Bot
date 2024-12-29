@@ -57,6 +57,7 @@
   
   <div id="navbar-container"></div>
   <script src="header.js"></script>
+  <script src="notifications.js"></script>
   <script src="task-script.js"></script>
   <script src="script.js"></script>
   <script src="backup.js"></script>
@@ -90,7 +91,7 @@
       console.log("Wallet successfully connected.");
     } catch (error) {
       console.error("Error connecting wallet:", error);
-      alert("Failed to connect wallet. Please try again.");
+      showNotification("Failed to connect wallet. Please try again.");
     }
   }
 
@@ -102,7 +103,7 @@
           // Check if a wallet is connected
           const walletInfo = tonConnectUI.wallet;
           if (!walletInfo) {
-              alert("Please connect your wallet first!");
+              showNotification("Please connect your wallet first!");
               return;
           }
   
@@ -125,7 +126,7 @@
   
           if (result) {
               console.log("Transaction successful:", result);
-              alert("Transaction sent successfully!");
+              showNotification("Transaction sent successfully!");
   
               // Show the reward modal
               document.getElementById("TonTransactionReward").classList.remove("hidden");
@@ -142,7 +143,7 @@
           }
       } catch (error) {
           console.error("Error initiating transaction:", error);
-          alert("Error initiating transaction. Please try again.");
+          showNotification("Error initiating transaction. Please try again.");
       }
   }
 
@@ -167,7 +168,7 @@ function hideModal() {
   document.getElementById("claimRewardBtn").addEventListener("click", async function () {
       const userId = localStorage.getItem("user_id");
       if (!userId) {
-          alert("User ID not found. Please refresh the page.");
+          showNotification("User ID not found. Please refresh the page.");
           return;
       }
   
@@ -182,7 +183,7 @@ function hideModal() {
           const result = await response.json();
   
           if (response.ok) {
-              alert("Reward claimed successfully!");
+              showNotification("Reward claimed successfully!");
               console.log("Balance updated:", result);
   
               // Hide the reward modal
@@ -193,7 +194,7 @@ function hideModal() {
           }
       } catch (error) {
           console.error("Error claiming reward:", error);
-          alert("Error claiming reward. Please try again.");
+          showNotification("Error claiming reward. Please try again.");
       }
   });
   
